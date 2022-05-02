@@ -1,0 +1,11 @@
+# Logger
+psutil
+pycryptodome
+cryptography
+discord
+httpx
+requests
+pypiwin32
+# Builder
+alive-progress
+colorama
