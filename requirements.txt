@@ -9,3 +9,4 @@ pypiwin32
 # Builder
 alive-progress
 colorama
+pyinstaller
