@@ -38,7 +38,13 @@ once the .exe has been created.
 You will then be promtped as to whether you want to run the file or not. I reccomend this so you 
 can see if there are any issues or not.
 ```
-### 6. Your Welcome, Enjoy!
+### 6. What Now?
+``` 
+The .exe file will appear with the name you set it as in the folder you downloaded and you can now send 
+this to your victims.😈
+```
+
+### 7. Your Welcome, Enjoy!
 This was made for educational purposes only. We do not take responsibility of any actions held against you.
 
 
