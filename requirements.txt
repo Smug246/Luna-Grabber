@@ -10,3 +10,4 @@ pypiwin32
 alive-progress
 colorama
 pyinstaller
+pillow
