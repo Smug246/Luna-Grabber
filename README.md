@@ -69,6 +69,6 @@ this to your victims.😈
 ![image](https://user-images.githubusercontent.com/99215486/171456769-a14cb576-77b8-4a9a-a02e-6ae466eb23ca.png)
 
 ### 8. Your Welcome, Enjoy!
-This was made for educational purposes only. We do not take responsibility of any actions held against you.
+This was made for educational purposes only. We do not take responsibility of any fo your actions or anything held against you.
 
 > Don't quite understand how to set it up? [Click me!](https://discord.gg/luna22)
