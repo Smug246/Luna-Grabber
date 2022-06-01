@@ -20,7 +20,7 @@ Don't Forget To ⭐ If You Like It!
 - `Email`
 - `If They Have Billing`
 - `If They Have Nitro`
-- `What OS They're Using
+- `What OS They're Using`
 - `RAM`
 - `GPU`
 - `CPU`
