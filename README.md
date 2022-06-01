@@ -16,7 +16,7 @@ Don't Forget To ⭐ If You Like It!
 - `Token`
 - `Discord Name`
 - `Google Passwords`
-- `Google Cookies
+- `Google Cookies`
 - `IP`
 - `Phone Number`
 - `Email`
