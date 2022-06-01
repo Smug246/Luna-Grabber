@@ -15,12 +15,15 @@ Don't Forget To ⭐ If You Like It!
 
 - `Token`
 - `Discord Name`
+- `IP`
 - `Phone Number`
 - `Email`
-- `2FA Checker`
 - `If They Have Billing`
-- `IP`
-- `HWID`
+- `If They Have Nitro`
+- `What OS They're Using
+- `RAM`
+- `GPU`
+- `CPU`
 - `More Coming Soon!`
 
 
