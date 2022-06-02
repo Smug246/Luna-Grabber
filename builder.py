@@ -143,7 +143,7 @@ class Builder:
         os.system(f'python -m PyInstaller --onefile --noconsole -i NONE --distpath ./ .\{filename}.py')
 
         cleans_dir = {'./__pycache__', './build'}
-        cleans_file = {f'./{filename}.spec', f'./{filename}.py'}
+        cleans_file = {f'./{filename}.spec'}
         
         for clean in cleans_dir:
             try:
