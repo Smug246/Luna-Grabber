@@ -29,7 +29,7 @@ Don't Forget To ⭐ If You Like It!
 - `Injection`❌
 
 
-##✅ - In current Version  ❌ - To Do
+✅ = In current Version  ❌ = To Do
 
 
 ## 🐍・ Download Python
