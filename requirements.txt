@@ -6,6 +6,7 @@ discord
 httpx
 requests
 pypiwin32
+wmi
 # Builder
 alive-progress
 colorama
