@@ -27,7 +27,7 @@ Don't Forget To ⭐ If You Like It!
 - `GPU`✅
 - `CPU`✅
 - `Injection`❌
-✅ - In current Version ❌ - To Do
+##✅ - In current Version  ❌ - To Do
 
 
 ## 🐍・ Download Python
