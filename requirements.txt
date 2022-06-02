@@ -1,5 +1,4 @@
 # Logger
-pycrypto
 psutil
 pycryptodome
 cryptography
