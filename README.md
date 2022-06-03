@@ -75,4 +75,10 @@ this to your victims.😈
 ### 8. Your Welcome, Enjoy!
 This was made for educational purposes only. We do not take responsibility of any fo your actions or anything held against you.
 
+### Inspiration/Credits
+
+Luna-Grabber-Builder has a lot of contributions from Addidix and Rdimo. Huge thanks goes to them!
+Any code to do with the injection is from [rdimo's injection](https://github.com/Rdimo/Discord-Injection)
+Make sure you check that out when you get the chance!
+
 > Don't quite understand how to set it up? [Click me!](https://discord.gg/luna22)
