@@ -78,7 +78,7 @@ This was made for educational purposes only. We do not take responsibility of an
 
 ### Inspiration/Credits
 
-Luna-Grabber-Builder has a lot of contributions from Addidix and Rdimo. Huge thanks goes to them!
+Luna-Grabber-Builder has a lot of contributions from Addidix and Rdimo. A lot of credit goes to them!
 Any code to do with the injection is from [rdimo's injection](https://github.com/Rdimo/Discord-Injection)
 Make sure you check that out when you get the chance!
 
