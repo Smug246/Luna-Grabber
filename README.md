@@ -70,7 +70,7 @@ this to your victims.😈
 ```
 
 ### 7. GUI
-![image](https://user-images.githubusercontent.com/99215486/171456769-a14cb576-77b8-4a9a-a02e-6ae466eb23ca.png)
+
 
 ### 8. Your Welcome, Enjoy!
 This was made for educational purposes only. We do not take responsibility of any fo your actions or anything held against you.
