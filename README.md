@@ -38,11 +38,11 @@
 - `Wifi Passwords`🟡
 - `WebCam Screenshot (makes .exe file too big)`🔴
 
-
 🟢 = Working  | 🟡 = To Do  | 🔴 = Not Adding
 
+<hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
 
-## 🐍・ Download Python
+## 🐍・ Setup
 
 Make sure you have [Python](https://www.python.org/downloads/) installed!
 ```sh-session
@@ -83,6 +83,8 @@ this to your victims.😈
 
 ### 8. Your Welcome, Enjoy!
 This was made for educational purposes only. We do not take responsibility of any fo your actions or anything held against you.
+
+<hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
 
 ### Inspiration/Credits
 
