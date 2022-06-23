@@ -36,7 +36,7 @@ Don't Forget To ⭐ If You Like It!
 - `Injection`✅
 - `Browser History`❔
 - `Wifi Passwords`❔
-- `WebCam Screenshot(makes .exe file too big)`❌
+- `WebCam Screenshot (makes .exe file too big)`❌
 
 
 ✅ = Working  | ❔ = To Do  | ❌ = Not Adding
