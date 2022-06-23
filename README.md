@@ -1,12 +1,12 @@
 <h1 align="center">
-  Luna Grabber Builder😈
+  Luna Token Grabber😈
 </h1>
 
 <h2 align="center">
-  Luna Grabber Builder is a tool that creates a token grabber for you!
+  Luna Token Grabber is a tool that steals discord tokens and other information and sends it to you webhook!
 </h2>
 
-<p align="center">
+<div align="center">
   <img src="https://img.shields.io/github/languages/top/Smug246/Luna-Grabber-Builder?color=6d00c1&&?style=flat-square">
   <img src="https://img.shields.io/github/last-commit/Smug246/Luna-Grabber-Builder?color=6d00c1&&?style=flat-square">
   <img src="https://sonarcloud.io/api/project_badges/measure?color=color=6d00c1&project=Smug246_Luna-Grabber-Builder&metric=ncloc">
@@ -15,7 +15,8 @@
   <br>
   <br>
   <img src="https://user-images.githubusercontent.com/99215486/175369409-b967da5b-e373-48ea-b8f5-8ed3d613df03.gif">
-  <p>
+  <hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
+</div>
   
 ### Features:
 
