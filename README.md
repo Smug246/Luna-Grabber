@@ -18,7 +18,7 @@ Don't Forget To ⭐ If You Like It!
   <img src="https://img.shields.io/github/forks/Smug246/Luna-Grabber-Builder?color=6d00c1&label=Forks&style=flat-square">
   <br>
   <br>
-  <img src="![lune-luna](https://user-images.githubusercontent.com/99215486/175365478-7d399083-a219-479d-abc8-6d64d819667c.gif)">
+  <img src="https://user-images.githubusercontent.com/99215486/175365478-7d399083-a219-479d-abc8-6d64d819667c.gif">
   <p>
   
 
