@@ -38,7 +38,7 @@
 - `Wifi Passwords`🟡
 - `WebCam Screenshot (makes .exe file too big)`🔴
 
-🟢 = Working  | 🟡 = To Do  | 🔴 = Not Adding
+🟢 = Working  | 🟡 = To Do  | 🔴 = Not Working
 
 <hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
 
