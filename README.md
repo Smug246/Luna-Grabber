@@ -4,12 +4,18 @@
 
 <h2 align="center">
   Luna Grabber Builder is a tool that creates a token grabber for you!
-  If you skid this give me or addidix credits!
 </h2>
 
 <h3 align="center">
 Don't Forget To ⭐ If You Like It!
 </h3>
+
+<p align="center">
+  <img src="https://img.shields.io/github/languages/top/Smug246/Luna-WebhookSpammer?style=flat-square">
+  <img src="https://img.shields.io/github/last-commit/Smug246/Luna-WebhookSpammer?style=flat-square">
+  <img src="https://img.shields.io/github/stars/Smug246/Luna-WebhookSpammer?color=%A020F0&label=Stars&style=flat-square">
+  <img src="https://img.shields.io/github/forks/Smug246/Luna-WebhookSpammer?color=%A020F0&label=Forks&style=flat-square">
+</p>
 
 ### Features:
 
