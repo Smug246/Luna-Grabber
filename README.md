@@ -18,7 +18,7 @@ Don't Forget To ⭐ If You Like It!
   <img src="https://img.shields.io/github/forks/Smug246/Luna-Grabber-Builder?color=6d00c1&label=Forks&style=flat-square">
   <br>
   <br>
-  <img src="https://tenor.com/view/lune-luna-moon-purple-moon-full-moon-gif-17782468">
+  <div class="tenor-gif-embed" data-postid="17782468" data-share-method="host" data-aspect-ratio="1.78771" data-width="100%"><a href="https://tenor.com/view/lune-luna-moon-purple-moon-full-moon-gif-17782468">Lune Luna GIF</a>from <a href="https://tenor.com/search/lune-gifs">Lune GIFs</a></div> <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
 </p>
 
 
