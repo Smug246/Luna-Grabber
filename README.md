@@ -12,7 +12,7 @@ Don't Forget To ⭐ If You Like It!
 
 <p align="center">
   <img src="https://img.shields.io/github/languages/top/Smug246/Luna-WebhookSpammer?color=5c12df&?style=flat-square">
-  <img src="https://img.shields.io/github/last-commit/Smug246/Luna-WebhookSpammer?style=flat-square">
+  <img src="https://img.shields.io/github/last-commit/Smug246/Luna-WebhookSpammer?color=5c12df&?style=flat-square">
   <img src="https://img.shields.io/github/stars/Smug246/Luna-Grabber-Builder?color=5c12df&label=Stars&style=flat-square">
   <img src="https://img.shields.io/github/forks/Smug246/Luna-Grabber-Builder?color=5c12df&label=Forks&style=flat-square">
 </p>
