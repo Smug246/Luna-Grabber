@@ -36,7 +36,7 @@ Don't Forget To ⭐ If You Like It!
 - `Injection`✅
 
 
-✅ = Working | ❔ = To Do | ❌ = Not Working
+✅ = Working  | ❔ = To Do  | ❌ = Not Working
 
 
 ## 🐍・ Download Python
