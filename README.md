@@ -34,9 +34,12 @@ Don't Forget To ⭐ If You Like It!
 - `GPU`✅
 - `CPU`✅
 - `Injection`✅
+- `Browser History`❔
+- `Wifi Passwords`❔
+- `WebCam Screenshot`(Makes .exe file too big)❌
 
 
-✅ = Working  | ❔ = To Do  | ❌ = Not Working
+✅ = Working  | ❔ = To Do  | ❌ = Not Adding
 
 
 ## 🐍・ Download Python
