@@ -11,11 +11,11 @@ Don't Forget To ⭐ If You Like It!
 </h3>
 
 <p align="center">
-  <img src="https://img.shields.io/github/languages/top/Smug246/Luna-Grabber-Builder?color=FFFFFF&?style=flat-square">
-  <img src="https://img.shields.io/github/last-commit/Smug246/Luna-Grabber-Builder?color=FFFFFF&?style=flat-square">
-  <img src="https://sonarcloud.io/api/project_badges/measure?color=FFFFFF&project=Smug246_Luna-Grabber-Builder&metric=ncloc">
-  <img src="https://img.shields.io/github/stars/Smug246/Luna-Grabber-Builder?color=FFFFFF&label=Stars&style=flat-square">
-  <img src="https://img.shields.io/github/forks/Smug246/Luna-Grabber-Builder?color=FFFFFF&label=Forks&style=flat-square">
+  <img src="https://img.shields.io/github/languages/top/Smug246/Luna-Grabber-Builder?color=color=6d00c1&&?style=flat-square">
+  <img src="https://img.shields.io/github/last-commit/Smug246/Luna-Grabber-Builder?color=color=6d00c1&&?style=flat-square">
+  <img src="https://sonarcloud.io/api/project_badges/measure?color=color=6d00c1&project=Smug246_Luna-Grabber-Builder&metric=ncloc">
+  <img src="https://img.shields.io/github/stars/Smug246/Luna-Grabber-Builder?color=6d00c1&label=Stars&style=flat-square">
+  <img src="https://img.shields.io/github/forks/Smug246/Luna-Grabber-Builder?color=6d00c1&label=Forks&style=flat-square">
 </p>
 
 ### Features:
