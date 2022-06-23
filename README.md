@@ -4,10 +4,7 @@
 
 <h2 align="center">
   Luna Grabber Builder is a tool that creates a token grabber for you!
-  Don't Forget To ⭐ If You Like It!
 </h2>
-
-
 
 <p align="center">
   <img src="https://img.shields.io/github/languages/top/Smug246/Luna-Grabber-Builder?color=6d00c1&&?style=flat-square">
@@ -20,8 +17,6 @@
   <img src="https://user-images.githubusercontent.com/99215486/175365478-7d399083-a219-479d-abc8-6d64d819667c.gif">
   <p>
   
-
-
 ### Features:
 
 - `Token`🟢
@@ -89,6 +84,8 @@ this to your victims.😈
 
 ### 8. Your Welcome, Enjoy!
 This was made for educational purposes only. We do not take responsibility of any fo your actions or anything held against you.
+    
+### Don't Forget To ⭐ If You Like It!
 
 ### Inspiration/Credits
 
