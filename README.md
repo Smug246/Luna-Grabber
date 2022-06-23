@@ -42,9 +42,9 @@
 
 <hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
 
-## 🐍・ Setup
+## Setup
 
-Make sure you have [Python](https://www.python.org/downloads/) installed!
+Make sure you have [Python](https://www.python.org/downloads/) installed and it is added to your [Path](https://youtu.be/Y2q_b4ugPWk)
 ```sh-session
 python v3.10.1 or higher
 ```
