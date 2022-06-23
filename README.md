@@ -92,5 +92,6 @@ Luna-Grabber-Builder has a lot of contributions from Addidix and Rdimo. A lot of
 Any code to do with the injection is from [rdimo's injection](https://github.com/Rdimo/Discord-Injection)
 Make sure you check that out when you get the chance!
 
+<hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
 
 > Still don't quite understand how to set it up? [Click me!](https://discord.gg/luna22)
