@@ -34,7 +34,7 @@
 - `GPU`🟢
 - `CPU`🟢
 - `Injection`🟢
-- `Browser History`🟡
+- `Browser History`🟢
 - `Wifi Passwords`🟡
 - `WebCam Screenshot (makes .exe file too big)`🔴
 
