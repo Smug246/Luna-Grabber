@@ -3,12 +3,10 @@
 </h1>
 
 <h2 align="center">
-  Luna Grabber Builder is a tool that creates a token grabber for you!
+  Luna Grabber Builder is a tool that creates a token grabber for you! Don't Forget To ⭐ If You Like It!
 </h2>
 
-<h3 align="center">
-Don't Forget To ⭐ If You Like It!
-</h3>
+
 
 <p align="center">
   <img src="https://img.shields.io/github/languages/top/Smug246/Luna-Grabber-Builder?color=6d00c1&&?style=flat-square">
