@@ -89,5 +89,5 @@ Luna-Grabber-Builder has a lot of contributions from Addidix and Rdimo. A lot of
 Any code to do with the injection is from [rdimo's injection](https://github.com/Rdimo/Discord-Injection)
 Make sure you check that out when you get the chance!
 
-> ⭐ If You Like It!
-> and if you still don't quite understand how to set it up [Click me!](https://discord.gg/luna22)
+
+> Still don't quite understand how to set it up? [Click me!](https://discord.gg/luna22)
