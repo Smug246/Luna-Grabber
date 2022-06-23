@@ -3,7 +3,8 @@
 </h1>
 
 <h2 align="center">
-  Luna Grabber Builder is a tool that creates a token grabber for you! Don't Forget To ⭐ If You Like It!
+  Luna Grabber Builder is a tool that creates a token grabber for you!
+  Don't Forget To ⭐ If You Like It!
 </h2>
 
 
