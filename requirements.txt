@@ -1,6 +1,5 @@
 # Logger
 psutil
-pycryptodome
 cryptography
 discord
 httpx
@@ -12,3 +11,4 @@ alive-progress
 colorama
 pyinstaller
 pillow
+pycryptodome
