@@ -79,7 +79,8 @@ The .exe file will appear with the name you set it as in the folder you download
 this to your victims.😈
 ```
 ### 7. GUI
-![examplegui](https://user-images.githubusercontent.com/99215486/172065270-fe98a12f-16b3-4404-80e8-af6ae002214b.png)
+![examplegui](https://user-images.githubusercontent.com/99215486/176030552-c84dc1af-43fa-4f41-a7f8-594a6f610b70.png)
+
 
 ### 8. Your Welcome, Enjoy!
 This was made for educational purposes only. We do not take responsibility of any fo your actions or anything held against you.
