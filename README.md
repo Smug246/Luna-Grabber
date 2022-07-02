@@ -99,4 +99,4 @@ Make sure you check that out when you get the chance!
 
 > Still don't quite understand how to set it up? [Click me!](https://discord.gg/luna22)                                                                                 
 
-[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=A6NV4KHPQ6HKW)
+[![paypal](https://github.com/andreostrovsky/donate-with-paypal/blob/master/blue.svg)](https://www.paypal.com/donate/?hosted_button_id=CUYTA98YWEX5J)
