@@ -97,7 +97,7 @@ Make sure you check that out when you get the chance!
 
 <hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
                                                                                 
-https://www.paypal.com/donate/?hosted_button_id=CUYTA98YWEX5J  
+![paypal](https://www.paypal.com/donate/?hosted_button_id=CUYTA98YWEX5J)
 If you enjoyed this project or your just feeling generous, consider donating. It means a lot to me!
 
 <hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
