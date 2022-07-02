@@ -37,7 +37,7 @@
 - `Injection`🟢
 - `Browser History`🟢
 - `Wifi Passwords`🟢
-- `Minecraft Session Info`🟡
+- `Minecraft Session Info`🟢
 - `WebCam Screenshot (makes .exe file too big)`🔴
 
 🟢 = Working  | 🟡 = To Do  | 🔴 = Not Working
