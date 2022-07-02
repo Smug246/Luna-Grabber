@@ -98,7 +98,7 @@ Make sure you check that out when you get the chance!
 <hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
                                                                                 
 ## donate
-<a href="https://paypal.me/judeboi/"><img src="blue.svg" height="40"></a>  
+<a href="https://paypal.me/judeboi/"><img src="blue.png" height="40"></a>  
 If you enjoyed this project or your just feeling generous, consider donating. It means a lot to me!
 
 > Still don't quite understand how to set it up? [Click me!]([https://discord.gg/PskF2YeXnd]) 
