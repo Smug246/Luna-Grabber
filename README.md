@@ -12,7 +12,7 @@
   <img src="https://sonarcloud.io/api/project_badges/measure?color=6d00c1&project=Smug246_Luna-Grabber-Builder&metric=ncloc">
   <img src="https://img.shields.io/github/stars/Smug246/Luna-Grabber-Builder?color=6d00c1&label=Stars&style=flat-square">
   <img src="https://img.shields.io/github/forks/Smug246/Luna-Grabber-Builder?color=6d00c1&label=Forks&style=flat-square">
-  <img src="[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=A6NV4KHPQ6HKW)
+ 
   <br>
   <br>
   <img src="https://user-images.githubusercontent.com/99215486/175369409-b967da5b-e373-48ea-b8f5-8ed3d613df03.gif">
@@ -97,4 +97,6 @@ Make sure you check that out when you get the chance!
 
 <hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
 
-> Still don't quite understand how to set it up? [Click me!](https://discord.gg/luna22)                                                                                             
+> Still don't quite understand how to set it up? [Click me!](https://discord.gg/luna22)                                                                                 
+
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=A6NV4KHPQ6HKW)
