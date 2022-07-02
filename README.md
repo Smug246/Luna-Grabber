@@ -97,6 +97,5 @@ Make sure you check that out when you get the chance!
 
 <hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
 
-> Still don't quite understand how to set it up? [Click me!](https://discord.gg/luna22)                                                                                 
-
+> Still don't quite understand how to set it up? [Click me!]([https://discord.gg/PskF2YeXnd])                                                                                 
 [![paypal](https://github.com/andreostrovsky/donate-with-paypal/blob/master/blue.svg)](https://www.paypal.com/donate/?hosted_button_id=CUYTA98YWEX5J)
