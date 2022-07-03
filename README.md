@@ -97,7 +97,7 @@ Make sure you check that out when you get the chance!
 
 <hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
 
-##If you enjoyed this project or your just feeling generous, consider donating. It means a lot to me!                                                                   
+## If you enjoyed this project or your just feeling generous, consider donating. It means a lot to me!                                                                   
 <a href="https://paypal.me/judeboi/"><img src="https://raw.githubusercontent.com/andreostrovsky/donate-with-paypal/master/blue.svg" height="40"></a>  btc address: 174LafHroT6Lf1Y6frajRKvdFwTZkfBpvH
  
 <hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
