@@ -38,6 +38,7 @@
 - `Browser History`🟢
 - `Wifi Passwords`🟢
 - `Minecraft Session Info`🟢
+- `Epic Games Offline Data`🟢
 - `WebCam Screenshot (makes .exe file too big)`🔴
 
 🟢 = Working  | 🟡 = To Do  | 🔴 = Not Working
