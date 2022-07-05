@@ -151,11 +151,9 @@ class Builder:
     def compile(self, filename):
         print(f'{Fore.MAGENTA}[+]{Fore.RESET} Compiling code...')
         
-        # os.system(f'python -m PyInstaller --onefile --noconsole -i NONE --distpath ./ .\{filename}.py')
-        os.system(f'cxfreeze -c {filename}.py')
-
-        # cleans_dir = {'./__pycache__', './build'}
-        cleans_dir = {'./__pycache__'}
+        os.system(f'python -m PyInstaller --onefile --noconsole -i NONE --distpath ./ .\{filename}.py')
+        
+        cleans_dir = {'./__pycache__', './build'}
         cleans_file = {f'./{filename}.spec'}
         
         for clean in cleans_dir:
