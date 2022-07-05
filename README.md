@@ -40,6 +40,8 @@
 - `Minecraft Session Info`🟢
 - `Epic Games Offline Data`🟢
 - `WebCam Screenshot (makes .exe file too big)`🔴
+- `Condense .exe size`🟡
+- `Obfuscation before compiling (waiting for pyhide to be released)🟡
 
 🟢 = Working  | 🟡 = To Do  | 🔴 = Not Working
 
