@@ -1,6 +1,6 @@
 import os
 import platform
-from tempfile import mkdtemp
+import difflib
 import threading
 import uuid
 import requests
@@ -10,6 +10,7 @@ import sqlite3
 import psutil
 import json
 
+from tempfile import mkdtemp
 from json import loads
 from re import findall, match
 from shutil import copy2
