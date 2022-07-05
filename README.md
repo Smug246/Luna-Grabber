@@ -80,7 +80,7 @@ can see if there are any issues or not.
 ```
 ### 6. What Now?
 ``` 
-The .exe file will appear in a build folder with the name you set it as and you can now send 
+The .exe file will appear in the same folder where all the other files are with the name you set it as and you can now send 
 this to your victims.😈
 ```
 ### 7. GUI
