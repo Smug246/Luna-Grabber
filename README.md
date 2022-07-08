@@ -39,9 +39,12 @@
 - `Wifi Passwords`🟢
 - `Minecraft Session Info`🟢
 - `Epic Games Offline Data`🟢
-- `WebCam Screenshot (makes .exe file too big)`🔴
+- `2FA Enabled Or Not`🟢
+- `Victim's 'About Me' Section`🟢
+- `Gift Inventory Codes`🟢
 - `Condense .exe size`🟡
 - `Obfuscation before compiling (waiting for pyhide to be released)`🟡
+- `WebCam Screenshot (makes .exe file too big)`🔴
 
 🟢 = Working  | 🟡 = To Do  | 🔴 = Not Working
 
