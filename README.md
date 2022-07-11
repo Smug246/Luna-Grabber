@@ -88,7 +88,7 @@ this to your victims.😈
 ```
 ### 7. GUI
 ![examplegui](https://i.imgur.com/duYIRXm.png)
-![examplegui2](https://i.imgur.com/DPNin7v.png)
+![examplegui2](https://i.imgur.com/9uhxp6S.png)
 
 ### 8. Your Welcome, Enjoy!
 This was made for educational purposes only. We do not take responsibility of any fo your actions or anything held against you.
