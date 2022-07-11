@@ -40,8 +40,8 @@
 - `Minecraft Session Info`🟢
 - `Epic Games Offline Data`🟢
 - `2FA Enabled Or Not`🟢
-- `Victim's 'About Me' Section`🟢
 - `Gift Inventory Codes`🟢
+- `NordVpn`🟢
 - `Condense .exe size`🟡
 - `Obfuscation before compiling (waiting for pyhide to be released)`🟡
 - `WebCam Screenshot (makes .exe file too big)`🔴
