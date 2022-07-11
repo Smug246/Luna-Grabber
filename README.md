@@ -87,7 +87,7 @@ The .exe file will appear in the same folder where all the other files are with 
 this to your victims.😈
 ```
 ### 7. GUI
-![examplegui](https://i.imgur.com/tTECLC4.png)
+![examplegui]()
 
 
 ### 8. Your Welcome, Enjoy!
