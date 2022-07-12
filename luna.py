@@ -479,7 +479,7 @@ class epicgames_data():
                         if line.startswith("Data="):
                             g.write(line.split('Data=')[1].strip())
             else:
-                g.write(g.write("No epic games data was found :("))
+                g.write("No epic games data was found :(")
                 
         hide(".\\epicgames-data.txt")
 
