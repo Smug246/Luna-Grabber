@@ -2,7 +2,6 @@ import os
 import platform
 import re
 import threading
-from unicodedata import name
 import uuid
 import requests
 import wmi
@@ -12,10 +11,8 @@ import psutil
 import json
 import base64
 
-from json import loads
-from re import findall, match
+from re import findall
 from shutil import copy2
-from sqlite3 import connect
 from base64 import b64decode
 from subprocess import PIPE, Popen
 from sys import exit
