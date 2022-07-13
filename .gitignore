@@ -1,0 +1,13 @@
+desktop-screenshot.png
+epicgames-data.txt
+google-cookies.txt
+google-history.txt
+google-passwords.txt
+minecraft-sessioninfo.json
+minecraft-usercache.json
+nordvpn-data.txt
+wifi-passwords.txt
+Luna-Logged-*
+
+**/__pycache__
+**/build
