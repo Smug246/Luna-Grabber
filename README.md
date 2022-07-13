@@ -87,8 +87,10 @@ The .exe file will appear in the same folder where all the other files are with 
 this to your victims.😈
 ```
 ### 7. GUI
-![examplegui](https://i.imgur.com/duYIRXm.png)
-![examplegui2](https://i.imgur.com/DPNin7v.png)
+![discord](https://i.imgur.com/duYIRXm.png)
+![files](https://i.imgur.com/DPNin7v.png)
+![injection](https://i.imgur.com/4DNCiAJ.png)
+
 
 ### 8. Your Welcome, Enjoy!
 This was made for educational purposes only. We do not take responsibility of any fo your actions or anything held against you.
