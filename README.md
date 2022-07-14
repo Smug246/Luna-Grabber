@@ -87,7 +87,7 @@ The .exe file will appear in the same folder where all the other files are with 
 this to your victims.😈
 ```
 ### 7. GUI
-![discord](https://i.imgur.com/duYIRXm.png)
+![discord](https://i.imgur.com/4a1X1q1.png)
 ![files](https://i.imgur.com/DPNin7v.png)
 ![injection](https://i.imgur.com/4DNCiAJ.png)
 
