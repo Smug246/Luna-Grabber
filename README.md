@@ -89,10 +89,11 @@ this to your victims.😈
 
 <hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
 
-### GUI
+### GUI/INFO
 ![discord](https://i.imgur.com/4a1X1q1.png)
 ![files](https://i.imgur.com/DPNin7v.png)
 ![injection](https://i.imgur.com/4DNCiAJ.png)
+![virustotal](https://i.imgur.com/LoApw7q.png)
 
 <hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
 
