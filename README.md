@@ -68,12 +68,12 @@ open a terminal with the luna logo. Don't worry although this looks quite menaci
 ```
 ### 3. Create A Webhook:
 ```
-This webhook will be sent the logs you obtain so dont remove it. Once you've created one paste it 
+This webhook will be sent any victims you log so don't delete it once it's made. Once you've created one paste it 
 into the terminal when prompted.
 ```
 ### 4. Enter The File Name:
 ```
-Now you can make up a name for the file that you will send to targets. This can be changed later 
+Now you can make up a name for the file you want to make and choose if you want to be pinged and the pingtype. The filename can be changed later 
 once the .exe has been created.
 ```
 ### 5. Test The File:
@@ -90,7 +90,6 @@ this to your victims.😈
 ![discord](https://i.imgur.com/4a1X1q1.png)
 ![files](https://i.imgur.com/DPNin7v.png)
 ![injection](https://i.imgur.com/4DNCiAJ.png)
-
 
 ### 8. Your Welcome, Enjoy!
 This was made for educational purposes only. We do not take responsibility of any fo your actions or anything held against you.
