@@ -42,8 +42,8 @@
 - `2FA Enabled Or Not`🟢
 - `Gift Inventory Codes`🟢
 - `NordVpn`🟢
+- `Obfuscation`🟢
 - `Condense .exe size`🟡
-- `Obfuscation before compiling (waiting for pyhide to be released)`🟡
 - `WebCam Screenshot (makes .exe file too big)`🔴
 
 🟢 = Working  | 🟡 = To Do  | 🔴 = Not Working
