@@ -85,14 +85,14 @@ can see if there are any issues or not.
 ``` 
 The .exe file will appear in the same folder where all the other files are with the name you set it as and you can now send 
 this to your victims.😈
+
+<hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
+
 ```
-### 7. GUI
+### GUI
 ![discord](https://i.imgur.com/4a1X1q1.png)
 ![files](https://i.imgur.com/DPNin7v.png)
 ![injection](https://i.imgur.com/4DNCiAJ.png)
-
-### 8. Your Welcome, Enjoy!
-This was made for educational purposes only. We do not take responsibility of any fo your actions or anything held against you.
 
 <hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
 
