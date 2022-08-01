@@ -42,7 +42,7 @@
 - `2FA Enabled Or Not`🟢
 - `Gift Inventory Codes`🟢
 - `NordVpn`🟢
-- `Obfuscation`🟢
+- `Obfuscation`(very soon)🟡
 - `Condense .exe size`🟡
 - `WebCam Screenshot (makes .exe file too big)`🔴
 
