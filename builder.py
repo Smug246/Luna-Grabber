@@ -43,6 +43,9 @@ class Builder:
             self.ping = False
             self.pingtype = "none"
 
+        self.compy = input(
+                f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Do you want to compile the file to a .exe? (y/n):')
+
         self.mk_file(self.filename, self.webhook)
 
         print(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Built!')
@@ -110,13 +113,11 @@ class Builder:
 
 |"""
 
-        num = random.randint(30, 40)
-        with alive_bar(num) as bar:
-            for _ in range(num):
+        with alive_bar(40) as bar:
+            for _ in range(40):
                 print(img)
-                time.sleep(random.randint(1, 3) / num)
+                time.sleep(random.randint(1, 3) / 40)
                 os.system('cls')
-
                 bar()
 
             os.system('cls')
@@ -172,7 +173,13 @@ class Builder:
                     .replace("\"%ping_enabled%\"", str(self.ping))
                     .replace("%ping_type%", self.pingtype))
 
-        self.compile(filename)
+        if self.compy == 'y':
+            self.compile(filename)
+        else:
+            time.sleep(2)
+            print(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Source code has been generated...')
+            input(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Press enter to exit...')
+            sys.exit()
 
     def compile(self, filename):
         print(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Compiling code...')
