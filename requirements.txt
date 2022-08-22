@@ -1,7 +1,7 @@
 # Logger
 psutil
 cryptography
-discord==1.7.3
+discord
 httpx
 requests
 pypiwin32
