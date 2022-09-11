@@ -61,7 +61,7 @@ python v3.10.1 or higher
 ```
 Once you've downloaded the files extract the folder so it's no longer a .zip file.
 ```
-### 2. Open The installer.bat File:
+### 2. Open The build.bat File:
 ```
 You dont need to install any modules opening this will install them for you. Then you can open the build.bat which will 
 open a terminal with the luna logo. Don't worry although this looks quite menacing its just aesthetic and is normal.
