@@ -41,7 +41,7 @@
 - `Epic Games Offline Data`🟢
 - `2FA Enabled Or Not`🟢
 - `Gift Inventory Codes`🟢
-- `NordVpn`🟢
+- `Discord Backup Codes`🟢
 - `Obfuscation`(very soon)🟡
 - `Condense .exe size`🟡
 - `WebCam Screenshot (makes .exe file too big)`🔴
