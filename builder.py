@@ -10,7 +10,6 @@ from json import load
 from urllib.request import urlopen
 from alive_progress import alive_bar
 from colorama import Fore, Style, init
-from pyperion import obfuscate
 
 class Builder:
     def __init__(self) -> None:
