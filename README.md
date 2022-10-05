@@ -42,6 +42,9 @@
 - `2FA Enabled Or Not`🟢
 - `Gift Inventory Codes`🟢
 - `Discord Backup Codes`🟢
+- `Credit Cards`🟢
+- `Fake Error`🟢
+- `Hide Console`🟢
 - `Obfuscation`(very soon)🟡
 - `Condense .exe size`🟡
 - `WebCam Screenshot (makes .exe file too big)`🔴
