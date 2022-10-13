@@ -45,7 +45,7 @@
 - `Credit Cards`🟢
 - `Fake Error`🟢
 - `Hide Console`🟢
-- `Obfuscation`(very soon)🟡
+- `Obfuscation`🟢
 - `Condense .exe size`🟡
 - `WebCam Screenshot (makes .exe file too big)`🔴
 
@@ -74,10 +74,10 @@ open a terminal with the luna logo. Don't worry although this looks quite menaci
 This webhook will be sent any victims you log so don't delete it once it's made. Once you've created one paste it 
 into the terminal when prompted.
 ```
-### 4. Enter The File Name:
+### 4. Conifgurable Options:
 ```
-Now you can make up a name for the file you want to make and choose if you want to be pinged and the pingtype. The filename can be changed later 
-once the .exe has been created.
+Now once you've given your file a name you can pick between some options by typing either y or n for each one. After
+having done that the file will be built and ready for usage.
 ```
 ### 5. Test The File:
 ``` 
@@ -93,8 +93,9 @@ this to your victims.😈
 <hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
 
 ### GUI
-![discord](https://i.imgur.com/4a1X1q1.png)
-![files](https://i.imgur.com/DPNin7v.png)
+![discord](https://i.imgur.com/c1cUmZF.png)
+![discord2](https://i.imgur.com/zReVojP.png)
+![files](https://i.imgur.com/UV5SuC2.png)
 ![injection](https://i.imgur.com/4DNCiAJ.png)
 
 <hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
