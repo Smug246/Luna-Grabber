@@ -12,6 +12,3 @@ colorama
 pyinstaller
 pillow
 pycryptodome
-# Obfuscation
-codecs
-argeparse
