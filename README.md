@@ -48,7 +48,7 @@
 - `Condense .exe size`🟢
 - `WebCam Screenshot (makes .exe file too big)`🔴
 
-🟢 = Added  | 🟡 = To Do  | 🔴 = Not Working
+🟢 = Added  | 🟡 = To Do  | 🔴 = Not Adding
 
 <hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
 
