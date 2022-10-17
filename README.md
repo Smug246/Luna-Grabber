@@ -100,7 +100,7 @@ this to your victims.😈
 
 ### Inspiration/Credits
 
-Luna-Grabber-Builder has a lot of contributions from Addidix and Rdimo. A lot of credit goes to them!
+Luna Token Grabber has some contributions from Addidix and Rdimo. Credit where due goes to them.
 Any code to do with the injection is from [rdimo's injection](https://github.com/Rdimo/Discord-Injection)
 Make sure you check that out when you get the chance!
 
