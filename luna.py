@@ -25,6 +25,8 @@ __PING__ = "%ping_enabled%"
 __PINGTYPE__ = "%ping_type%"
 __ERROR__ = "%_error_enabled%"
 
+#teset
+
 def main(webhook: str):
     webhook = SyncWebhook.from_url(webhook, session=requests.Session())
         
