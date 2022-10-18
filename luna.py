@@ -10,7 +10,6 @@ import sqlite3
 import psutil
 import json
 import base64
-import ctypes
 
 from tkinter import messagebox
 from shutil import copy2

