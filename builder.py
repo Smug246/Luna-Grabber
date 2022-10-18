@@ -244,7 +244,7 @@ class Builder:
 
     def compile(self, filename):
         print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET} {Fore.WHITE}Compiling code...{Fore.RESET}')
-        os.system(f'python -m PyInstaller --onefile --upx-dir=./upx -i NONE --distpath ./ .\\{filename}.py')
+        os.system(f'python -m PyInstaller --onefile --noconsole --upx-dir=./upx -i NONE --distpath ./ .\\{filename}.py')
         print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Code compiled!{Fore.RESET}')
 
     def run(self, filename):
