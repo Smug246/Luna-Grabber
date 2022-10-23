@@ -44,8 +44,13 @@
 - `Credit Cards`🟢
 - `Fake Error`🟢
 - `Obfuscation`🟢
-- `Condense .exe size`🟢
-- `WebCam Screenshot (makes .exe file too big)`🔴
+- `Condense .Exe Size`🟢
+- `Icon For .Exe (optional)`🟢
+- `Add File To Startup`🟡
+- `Bypass Token Protector`🟡
+- `Anti Spam`🟡
+- `Binder`🟡
+- `WebCam Screenshot (optional)`🟡
 
 🟢 = Added  | 🟡 = To Do  | 🔴 = Not Adding
 
