@@ -278,7 +278,7 @@ class Builder:
         if self.icon == 'y':
             icon = self.icon_name
         else:
-            icon = None
+            icon = "NONE"
         os.system(f'python -m PyInstaller --onefile --noconsole --upx-dir=./upx -i {icon} --distpath ./ .\\{filename}.py')
         print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Code compiled!{Fore.RESET}')
 
