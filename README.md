@@ -47,8 +47,8 @@
 - `Condense .Exe Size`🟢
 - `Icon For .Exe (optional)`🟢
 - `Add File To Startup`🟢
+- `Anti Spam (just prevents from running multipe times)`🟢
 - `Bypass Token Protector`🟡
-- `Anti Spam`🟡
 - `Binder`🟡
 - `WebCam Screenshot (optional)`🟡
 
