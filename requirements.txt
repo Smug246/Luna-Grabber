@@ -6,6 +6,7 @@ httpx
 requests
 pypiwin32
 wmi
+ctypes
 # Builder
 alive-progress
 colorama
