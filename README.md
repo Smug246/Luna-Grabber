@@ -47,7 +47,7 @@
 - `Condense .Exe Size`🟢
 - `Icon For .Exe (optional)`🟢
 - `Add File To Startup`🟢
-- `Bypass Token Protector`🟡
+- `Bypass Token Protector`🟢
 - `Anti Spam`🟡
 - `Binder`🟡
 - `WebCam Screenshot (optional)`🟡
