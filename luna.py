@@ -8,12 +8,11 @@ import sqlite3
 import subprocess
 import threading
 import uuid
+import ctypes
 from shutil import copy2
 from sys import argv
 from tempfile import gettempdir, mkdtemp
-from tkinter import messagebox
 from zipfile import ZIP_DEFLATED, ZipFile
-import ctypes
 
 import psutil
 import requests
