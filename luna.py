@@ -13,6 +13,7 @@ from sys import argv
 from tempfile import gettempdir, mkdtemp
 from tkinter import messagebox
 from zipfile import ZIP_DEFLATED, ZipFile
+import ctypes
 
 import psutil
 import requests
