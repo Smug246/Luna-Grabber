@@ -104,6 +104,8 @@ The .exe file will appear in the same folder where all the other files are with 
 this to your victims.😈
 ```
 
+> Still don't quite understand how to set it up? Make an issue or [Click me!](https://discord.gg/qqHM44c55h)
+
 <hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
 
 ### GUI
@@ -123,10 +125,4 @@ Make sure you check that out when you get the chance!
 
 <hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
 
-## If you enjoyed this project or your just feeling generous, consider donating. It means a lot to me!
-
-<a href="https://paypal.me/judeboi/"><img src="https://raw.githubusercontent.com/andreostrovsky/donate-with-paypal/master/blue.svg" height="40"></a>
-
-<hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
-
-> Still don't quite understand how to set it up? Make an issue or [Click me!](https://discord.gg/qqHM44c55h)
+## If you enjoyed this project consider dropping a star!
