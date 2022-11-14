@@ -24,7 +24,7 @@
 - `Browser Passwords`🟢
 - `Browser Cookies`🟢
 - `Browser History`🟢
-- `Roblox Cookies`🟢
+- `Roblox Info`🟢
 - `Credit Cards`🟢
 - `IP`🟢
 - `Phone Number`🟢
