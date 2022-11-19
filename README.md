@@ -47,7 +47,7 @@
 - `Add File To Startup`🟢
 - `Anti Spam (just prevents from multiple instances running at once)`🟢
 - `Very Low Detections`🟢
-- `Bypass Token Protector`🟡
+- `Bypass Token Protector`🟢
 - `WebCam Screenshot (optional)`🟡
 - `Binder`🟡
 
