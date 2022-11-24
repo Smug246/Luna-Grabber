@@ -112,9 +112,11 @@ this to your victims.😈
   
 ### GUI
 
-![discord](https://i.imgur.com/c1cUmZF.png)
-![discord2](https://i.imgur.com/zReVojP.png)
-![discord3](https://i.imgur.com/9u8nNbD.png)
-![discord4](https://i.imgur.com/6GO5CB4.png)
-![injection](https://i.imgur.com/4DNCiAJ.png)
-![files](https://i.imgur.com/Kx4F4cr.png)
+<div align="center">
+  ![discord](https://i.imgur.com/c1cUmZF.png)
+  ![discord2](https://i.imgur.com/zReVojP.png)
+  ![discord3](https://i.imgur.com/9u8nNbD.png)
+  ![discord4](https://i.imgur.com/6GO5CB4.png)
+  ![injection](https://i.imgur.com/4DNCiAJ.png)
+  ![files](https://i.imgur.com/Kx4F4cr.png)
+</div>
