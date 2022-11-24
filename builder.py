@@ -284,7 +284,7 @@ class Builder:
     def compile(self, filename):
         print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET} {Fore.WHITE}Compiling code...{Fore.RESET}')
         if self.icon == 'y':
-            icon = self.icon_name
+            icon = "./" + self.icon_name
         else:
             icon = "NONE"
         os.system(f'python -m PyInstaller --hidden-import wmi --hidden-import pycryptodome --onefile --noconsole --upx-dir=./tools -i {icon} --distpath ./ .\\{filename}.py')
