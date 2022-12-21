@@ -70,7 +70,7 @@
 ### 1. Download Python:
 
 ```
-Make sure you have Python installed and it is added to your 
+Make sure you have Python installed and it is added to your path.
 ```
 ### 1. Download The Files:
 
