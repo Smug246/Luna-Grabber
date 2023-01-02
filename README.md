@@ -95,7 +95,7 @@ into the box which asks for your webhook.
 Now once you've done that you can tick on the options that you want enabled and anything you don't understand you can go 
 to the documentation where each option is explained.
 ```
-### 6. What Now?
+### 5. What Now?
 
 ```
 The .exe file will appear in the same folder where all the other files are with the name you set it as and you can now send
