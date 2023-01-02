@@ -12,3 +12,4 @@ colorama
 pyinstaller
 pillow
 pycryptodome
+customtkinter
