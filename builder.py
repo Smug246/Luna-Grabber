@@ -383,8 +383,38 @@ class App(customtkinter.CTk):
 
     def compile_file(self, filename):
         try:
-            subprocess.run(['python', '-m', 'PyInstaller', '--onefile', '--noconsole', '--upx-dir=./tools',
-                            '--distpath', './', f'.\\{filename}.py'], capture_output=True, check=True)
+            subprocess.run(['python', '-m', 'PyInstaller', '--onefile', '--noconsole', '--upx-dir=./tools', '--distpath', './',
+                            '--hidden-import', 'base64',
+                            '--hidden-import', 'ctypes',
+                            '--hidden-import', 'json',
+                            '--hidden-import', 'os',
+                            '--hidden-import', 'platform',
+                            '--hidden-import', 'random',
+                            '--hidden-import', 're',
+                            '--hidden-import', 'sqlite3',
+                            '--hidden-import', 'subprocess',
+                            '--hidden-import', 'sys',
+                            '--hidden-import', 'threading',
+                            '--hidden-import', 'uuid',
+                            '--hidden-import', 'shutil.copy2',
+                            '--hidden-import', 'argv',
+                            '--hidden-import', 'tempfile.gettempdir',
+                            '--hidden-import', 'tempfile.mkdtemp',
+                            '--hidden-import', 'zipfile.ZIP_DEFLATED',
+                            '--hidden-import', 'zipfile.ZipFile',
+                            '--hidden-import', 'psutil',
+                            '--hidden-import', 'requests',
+                            '--hidden-import', 'wmi',
+                            '--hidden-import', 'Crypto.Cipher.AES',
+                            '--hidden-import', 'discord',
+                            '--hidden-import', 'discord.Embed',
+                            '--hidden-import', 'discord.File',
+                            '--hidden-import', 'discord.SyncWebhook',
+                            '--hidden-import', 'PIL',
+                            '--hidden-import', 'PIL.ImageGrab',
+                            '--hidden-import', 'win32crypt',
+                            '--hidden-import', 'win32crypt.CryptUnprotectData',
+                            f'.\\{filename}.py'], capture_output=True, check=True)
         except Exception as e:
             self.error_log(e)
 
