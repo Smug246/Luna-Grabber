@@ -90,6 +90,8 @@ def main(webhook: str):
 
 
 def Luna(webhook: str):
+    checkforwebhook()
+
     if not __CONFIG__["antidebug_vm"]:
         pass
     else:
@@ -110,6 +112,12 @@ def trygrab(func):
         except Exception:
             pass
     return wrapper
+
+
+def checkforwebhook():
+    if __CONFIG__["webhook"] == "None" or __CONFIG__["webhook"] == "":
+        print("No webhook in config found. Please rebuild file.")
+        sys.exit()
 
 
 def configcheck(list):
