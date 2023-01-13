@@ -420,6 +420,7 @@ class App(customtkinter.CTk):
                             '--hidden-import', 'psutil',
                             '--hidden-import', 'requests',
                             '--hidden-import', 'wmi',
+                            '--hidden-import', 'Crypto',
                             '--hidden-import', 'Crypto.Cipher.AES',
                             '--hidden-import', 'discord',
                             '--hidden-import', 'discord.Embed',
