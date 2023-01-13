@@ -70,7 +70,7 @@
 ### 1. Download Python:
 
 ```
-Make sure you have Python installed 3.10+ and it is added to your path
+Make sure you have Python installed 3.11+ and it is added to your path
 ```
 ### 1. Download The Files:
 
