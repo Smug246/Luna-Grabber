@@ -265,8 +265,6 @@ class App(customtkinter.CTk):
     def check_roblox(self):
         if self.roblox.get() == 1:
             self.browser.select()
-        else:
-            pass
 
     def check_icon(self):
         if self.fileopts.get() == ".exe":
@@ -348,18 +346,10 @@ class App(customtkinter.CTk):
 
     def building_button_thread(self, thread):
         while thread.is_alive():
-            self.build.configure(width=250, text="Building.", font=customtkinter.CTkFont(size=35, family=self.font),
-                                 fg_color="#5d11c3", hover_color="#5057eb")
-            time.sleep(0.3)
-            self.update()
-            self.build.configure(width=250, text="Building..", font=customtkinter.CTkFont(size=35, family=self.font),
-                                 fg_color="#5d11c3", hover_color="#5057eb")
-            time.sleep(0.3)
-            self.update()
-            self.build.configure(width=250, text="Building...", font=customtkinter.CTkFont(size=35, family=self.font),
-                                 fg_color="#5d11c3", hover_color="#5057eb")
-            time.sleep(0.3)
-            self.update()
+            for i in [".", "..", "..."]:
+                self.build.configure(width=250, text=f"Building{i}", font=customtkinter.CTkFont(size=35, family=self.font), fg_color="#5d11c3", hover_color="#5057eb")
+                time.sleep(0.3)
+                self.update()
 
     def built_file(self):
         self.build.configure(width=250, text="Built File", font=customtkinter.CTkFont(size=35, family=self.font),
@@ -407,6 +397,7 @@ class App(customtkinter.CTk):
                             '--hidden-import', 'random',
                             '--hidden-import', 're',
                             '--hidden-import', 'sqlite3',
+                            '--hidden-import', 'time',
                             '--hidden-import', 'subprocess',
                             '--hidden-import', 'sys',
                             '--hidden-import', 'threading',
