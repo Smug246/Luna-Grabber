@@ -13,7 +13,6 @@ import customtkinter
 import requests
 from PIL import Image
 
-VERSION = '1.2.6'
 
 class App(customtkinter.CTk):
     def __init__(self):
