@@ -13,4 +13,3 @@ pyinstaller
 pillow
 pycryptodome
 customtkinter
-tkinter
