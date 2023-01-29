@@ -1,7 +1,6 @@
 # Logger
 psutil
 cryptography
-discord
 httpx
 requests
 pypiwin32
