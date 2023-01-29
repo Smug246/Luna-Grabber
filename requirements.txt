@@ -12,3 +12,4 @@ pyinstaller
 pillow
 pycryptodome
 customtkinter
+requests-toolbelt
