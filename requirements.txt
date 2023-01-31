@@ -1,13 +1,11 @@
 # Logger
 psutil
 cryptography
-httpx
 requests
 pypiwin32
 wmi
 requests-toolbelt
 # Builder
-alive-progress
 colorama
 pyinstaller
 pillow
