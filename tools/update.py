@@ -4,11 +4,11 @@ from zipfile import ZipFile
 
 import requests
 
-VERSION = '1.3.0'
+VERSION = '1.3.1'
 
 def check_update():
     code = requests.get('https://raw.githubusercontent.com/Smug246/Luna-Token-Grabber/main/tools/update.py').text
-    if "VERSION = '1.3.0'" in code:
+    if "VERSION = '1.3.1'" in code:
         print('This version is up to date!')
         print('Exiting...')
         sleep(2)
