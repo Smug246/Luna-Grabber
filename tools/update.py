@@ -8,8 +8,8 @@ import requests
 class Update():
     def __init__(self):
         self.version = '1.3.4'
-        self.github = 'https://raw.githubusercontent.com/Smug246/Luna-Token-Grabber/main/tools/update.py'
-        self.zipfile = 'https://github.com/Smug246/Luna-Token-Grabber/archive/refs/heads/main.zip'
+        self.github = 'https://raw.githubusercontent.com/Smug246/Luna-Grabber/main/tools/update.py'
+        self.zipfile = 'https://github.com/Smug246/Luna-Grabber/archive/refs/heads/main.zip'
         self.update_checker()
 
     def update_checker(self):
@@ -31,11 +31,11 @@ class Update():
             choice = input('\nWould you like to update? (y/n): ')
             if choice.lower() == 'y':
                 new_version_source = requests.get(self.zipfile)
-                with open("Luna-Token-Grabber-main.zip", 'wb')as zipfile:
+                with open("Luna-Grabber-main.zip", 'wb')as zipfile:
                     zipfile.write(new_version_source.content)
-                with ZipFile("Luna-Token-Grabber-main.zip", 'r') as filezip:
+                with ZipFile("Luna-Grabber-main.zip", 'r') as filezip:
                     filezip.extractall(path=os.path.join(os.path.expanduser("~"), "Desktop"))
-                os.remove("Luna-Token-Grabber-main.zip")
+                os.remove("Luna-Grabber-main.zip")
                 print('The new version is now on your desktop.\nUpdate Complete!')
                 print("Exiting...")
                 sleep(5)
