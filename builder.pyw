@@ -18,9 +18,7 @@ def catcher(func):
         try:
             func(*args, **kwargs)
         except Exception as error:
-            with open("logs.txt", "w") as f:
-                f.write(str(error))
-                f.close()
+            print(error)
     return wrapper
 
 
@@ -30,8 +28,6 @@ class App(customtkinter.CTk):
 
         self.title("Luna Grabber Builder")
         self.geometry("1000x550")
-
-        # set grid layout 1x2
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
         self.dark_mode()
