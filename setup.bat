@@ -4,4 +4,4 @@ title Installing requirements...
 python -m pip install -r requirements.txt
 cls
 cd tools
-python update.py
+python -m update
