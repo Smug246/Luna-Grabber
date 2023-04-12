@@ -2,7 +2,7 @@
 color 5
 title Installing Dependencies...
 
-rem Check if Python 3.11.1 is installed
+:: Check if Python 3.11.1 is installed
 python --version | findstr "3.11"
 if %errorlevel%==0 (
     echo Python 3.11 is already installed
@@ -15,11 +15,15 @@ if %errorlevel%==0 (
     echo Python 3.11 has been installed
 )
 
-rem Install requirements
-echo Installing requirements...
+:: Change directory to current directory
+cd /d "%~dp0"
+::echo Current directory: %CD% :: To debug if you are getting requrirements.txt not found error
+
+:: Install requirements
+echo Installing Requirements...
 python -m pip install -r requirements.txt
 
-rem Check for updates
+:: Check for updates
 cd tools
 echo Checking for updates...
 python update.py
