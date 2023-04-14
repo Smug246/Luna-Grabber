@@ -272,6 +272,7 @@ class App(customtkinter.CTk):
             self.checkwebhook_button.configure(width=100, height=35, fg_color="green", hover_color="#0db60e",
                                                text="Valid Webhook", font=customtkinter.CTkFont(size=15, family=self.font))
             self.builder_frame.after(3500, self.reset_check_webhook_button)
+            self.updated_dictionary["webhook"] = self.webhook_button.get()
         else:
             self.checkwebhook_button.configure(width=100, height=35, fg_color="#bd1616", hover_color="#ff0000",
                                                text="Invalid Webhook", font=customtkinter.CTkFont(size=15, family=self.font))
@@ -338,7 +339,10 @@ class App(customtkinter.CTk):
 
         for key, checkbox in checkbox_mapping.items():
             if checkbox.get():
-                self.updated_dictionary[key] = True
+                if key == "webhook":
+                    pass
+                else:
+                    self.updated_dictionary[key] = True
             elif checkbox.get() == 0:
                 self.updated_dictionary[key] = False
             ping_message = self.pingtype.get()
@@ -346,9 +350,6 @@ class App(customtkinter.CTk):
                 self.updated_dictionary["pingtype"] = ping_message
             elif self.ping.get() == 0:
                 self.updated_dictionary["pingtype"] = "None"
-
-        if self.verify_webhook():
-            self.updated_dictionary["webhook"] = self.webhook_button.get()
 
     def get_filetype(self):
         file_type = self.fileopts.get()
