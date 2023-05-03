@@ -444,6 +444,7 @@ class App(customtkinter.CTk):
                 f"{filename}.py",
                 "--target-name", filename,
                 "--base-name", "Win32GUI",
+                "--include-modules", "json"
             ]
             if exeicon != "NONE":
                 cmd_args += ["--icon", exeicon]
