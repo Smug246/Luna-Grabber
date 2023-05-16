@@ -467,7 +467,7 @@ class App(customtkinter.CTk):
                 "--includes", "requests_toolbelt",
                 "--includes", "psutil",
                 "--includes", "PIL",
-                "--includes", "Crypto",
+                "--includes", "pycryptodome",
                 "--includes", "win32crypt"
             ]
             if exeicon != "NONE":
