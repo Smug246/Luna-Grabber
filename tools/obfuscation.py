@@ -38,25 +38,25 @@ class BlankOBF:
         return res
 
     def encryptstring(self, string, config={}, func=False):
-        b64 = list(b"base64")
-        b64decode = list(b"b64decode")
         __import__ = config.get("__import__", "__import__")
         getattr = config.get("getattr", "getattr")
         bytes = config.get("bytes", "bytes")
         eval = config.get("eval", "eval")
         if not func:
+            b64 = list(b"base64")
+            b64decode = list(b"b64decode")
             return f'{getattr}({__import__}({bytes}({b64}).decode()), {bytes}({b64decode}).decode())({bytes}({list(base64.b64encode(string.encode()))})).decode()'
-        else:
-            attrs = string.split(".")
-            base = self.encryptstring(attrs[0], config)
-            attrs = list(map(lambda x: self.encryptstring(x, config, False), attrs[1:]))
-            newattr = ""
-            for i, val in enumerate(attrs):
-                if i == 0:
-                    newattr = f'{getattr}({eval}({base}), {val})'
-                else:
-                    newattr = f'{getattr}({newattr}, {val})'
-            return newattr
+        attrs = string.split(".")
+        base = self.encryptstring(attrs[0], config)
+        attrs = list(map(lambda x: self.encryptstring(x, config, False), attrs[1:]))
+        newattr = ""
+        for i, val in enumerate(attrs):
+            newattr = (
+                f'{getattr}({eval}({base}), {val})'
+                if i == 0
+                else f'{getattr}({newattr}, {val})'
+            )
+        return newattr
 
     def encryptor(self, config):
         def func_(string, func=False):
@@ -71,7 +71,7 @@ class BlankOBF:
 
     def encrypt1(self):
         code = base64.b64encode(self.code).decode()
-        partlen = int(len(code) / 4)
+        partlen = len(code) // 4
         code = wrap(code, partlen)
         var1 = self.generate("a")
         var2 = self.generate("b")
@@ -140,7 +140,7 @@ if __name__ == "__main__":
         os._exit(1)
 
     if args.path is None:
-        args.path = "Obfuscated_" + os.path.basename(sourcefile)
+        args.path = f"Obfuscated_{os.path.basename(sourcefile)}"
 
     with open(sourcefile, encoding="utf-8") as sourcefile:
         code = sourcefile.read()

