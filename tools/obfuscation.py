@@ -1,3 +1,5 @@
+# https://github.com/Blank-c/BlankOBF
+
 import argparse
 import base64
 import codecs
@@ -7,9 +9,6 @@ import sys
 from lzma import compress
 from marshal import dumps
 from textwrap import wrap
-
-# This is not my obfusactor but I found it on github and I thought it was decent so I added it to the repo
-# https://github.com/Blank-c/BlankOBF
 
 
 def printerr(data):
@@ -26,7 +25,6 @@ class BlankOBF:
         self.marshal()
         self.encrypt1()
         self.encrypt2()
-        self.encrypt3()
         self.finalize()
 
     def generate(self, name):
@@ -105,19 +103,13 @@ class BlankOBF:
         }
         encryptstring = self.encryptor(conf)
 
-        self.code = f'''
+        self.code = f'''# Obfuscated using https://github.com/Blank-c/BlankOBF
 {var3} = eval({self.encryptstring("eval")});{var4} = {var3}({self.encryptstring("getattr")});{var8} = {var3}({self.encryptstring("__import__")});{var9} = {var3}({self.encryptstring("bytes")});{var5} = lambda {var7}: {var3}({encryptstring("compile")})({var7}, {encryptstring("<string>")}, {encryptstring("exec")});{var1} = {self.code}
 {var2} = {encryptstring('__import__("builtins").list', func= True)}({var1})
 try:
     {encryptstring('__import__("builtins").exec', func= True)}({var5}({encryptstring('__import__("lzma").decompress', func= True)}({var9}({var2})))) or {encryptstring('__import__("os")._exit', func= True)}(0)
 except {encryptstring('__import__("lzma").LZMAError', func= True)}:...
 '''.strip().encode()
-
-    def encrypt3(self):
-        self.compress()
-        data = base64.b64encode(self.code)
-        self.code = f'import base64, lzma; exec(compile(lzma.decompress(base64.b64decode({data})), "<string>", "exec"))'.encode(
-        )
 
     def finalize(self):
         if os.path.dirname(self.outpath).strip() != "":
