@@ -10,5 +10,5 @@ colorama
 pyinstaller
 cx-Freeze
 pillow
-pycryptodome
+pycryptodomex
 customtkinter
