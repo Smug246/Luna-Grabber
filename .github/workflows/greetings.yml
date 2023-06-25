@@ -1,0 +1,14 @@
+name: Greetings
+
+on: [issues]
+
+jobs:
+  greeting:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+    - uses: actions/first-interaction@v1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        issue-message: "If you really have no idea how to fix your issue and smug hasn't replied within 24 hours. Join the discord server https://discord.gg/BRcG6Zubep"
