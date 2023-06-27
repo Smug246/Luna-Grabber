@@ -7,7 +7,7 @@ if %errorlevel%==0 (
     echo Python 3.11.2 is already installed
 ) else (
     echo Python 3.11.2 is not installed
-    echo Please install Python 3.11.2 and it it to your PATH
+    echo Please install Python 3.11.2 and add it to your PATH
     exit /b
 )
 
