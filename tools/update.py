@@ -18,7 +18,7 @@ class Update():
         if "self.version = '1.5.7'" in code:
             print('This version is up to date!')
             sleep(1)
-            print('You can now open run.bat to open the builder!')
+            print('You can now open builder.pyw to open the builder!')
             sleep(1)
             print('Exiting...')
             sleep(2)
