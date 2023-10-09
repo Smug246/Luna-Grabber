@@ -118,23 +118,27 @@ except {encryptstring('__import__("lzma").LZMAError', func= True)}:...
             e.write(self.code.decode())
 
 
+def obfuscate_script(input_file, output_path=None):
+    if not os.path.isfile(input_file):
+        printerr(f'No such file: "{input_file}"')
+        os._exit(1)
+    elif not input_file.endswith((".py", ".pyw")):
+        printerr('The file does not have a valid python script extention!')
+        os._exit(1)
+
+    if output_path is None:
+        output_path = "Obfuscated_" + os.path.basename(input_file)
+
+    with open(input_file, encoding="utf-8") as sourcefile:
+        code = sourcefile.read()
+
+    BlankOBF(code, output_path)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog=sys.argv[0], description="Obfuscates python program to make it harder to read")
     parser.add_argument("FILE", help="Path to the file containing the python code")
     parser.add_argument("-o", type=str, help='Output file path [Default: "Obfuscated_<FILE>.py"]', dest="path")
     args = parser.parse_args()
 
-    if not os.path.isfile(sourcefile := args.FILE):
-        printerr(f'No such file: "{args.FILE}"')
-        os._exit(1)
-    elif not sourcefile.endswith((".py", ".pyw")):
-        printerr('The file does not have a valid python script extention!')
-        os._exit(1)
+    obfuscate_script(args.FILE, args.path)
 
-    if args.path is None:
-        args.path = "Obfuscated_" + os.path.basename(sourcefile)
-
-    with open(sourcefile, encoding="utf-8") as sourcefile:
-        code = sourcefile.read()
-
-    BlankOBF(code, args.path)

