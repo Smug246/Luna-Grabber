@@ -416,7 +416,7 @@ class App(customtkinter.CTk):
 
     def return_filename(self):
         try:
-            get_file_name = self.filename.get()
+            get_file_name = self.filename.get().replace(" ", "_")
             if not get_file_name:
                 random_name = ''.join(random.choices(string.ascii_letters, k=5))
                 logging.info(f"Retrieved filename: test-{random_name}")
@@ -465,8 +465,8 @@ class App(customtkinter.CTk):
                 exeicon = self.iconpath
 
             if filetype == "pyinstaller":
-                subprocess.run(["python", "./tools/upx.py"])
-                subprocess.run(["python", "-m", "PyInstaller",
+                subprocess.run(["./env/Scripts/python.exe", "./tools/upx.py"])
+                subprocess.run(["./env/Scripts/python.exe", "-m", "PyInstaller",
                                 "--onefile", "--clean", "--noconsole",
                                 "--upx-dir=./tools", "--distpath=./",
                                 "--hidden-import", "base64",
@@ -547,12 +547,18 @@ class App(customtkinter.CTk):
                 f.write(self.get_config())
 
             if self.obfuscation.get() == 1:
-                os.system(f"python ./tools/obfuscation.py ./{filename}.py")
+                print("1")
+                subprocess.run(f"./env/Scripts/python.exe ./tools/obfuscation.py ./{filename}.py")
+                print("2")
                 os.remove(f"./{filename}.py")
+                print("3")
                 os.rename(f"./Obfuscated_{filename}.py", f"./{filename}.py")
+                print("4")
                 logging.info(f"Successfully obfuscated file: {filename}.py")
+                print("5")
         except Exception as e:
             logging.error(f"Error with writing and obfuscating file: {e}")
+            print("6")
 
     def buildfile(self):
         try:

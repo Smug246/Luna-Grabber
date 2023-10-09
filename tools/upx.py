@@ -7,7 +7,8 @@ import requests
 
 class UPX():
     def __init__(self):
-        self.url = "https://github.com/upx/upx/releases/download/v4.0.2/upx-4.0.2-win64.zip"
+        self.version = "4.1.0"
+        self.url = f"https://github.com/upx/upx/releases/download/v{self.version}/upx-{self.version}-win64.zip"
 
         self.check()
         self.download()
@@ -26,11 +27,11 @@ class UPX():
     def extract(self):
         with zipfile.ZipFile("upx.zip") as zip_file:
             zip_file.extractall()
-            shutil.move("./upx-4.0.2-win64/upx.exe", "./tools")
+            shutil.move(f"./upx-{self.version}-win64/upx.exe", "./tools")
 
     def cleanup(self):
         os.remove("upx.zip")
-        shutil.rmtree("upx-4.0.2-win64")
+        shutil.rmtree(f"upx-{self.version}-win64")
 
 
 if __name__ == "__main__":
