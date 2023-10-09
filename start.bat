@@ -2,7 +2,7 @@
 color 5
 
 title Checking Python Version
-python --version | findstr "3.11."
+python --version | findstr "3.9."
 if %errorlevel%==0 (
     echo Python 3.11.0 or higher is already installed
 ) else (
