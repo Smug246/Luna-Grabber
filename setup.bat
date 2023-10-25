@@ -2,13 +2,11 @@
 color 5
 
 title Checking Python Version
-python --version | findstr "3.11."
-if %errorlevel%==0 (
-    echo Python 3.11.0 or higher is already installed
-) else (
-    echo Python 3.11.0 or higher is not installed
-    echo Please install Python 3.11.0 or higher and add it to your PATH
-    timeout /t 5 >nul
+python --version > nul 2>&1
+if %errorlevel% neq 0 (
+    echo Python is not installed! (Go to https://www.python.org/downloads and install the latest version.^)
+    echo Make sure it is added to PATH.
+    goto ERROR
 )
 
 title Installing Requirements
@@ -20,3 +18,8 @@ cd tools
 title Checking for updates
 echo Checking for updates...
 python update.py
+
+
+:ERROR
+color 4 && title Error
+pause > nul
