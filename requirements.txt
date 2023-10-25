@@ -8,8 +8,8 @@ requests-toolbelt
 # Builder
 colorama
 pyinstaller
-cx-Freeze
 pyuac
 pillow
 pycryptodomex
 customtkinter
+packaging
