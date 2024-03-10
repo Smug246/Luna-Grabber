@@ -481,8 +481,6 @@ class App(customtkinter.CTk):
                                 "--hidden-import", "Cryptodome",
                                 "--hidden-import", "Cryptodome.Cipher",
                                 "--hidden-import", "Cryptodome.Cipher.AES",
-                                "--hidden-import", "ctypes",
-                                "--hidden-import", "ctypes.wintypes",
                                 "--hidden-import", "win32crypt",
                                 "--icon", exeicon, f"./{filename}.py"])
     
