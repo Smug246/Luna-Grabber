@@ -7,14 +7,29 @@ if %errorlevel% neq 0 (
     echo Python is not installed! (Go to https://www.python.org/downloads and install the latest version.^)
     echo Make sure it is added to PATH.
     pause > nul
+    exit
 )
 
-title Installing Requirements
-cd /d "%~dp0"
-echo Installing Requirements...
-python -m pip install -r requirements.txt
+title Creating Virtual Environment
+echo Creating Virtual Environment...
+python -m venv .venv
 
-cd tools
+title Installing Requirements
+echo Installing Requirements...
+.venv\Scripts\python -m pip install --upgrade -r requirements.txt
+
 title Checking for updates
 echo Checking for updates...
-python update.py
+.venv\Scripts\python tools\update.py
+
+if %errorlevel% equ 0 (
+    echo Setup Complete!
+    title Luna Grabber Builder
+    echo Starting the builder...
+    .venv\Scripts\python builder.pyw
+) else (
+    title Setup Failed
+    echo Setup Failed!
+    echo Check the error message above.
+    pause > nul
+)
