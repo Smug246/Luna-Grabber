@@ -8,9 +8,11 @@ minecraft-usercache.json
 discord-2fa-codes.txt
 wifi-passwords.txt
 Luna-Logged-*
+luna.log
 
 **/__pycache__
 **/build
+.venv
 
 LICENSE
 README.md
@@ -18,3 +20,5 @@ test
 GUI
 Versions
 builder.py
+*.exe
+/.vs
