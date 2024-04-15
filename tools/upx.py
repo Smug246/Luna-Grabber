@@ -7,7 +7,7 @@ import requests
 
 class UPX():
     def __init__(self):
-        self.version = "4.1.0"
+        self.version = "4.2.3"
         self.url = f"https://github.com/upx/upx/releases/download/v{self.version}/upx-{self.version}-win64.zip"
 
         self.check()
