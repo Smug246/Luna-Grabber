@@ -507,7 +507,6 @@ class App(customtkinter.CTk):
                                 "--include-module=requests_toolbelt", "--include-module=win32crypt",                                
                                 "--assume-yes-for-downloads",
                                 f"--windows-icon-from-ico={exeicon}",
-                                "--windows-disable-console",
                                 f"./{filename}.py"
                             ])
                         else:
@@ -521,7 +520,6 @@ class App(customtkinter.CTk):
                                 "--include-module=requests", "--include-module=Cryptodome.Cipher.AES",
                                 "--include-module=requests_toolbelt", "--include-module=win32crypt",
                                 "--assume-yes-for-downloads",
-                                "--windows-disable-console",
                                 f"./{filename}.py"
                             ])
                         logging.info(f"Successfully compiled {filename}.exe with nuitka")    
