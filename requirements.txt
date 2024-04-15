@@ -13,3 +13,4 @@ pillow
 pycryptodomex
 customtkinter
 packaging
+nuitka
