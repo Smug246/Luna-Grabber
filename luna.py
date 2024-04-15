@@ -215,8 +215,8 @@ class PcInfo:
         computer_os = subprocess.run('wmic os get Caption', capture_output=True, shell=True).stdout.decode(errors='ignore').strip().splitlines()[2].strip()
         cpu = subprocess.run(["wmic", "cpu", "get", "Name"], capture_output=True, text=True).stdout.strip().split('\n')[2]
         gpu = subprocess.run("wmic path win32_VideoController get name", capture_output=True, shell=True).stdout.decode(errors='ignore').splitlines()[2].strip()
-        ram = str(int(int(subprocess.run('wmic computersystem get totalphysicalmemory', capture_output=True,
-                  shell=True).stdout.decode(errors='ignore').strip().split()[1]) / 1000000000))
+        ram = str(round(int(subprocess.run('wmic computersystem get totalphysicalmemory', capture_output=True,
+                  shell=True).stdout.decode(errors='ignore').strip().split()[1]) / (1024 ** 3)))
         username = os.getenv("UserName")
         hostname = os.getenv("COMPUTERNAME")
         hwid = subprocess.check_output(r'C:\\Windows\\System32\\wbem\\WMIC.exe csproduct get uuid', shell=True, stdin=subprocess.PIPE, stderr=subprocess.PIPE).decode('utf-8').split('\n')[1].strip()
