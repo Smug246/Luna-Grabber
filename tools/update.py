@@ -43,8 +43,9 @@ class Update():
                 os.remove("Luna-Grabber-main.zip")
                 print('The new version is now in your Downloads folder.\nUpdate Complete!')
                 print("Exiting...")
+                sleep(3)
                 run(['explorer', os.path.join(os.path.expanduser("~"), "Downloads")])
-                sleep(5)
+                sys.exit()
             if choice.lower() == 'n':
                 print('Exiting...')
                 sleep(2)
