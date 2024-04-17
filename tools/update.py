@@ -2,6 +2,7 @@ import os
 import sys
 from time import sleep
 from zipfile import ZipFile
+from subprocess import run
 
 import requests
 
@@ -42,7 +43,9 @@ class Update():
                 os.remove("Luna-Grabber-main.zip")
                 print('The new version is now in your Downloads folder.\nUpdate Complete!')
                 print("Exiting...")
-                sleep(5)
+                sleep(3)
+                run(['explorer', os.path.join(os.path.expanduser("~"), "Downloads")])
+                sys.exit()
             if choice.lower() == 'n':
                 print('Exiting...')
                 sleep(2)

