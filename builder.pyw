@@ -438,7 +438,7 @@ class App(customtkinter.CTk):
             copy_dict = copy.deepcopy(self.updated_dictionary)
             config_str = f"""__CONFIG__ = {repr(copy_dict)}"""
             code = code.replace(config, config_str)
-            logging.info(f"Successfully changed config")
+            logging.info("Successfully changed config")
             return code
         except Exception as e:
             logging.error(f"Error with config: {e}")
