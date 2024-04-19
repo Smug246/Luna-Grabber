@@ -90,7 +90,6 @@ class BlankOBF:
         var3 = self.generate("g")
         var4 = self.generate("h")
         var5 = self.generate("i")
-        var6 = self.generate("j")
         var7 = self.generate("k")
         var8 = self.generate("l")
         var9 = self.generate("m")
