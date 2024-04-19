@@ -9,14 +9,14 @@ import requests
 
 class Update():
     def __init__(self):
-        self.version = '1.6.0'
+        self.version = '1.6.1'
         self.github = 'https://raw.githubusercontent.com/Smug246/Luna-Grabber/main/tools/update.py'
         self.zipfile = 'https://github.com/Smug246/Luna-Grabber/archive/refs/heads/main.zip'
         self.update_checker()
 
     def update_checker(self):
         code = requests.get(self.github).text
-        if "self.version = '1.6.0'" in code:
+        if "self.version = '1.6.1'" in code:
             print('This version is up to date!')
             sleep(1)
             print('You can now open builder.pyw to open the builder!')
