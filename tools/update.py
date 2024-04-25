@@ -19,10 +19,6 @@ class Update():
         if "self.version = '1.6.1'" in code:
             print('This version is up to date!')
             sleep(1)
-            print('You can now open builder.pyw to open the builder!')
-            sleep(1)
-            print('Exiting...')
-            sleep(2)
             sys.exit()
         else:
             print('''

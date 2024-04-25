@@ -12,7 +12,7 @@ luna.log
 
 **/__pycache__
 **/build
-.venv
+.venv*
 
 LICENSE
 README.md
