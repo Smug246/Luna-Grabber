@@ -1,6 +1,5 @@
 @echo off
 color 5
-
 title Checking Python Versions
 setlocal enabledelayedexpansion
 set "python_versions="
@@ -23,6 +22,13 @@ for /f "delims=" %%I in ('where python') do (
             set "python_versions[!counter!]=!python_version!"
         )
     )
+)
+
+REM If no Python installations are found, display a message and exit
+if %counter% equ 0 (
+    echo No Python installations found in PATH. Please install Python and try again.: https://www.python.org/downloads/
+    pause > nul
+    exit /b 1
 )
 
 REM Prompt user to choose a Python version
@@ -59,9 +65,11 @@ if %errorlevel% equ 0 (
     title Luna Grabber Builder
     echo Starting the builder...
     "!venv_name!\Scripts\python" builder.pyw
-) else (
+) else if %errorlevel% equ 1 (
     title Setup Failed
     echo Setup Failed!
     echo Check the error message above.
     pause > nul
+) else if %errorlevel% equ 2 (
+    timeout /t 3 /nobreak > nul
 )

