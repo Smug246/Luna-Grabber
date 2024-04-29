@@ -4,20 +4,57 @@ title: "Bug: "
 labels: ["bug", "not fixed"]
 assignees: Smug246
 body:
+  -type: textarea
+    id: what-you-expected
+    attributes:
+      label: What Did You Expect To Happen?
+      placeholder: Please describe what you expected to happen
+    validations:
+      required: true
+      
   - type: textarea
     id: what-happened
     attributes:
       label: What Happened?
-      placeholder: Add descriptions
+      placeholder: Please describe exactly what happened
     validations:
       required: true
+
   - type: textarea
     id: screenshots
     attributes:
       label: Add Screenshots
-      placeholder: Add screenshots
+      placeholder: Please include screenshots of any errors in the terminal/s
     validations:
       required: true
+
+  - type: dropdown
+    id: Grabber Options
+    attributes:
+      label: What Options Did You Select?
+      multiple: true
+      options:
+        - Add To Startup
+        - Disable Defender
+        - Discord Info
+        - Fake Error
+        - Kill Protector
+        - Wifi Info
+        - Ping
+        - Anti Debug/VM
+        - Minecraft Info
+        - System Info
+        - 2FA Codes
+        - Browser Info
+        - Roblox Info
+        - Obfuscation
+        - Injection
+        - Anti Spam
+        - Self Destruct
+        - File Pumper
+    validations:
+      required: true
+
   - type: checkboxes
     id: terms
     attributes:

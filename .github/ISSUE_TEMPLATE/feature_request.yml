@@ -11,13 +11,13 @@ body:
       placeholder: Add description of feature
     validations:
       required: true
+
   - type: textarea
     id: screenshots
     attributes:
-      label: Add Screenshots
+      label: Add Screenshots (If Applicable)
       placeholder: Add screenshots
-    validations:
-      required: true
+      
   - type: checkboxes
     id: terms
     attributes:
@@ -25,5 +25,4 @@ body:
       options:
         - label: I have checked the existing [issues](https://github.com/Smug246/Luna-Grabber/issues)
           required: true
-
         - label: I want to work on this feature
