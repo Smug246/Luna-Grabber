@@ -88,10 +88,7 @@ You dont need to manually install any modules. Just opening setup.bat will insta
 
 ```
 If you don't know how to make a webhook you can follow this guide: https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks
-If that is to hard for you, you can also use this tool: https://github.com/Serpensin/DiscordBots-WebhookCreator
-
-This webhook will be sent any victims you log so don't delete it once it's made. Once you've created one paste it
-into the box which asks for your webhook.
+Once created, paste the webhook into the webhook prompt.
 ```
 ### 5. Configurable Options:
 
