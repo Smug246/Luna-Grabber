@@ -1,4 +1,3 @@
-blank_issues_enabled: false
 name: Bug Report
 description: File a bug report
 title: "Bug: "
@@ -53,7 +52,7 @@ body:
         - Anti Spam
         - Self Destruct
         - File Pumper
-
+        
   - type: checkboxes
     id: terms
     attributes:
