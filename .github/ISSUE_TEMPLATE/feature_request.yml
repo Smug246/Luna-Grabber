@@ -21,7 +21,6 @@ body:
   - type: checkboxes
     id: terms
     attributes:
-      label: "Record"
       options:
         - label: I have checked the existing [issues](https://github.com/Smug246/Luna-Grabber/issues)
           required: true
