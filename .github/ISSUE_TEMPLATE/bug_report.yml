@@ -31,7 +31,7 @@ body:
   - type: dropdown
     id: options
     attributes:
-      label: What Options Did You Select?
+      label: Which Options Did You Select?
       multiple: true
       options:
         - Add To Startup
@@ -52,6 +52,8 @@ body:
         - Anti Spam
         - Self Destruct
         - File Pumper
+    validations:
+      required: true
         
   - type: checkboxes
     id: terms
