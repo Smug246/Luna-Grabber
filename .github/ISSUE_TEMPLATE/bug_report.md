@@ -1,27 +1,33 @@
----
-name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: bug
+name: Bug Report
+description: File a bug report
+title: "Bug: "
+labels: ["bug", "not fixed"]
 assignees: Smug246
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What Happened?
+      placeholder: Add descriptions
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Add Screenshots
+      placeholder: Add screenshots
+    validations:
+      required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      options:
+        - label: I have checked the existing [issues](https://github.com/Smug246/Luna-Grabber/issues)
+          required: true
 
----
+        - label: I have followed the [installation](https://github.com/Smug246/Luna-Grabber?tab=readme-ov-file#installation) steps
+          required: true
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+        - label: I have attempted to resolve my problem by myself
+          required: true
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
-
-**Expected behavior**
-A clear and concise description of what you expected to happen.
-
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
-
-**Additional context**
-Add any other context about the problem here.
