@@ -82,8 +82,7 @@ Once you've downloaded the files extract the folder so it's no longer a .zip fil
 ### 3. Open The setup.bat File:
 
 ```
-You dont need to install any modules opening setup.bat will install them for you. Then you need to open builder.pyw which will
-open the gui.
+You dont need to install any modules opening setup.bat will install them for you. If successfull the setup.bat will then open up the gui
 ```
 ### 4. Create A Webhook:
 
