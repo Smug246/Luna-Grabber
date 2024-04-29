@@ -24,7 +24,7 @@ body:
     id: screenshots
     attributes:
       label: Add Screenshots
-      placeholder: Please include screenshots of any errors in the terminal/s
+      placeholder: Please include screenshots of the end of the luna.log file and any errors in the terminal/s
     validations:
       required: true
 
@@ -52,6 +52,7 @@ body:
         - Anti Spam
         - Self Destruct
         - File Pumper
+        - Clipboard
     validations:
       required: true
         
