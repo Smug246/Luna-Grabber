@@ -21,7 +21,7 @@ body:
   - type: checkboxes
     id: terms
     attributes:
-    label: "Check the following before submitting (If Applicable)"
+      label: "Check the following before submitting (If Applicable)"
       options:
         - label: I have checked the existing [issues](https://github.com/Smug246/Luna-Grabber/issues)
           required: true
