@@ -1,11 +1,8 @@
 name: Bug Report
-about: File a bug report
+description: File a bug report
 title: "Bug: "
-labels:
-  - bug
-  - not fixed
+labels: ["bug", "not fixed"]
 assignees: Smug246
-
 body:
   - type: textarea
     id: what-you-expected
@@ -55,17 +52,16 @@ body:
         - Anti Spam
         - Self Destruct
         - File Pumper
-
+        
   - type: checkboxes
     id: terms
     attributes:
-      label: "Check the following before submitting (If Applicable)"
+      label: Check the following before submitting (If Applicable)
       options:
-        - label: I have checked the existing issues
+        - label: I have checked the existing [issues](https://github.com/Smug246/Luna-Grabber/issues)
           required: true
-
-        - label: I have followed the installation steps
+        - label: I have followed the [installation](https://github.com/Smug246/Luna-Grabber?tab=readme-ov-file#installation) steps
           required: true
-
         - label: I have attempted to resolve my problem by myself
           required: true
+
