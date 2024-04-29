@@ -1,3 +1,4 @@
+blank_issues_enabled: false
 name: Feature Request
 description: Suggest a feature request
 title: "feature:"
@@ -17,7 +18,7 @@ body:
     attributes:
       label: Add Screenshots (If Applicable)
       placeholder: Add screenshots
-      
+
   - type: checkboxes
     id: terms
     attributes:
