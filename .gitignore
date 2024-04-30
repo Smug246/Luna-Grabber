@@ -19,6 +19,6 @@ README.md
 test
 GUI
 Versions
-builder.py
 *.exe
 /.vs
+/test.py

