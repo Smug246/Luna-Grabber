@@ -20,6 +20,7 @@ for /f "delims=" %%I in ('where python') do (
             set /a "counter+=1"
             echo !counter!. Found Python version !python_version!: "!python_exe!"
             set "python_versions[!counter!]=!python_version!"
+            set "python_paths[!counter!]=!python_exe!"
         )
     )
 )
@@ -44,13 +45,14 @@ if not defined python_versions[%selected_number%] (
     exit /b 1
 )
 set "selected_version=!python_versions[%selected_number%]!"
+set "selected_python_path=!python_paths[%selected_number%]!"
 
 REM Append Python version to the .venv folder name
 set "venv_name=.venv_!selected_version!"
 
 title Creating Virtual Environment for Python version !selected_version!
 echo Creating Virtual Environment for Python version !selected_version!...
-python -m venv "!venv_name!"
+"!selected_python_path!" -m venv "!venv_name!"
 
 title Installing Requirements
 echo Installing Requirements...
@@ -64,7 +66,7 @@ if %errorlevel% equ 0 (
     echo Setup Complete!
     title Luna Grabber Builder
     echo Starting the builder...
-    "!venv_name!\Scripts\python" builder.pyw
+    "!venv_name!\Scripts\python" builder.py
 ) else if %errorlevel% equ 1 (
     title Setup Failed
     echo Setup Failed!
