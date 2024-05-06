@@ -133,6 +133,9 @@ Don't forget to give the project a star! Thanks again!
 4. Push to the Branch (`git push origin feature/NewFeature`)
 5. Open a Pull Request
 
+## Errors
+If you find an error that you cant fix and need help with you can submit an [issue]( [feature request](https://github.com/Smug246/Luna-Grabber/issues/) or join the [telegram](https://t.me/lunaxsmug) for support
+
 
 ## License
 Luna Grabber is distributed under the MIT License. See `LICENSE.md` for more information.
