@@ -570,7 +570,7 @@ class App(customtkinter.CTk):
                 f.write(self.get_config())
 
             if self.obfuscation.get() == 1:
-                os.system(f"python ./tools/obfuscation.py ./{filename}.py")
+                os.system(f"python ./tools/obfuscation.py -i ./{filename}.py")
                 os.remove(f"./{filename}.py")
                 os.rename(f"./Obfuscated_{filename}.py", f"./{filename}.py")
                 logging.info(f"Successfully obfuscated file: {filename}.py")
