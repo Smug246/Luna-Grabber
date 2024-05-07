@@ -3,6 +3,7 @@ psutil
 cryptography
 requests
 pypiwin32
+pyperclip
 wmi
 requests-toolbelt
 # Builder
