@@ -13,7 +13,7 @@ class Update():
 
     def update_checker(self):
         code = requests.get(self.github).text
-        if "self.version = '1.6.8'" in code:
+        if "self.version = '1.7.0'" in code:
             print('This version is up to date!')
             sleep(1)
             sys.exit()
