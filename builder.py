@@ -269,6 +269,7 @@ Anti Spam:\nOnly allows the victim to open the file every 60 seconds so your web
 Self Destruct:\nDeletes the file once it has ran so the victim can't run it again.\n\n
 File Pumper:\nAdds more megabytes to the file to make the file appear to be something its not and also tricks some antiviruses.\n\n
 Clipboard:\nRetrieves the last thing they copied onto their clipboard.\n\n
+Webcam:\nTakes one picture with each attached webcam.\n\n
 Build Options:\n
 Pyinstaller - Builds a standalone executable file with the necessary modules inside of it.\nAdvantages: Single file, fast compilation time, easy to transfer.\nDisadvantages: Detected by antiviruses, large file size\n
 Nuitka - Builds a standalone executable file with the necessary modules inside of it.\nAdvantages: Smaller than PyInstaller and way faster.\nDisadvantages: Detected by antiviruses, longer buildtimes.
