@@ -10,7 +10,6 @@ opencv-python
 # Builder
 colorama
 pyinstaller
-pyuac
 pillow
 pycryptodomex
 customtkinter
