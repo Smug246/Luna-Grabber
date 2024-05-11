@@ -110,7 +110,7 @@ To finally create the file you must enter a filename and press build. Once fully
 ### 7. What Now?
 
 ```
-The file you built will now appear in the current folder with the name you set. 😈
+The file you built will now appear in the current folder with the name you set.
 ```
 
 <hr  style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;"  noshade=""  size="20"  width="100%">
