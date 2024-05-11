@@ -27,11 +27,11 @@ class UPX():
     def extract(self):
         with zipfile.ZipFile("upx.zip") as zip_file:
             zip_file.extractall()
-            shutil.move(f"./upx-{self.version}-win64/upx.exe", "./tools")
+            shutil.move(f"./upx-{self.version}-win{platform.architecture()[0][:2]}/upx.exe", "./tools")
 
     def cleanup(self):
         os.remove("upx.zip")
-        shutil.rmtree(f"upx-{self.version}-win64")
+        shutil.rmtree(f"upx-{self.version}-win{platform.architecture()[0][:2]}")
 
 
 if __name__ == "__main__":

