@@ -6,10 +6,10 @@ pypiwin32
 pyperclip
 wmi
 requests-toolbelt
+opencv-python
 # Builder
 colorama
 pyinstaller
-pyuac
 pillow
 pycryptodomex
 customtkinter

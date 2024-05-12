@@ -1,14 +1,14 @@
 import os
+import platform
+import requests
 import shutil
 import zipfile
-
-import requests
 
 
 class UPX():
     def __init__(self):
-        self.version = "4.2.3"
-        self.url = f"https://github.com/upx/upx/releases/download/v{self.version}/upx-{self.version}-win64.zip"
+        self.version = "4.2.4"
+        self.url = f"https://github.com/upx/upx/releases/download/v{self.version}/upx-{self.version}-win{platform.architecture()[0][:2]}.zip"
 
         self.check()
         self.download()
@@ -27,11 +27,11 @@ class UPX():
     def extract(self):
         with zipfile.ZipFile("upx.zip") as zip_file:
             zip_file.extractall()
-            shutil.move(f"./upx-{self.version}-win64/upx.exe", "./tools")
+            shutil.move(f"./upx-{self.version}-win{platform.architecture()[0][:2]}/upx.exe", "./tools")
 
     def cleanup(self):
         os.remove("upx.zip")
-        shutil.rmtree(f"upx-{self.version}-win64")
+        shutil.rmtree(f"upx-{self.version}-win{platform.architecture()[0][:2]}")
 
 
 if __name__ == "__main__":
