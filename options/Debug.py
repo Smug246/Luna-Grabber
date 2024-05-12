@@ -96,7 +96,7 @@ class Debug:
 			self.get_network() or
 			self.get_system() or
 			self.checkHTTPSimulation() or
-			self.check_video_controller()
+			self.checkVideoController()
 		)
 
 	def check_process(self) -> bool:
