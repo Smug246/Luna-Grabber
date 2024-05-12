@@ -662,8 +662,8 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 
 				subprocess.run(command)
 				self.RemoveStrings(f"./{filename}.exe")
-				self.RenameEntryPoint(f"./{filename}.exe", "Luna")
 				self.AddCertificate(f"./{filename}.exe")
+				self.RenameEntryPoint(f"./{filename}.exe", "Luna")
 				logging.info(f"Successfully compiled {filename}.exe with pyinstaller")
 
 			elif filetype == "nuitka":
@@ -695,8 +695,8 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 					except Exception as e:
 						logging.error(f"Error with compiling file: {e}")
 				self.RemoveStrings(f"./{filename}.exe")
-				self.RenameEntryPoint(f"./{filename}.exe", "Luna")
 				self.AddCertificate(f"./{filename}.exe")
+				self.RenameEntryPoint(f"./{filename}.exe", "Luna")
 
 		except Exception as e:
 			logging.error(f"Error with compiling file: {e}")
