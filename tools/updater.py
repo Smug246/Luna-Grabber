@@ -4,9 +4,6 @@ import subprocess
 from zipfile import ZipFile
 
 
-
-
-
 def main():
     if not os.path.exists('Update.zip'):
         print('Update.zip not found.')

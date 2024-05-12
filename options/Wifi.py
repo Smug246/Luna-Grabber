@@ -16,7 +16,7 @@ class Wifi:
 			for profile in profiles:
 				if profile:
 					self.networks[profile] = subprocess.check_output(["netsh", "wlan", "show", "profile", profile, "key=clear"]).decode(errors='ignore')
-		except:
+		except Exception:
 			pass
 
 	def save_networks(self):

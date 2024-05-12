@@ -69,7 +69,7 @@ class BlankOBFv2:
             # Generate new alias
             while(True):
                 name = "".join(random.choices(dir(builtins), k=random.randint(10, 25)))
-                if not name in self._aliases.values():
+                if name not in self._aliases.values():
                     self._aliases[value] = name
                     return name
                 
@@ -127,7 +127,7 @@ class BlankOBFv2:
                 self._outer = outer
 
             def rename(self, name: str) -> None:
-                if not name in dir(builtins) and not name in [x[1] for x in self._outer._imports]:
+                if name not in dir(builtins) and name not in [x[1] for x in self._outer._imports]:
                     return self._outer._generate_random_name(name)
                 else:
                     return name

