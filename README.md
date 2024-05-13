@@ -52,11 +52,14 @@
     - OS
     - System
     - Network IP
+    - Country
     - Wifi
     - Mac
     - Hwid
     - PC Specs
     - Screenshot
+    - Proxies
+    - Installed AV's
 
 - General Functions
     - Checks if being run in a virustotal sandbox/virtual machine
@@ -71,6 +74,7 @@
     - File Pumper
     - Self Destruct
     - Clipboard
+    - Crypto Wallets
  
 <hr  style="border-radius: 2%; margin-top: 60px; margin-bottom: 60px;"  noshade=""  size="20"  width="100%">
   
