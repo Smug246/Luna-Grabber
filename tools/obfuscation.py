@@ -1,5 +1,3 @@
-# Made by Blank-c (github/Blank-c)
-
 import argparse
 import ast
 import base64

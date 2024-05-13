@@ -1,17 +1,18 @@
 # Logger
-psutil
 cryptography
-requests
-pypiwin32
-pyperclip
-wmi
-requests-toolbelt
 opencv-python
+psutil
+pycountry
+pyperclip
+pypiwin32
+requests
+requests-toolbelt
+wmi
 # Builder
 colorama
-pyinstaller
+customtkinter
+nuitka
+packaging
 pillow
 pycryptodomex
-customtkinter
-packaging
-nuitka
+pyinstaller
