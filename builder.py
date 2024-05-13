@@ -672,6 +672,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                 self.PostProcessing(f"./{filename}.exe")
 
                 logging.info(f"Successfully compiled {filename}.exe with pyinstaller")
+                print(f"Successfully compiled {filename}.exe with pyinstaller")
 
             elif filetype == "nuitka":
                 if sys.version_info[:2] > (3, 11):
@@ -702,11 +703,14 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                         self.PostProcessing(f"./{filename}.exe")
                         
                         logging.info(f"Successfully compiled {filename}.exe with nuitka")
+                        print(f"Successfully compiled {filename}.exe with nuitka")
                     except Exception as e:
                         logging.error(f"Error with compiling file: {e}")
+                        print(f"Error with compiling file: {e}")
                         
         except Exception as e:
             logging.error(f"Error with compiling file: {e}")
+            print(f"Error with compiling file: {e}")
 
     def cleanup_files(self, filename):
         cleans_dir = {'./__pycache__', './build'}
