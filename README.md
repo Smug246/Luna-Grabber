@@ -60,6 +60,7 @@
     - Screenshot
     - Proxies
     - Installed AV's
+    - Product Key
 
 - General Functions
     - Checks if being run in a virustotal sandbox/virtual machine
