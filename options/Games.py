@@ -8,18 +8,6 @@ class Games:
         self.StealEpic()
         self.StealMinecraft()
         
-
-    def GetLnkTarget(self, path_to_lnk: str) -> str | None:
-        target = None
-        if os.path.isfile(path_to_lnk):
-            output = subprocess.run('wmic path win32_shortcutfile where name="%s" get target /value' % os.path.abspath(path_to_lnk).replace("\\", "\\\\"), shell= True, capture_output= True).stdout.decode()
-            if output:
-                for line in output.splitlines():
-                    if line.startswith("Target="):
-                        temp = line.lstrip("Target=").strip()
-                        if os.path.exists(temp):
-                            target = temp
-                            break
                         
     def GetLnkFromStartMenu(self, app: str) -> list[str]:
         shortcutPaths = []

