@@ -90,6 +90,13 @@ def Luna(webhook: str):
     if not IsConnectedToInternet():
         sys.exit(0)
 
+    def CreateMutex(mutex: str = "Your Mom") -> bool:
+        kernel32 = ctypes.windll.kernel32
+        mutex = kernel32.CreateMutexA(None, False, mutex)
+        return kernel32.GetLastError() != 183
+    if not CreateMutex():
+        os._exit(0)
+
     if __CONFIG__["anti_spam"]:
         AntiSpam()
 

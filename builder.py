@@ -612,7 +612,8 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
             included_modules_pyinstaller = [
                 "json",
                 "requests_toolbelt",
-                "sys"
+                "sys",
+                "ctypes"
                 ]
             
             option_module_mapping_pyinstaller = {
@@ -623,7 +624,6 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                 "antidebug_vm": ["psutil", "subprocess"],
                 "defender": ["subprocess", "base64"],
                 "discord": ["Cryptodome.Cipher.AES", "PIL.ImageGrab", "win32crypt", "base64", "re"],
-                "fakeerror": ["ctypes"],
                 "injection": ["subprocess", "psutil", "re"],
                 "systeminfo": ["psutil", "subprocess", "pycountry"],
                 "self_destruct": ["subprocess"],
