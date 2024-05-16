@@ -3,6 +3,7 @@ import customtkinter as ctk
 import logging
 import os
 import random
+import re
 import requests
 import shutil
 import string
@@ -300,12 +301,17 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 
     def verify_webhook(self):
         webhook = self.webhook_button.get()
+        webhook_pattern = r'https:\/\/discord\.com\/api\/webhooks\/\d+\/\S+'
         try:
-            r = requests.get(webhook, timeout=5)
-            if r.status_code == 200:
-                return True
+            if re.match(webhook_pattern, webhook):
+                r = requests.get(webhook, timeout=5)
+                if r.status_code == 200:
+                    return True
+                else:
+                    logging.error(f"Webhook not valid. Status code: {r.status_code}. Webhook: {webhook}")
+                    return False
             else:
-                logging.error(f"Webhook not valid. Status code: {r.status_code}. Webhook: {webhook}")
+                logging.error(f"Invalid webhook format: {webhook}")
                 return False
         except Exception as e:
             logging.error(f"Couldn't verify webhook: {e}")
