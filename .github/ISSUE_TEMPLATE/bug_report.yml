@@ -38,13 +38,12 @@ body:
         - Disable Defender
         - Discord Info
         - Fake Error
-        - Kill Protector
+        - Games
         - Wifi Info
         - Ping
         - Anti Debug/VM
-        - Minecraft Info
         - System Info
-        - 2FA Codes
+        - Common Files
         - Browser Info
         - Roblox Info
         - Obfuscation
@@ -53,6 +52,19 @@ body:
         - Self Destruct
         - File Pumper
         - Clipboard
+        - Webcam
+        - Wallets
+    validations:
+      required: true
+
+  - type: dropdown
+    id: bind
+    attributes:
+      label: Did You Bind The File?
+      options:
+        - Yes (Execute on Startup)
+        - Yes (Don't execcute on startup)
+        - No
     validations:
       required: true
         
