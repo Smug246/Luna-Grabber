@@ -63,7 +63,7 @@ body:
       label: Did You Bind The File?
       options:
         - Yes (Execute on Startup)
-        - Yes (Don't execcute on startup)
+        - Yes (Don't execute on startup)
         - No
     validations:
       required: true
