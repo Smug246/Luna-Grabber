@@ -64,7 +64,7 @@ body:
       options:
         - Yes (Execute on Startup)
         - Yes (Don't execute on startup)
-        - No
+        - "No"
     validations:
       required: true
         
