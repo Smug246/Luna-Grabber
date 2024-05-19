@@ -1,11 +1,10 @@
 import os
-import sys
 import time
 
 class AntiSpam:
 	def __init__(self):
 		if self.check_time():
-			sys.exit(0)
+			os._exit(0)
 
 	def check_time(self) -> bool:
 		current_time = time.time()

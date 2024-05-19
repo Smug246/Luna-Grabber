@@ -16,7 +16,7 @@ class Update():
         if "self.version = '1.7.3'" in code:
             print('This version is up to date!')
             sleep(1)
-            sys.exit()
+            sys.exit(0)
         else:
             print('''
                     ███╗   ██╗███████╗██╗    ██╗    ██╗   ██╗██████╗ ██████╗  █████╗ ████████╗███████╗██╗

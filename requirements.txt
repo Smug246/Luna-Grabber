@@ -8,6 +8,7 @@ pypiwin32
 requests
 requests-toolbelt
 wmi
+pyaesm
 # Builder
 colorama
 customtkinter

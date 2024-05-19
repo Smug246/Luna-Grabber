@@ -1,4 +1,5 @@
 import cv2
+import os
 
 def capture_images(num_images=1):
 	num_cameras = 0

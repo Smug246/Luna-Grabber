@@ -1,5 +1,6 @@
 import ctypes
-
+import os
+import sys
 
 class Fakeerror():
     def __init__(self):
