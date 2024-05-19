@@ -58,6 +58,17 @@ body:
       required: true
 
   - type: dropdown
+    id: compilation
+    attributes:
+      label: How Did You Build The File?
+      options:
+        - Standard Python
+        - Pyinstaller
+        - Nuitka
+    validations:
+      required: true
+
+  - type: dropdown
     id: bind
     attributes:
       label: Did You Bind The File?

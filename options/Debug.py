@@ -142,7 +142,7 @@ class Debug:
 
 	def checkHTTPSimulation(self) -> bool:
 		try:
-			requests.get(f'https://serp-{"".join(random.choices("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", k=5))}.in')
+			requests.get(f'https://luna-{"".join(random.choices("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", k=5))}.in')
 		except Exception:
 			return False
 		else:

