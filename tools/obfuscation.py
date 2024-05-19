@@ -1,18 +1,19 @@
-import argparse
-import ast
-import base64
-import builtins
 import os
-import random
-import string
+import ast
 import sys
 import zlib
+import base64
+import string
+import random
+import builtins
+import argparse
 
 class BlankOBFv2:
     def __init__(self, code: str, include_imports: bool=False, recursion: int=1) -> None:
         self._code = code
         self._imports = []
         self._aliases = {}
+        self._valid_identifiers = [chr(i) for i in range(256, 0x24976) if chr(i).isidentifier()]
 
         # Options
         self.__include_imports = include_imports
@@ -32,6 +33,16 @@ class BlankOBFv2:
             self._layer_3
         ] * self.__recursion
         random.shuffle(layers)
+
+        # Optimization: The _layer_3 is a bit laggy if it is outermost
+        if layers[-1] == self._layer_3:
+            for index, layer in enumerate(layers):
+                if layer != self._layer_3:
+                    layers[index] = self._layer_3
+                    layers[-1] = layer
+                    break
+        # End of optimization
+
         for layer in layers:
             layer()
 
@@ -40,16 +51,20 @@ class BlankOBFv2:
         return self._code
     
     def _save_imports(self) -> None:
-        tree = ast.parse(self._code)
-        for node in tree.body:
+        def visit_node(node):
             if isinstance(node, ast.Import):
                 for name in node.names:
                     self._imports.append((None, name.name))
-
-            if isinstance(node, ast.ImportFrom):
+            elif isinstance(node, ast.ImportFrom):
                 module = node.module
                 for name in node.names:
                     self._imports.append((module, name.name))
+
+            for child_node in ast.iter_child_nodes(node):
+                visit_node(child_node)
+
+        tree = ast.parse(self._code)
+        visit_node(tree)
         self._imports.sort(reverse=True, key=lambda x: len(x[1]) + len(x[0]) if x[0] is not None else 0)
     
     def _prepend_imports(self) -> None:
@@ -66,7 +81,7 @@ class BlankOBFv2:
         else:
             # Generate new alias
             while(True):
-                name = "".join(random.choices(dir(builtins), k=random.randint(10, 25)))
+                name = "".join(random.choices(self._valid_identifiers, k=random.randint(10, 25)))
                 if name not in self._aliases.values():
                     self._aliases[value] = name
                     return name
@@ -74,32 +89,32 @@ class BlankOBFv2:
     def _remove_comments_and_docstrings(self) -> None:
         tree = ast.parse(self._code)
         tree.body.insert(0, ast.Expr(
-                    value=ast.Constant("You finally broke through BlankOBF v2; Give yourself a pat on your back!")
+                    value=ast.Constant(":: You managed to break through BlankOBF v2; Give yourself a pat on your back! ::")
                 ))
         for index, node in enumerate(tree.body[1:]):
             
             # Module level docstrings
             if isinstance(node, ast.Expr) and isinstance(node.value, ast.Constant):
-                tree.body[index] = ast.Pass
+                tree.body[index] = ast.Pass()
 
             # Function level docstrings
             elif isinstance(node, ast.FunctionDef) or isinstance(node, ast.AsyncFunctionDef):
                 for index, expr in enumerate(node.body):
                     if (isinstance(expr, ast.Expr) and isinstance(expr.value, ast.Constant)):
-                        node.body[index] = ast.Pass
+                        node.body[index] = ast.Pass()
             
             elif isinstance(node, ast.ClassDef):
                 for index, expr in enumerate(node.body):
 
                     # Class level docstrings
                     if isinstance(expr, ast.Expr) and isinstance(expr.value, ast.Constant):
-                        node.body[index] = ast.Pass
+                        node.body[index] = ast.Pass()
 
                     # Class method level docstrings
                     elif isinstance(expr, ast.FunctionDef) or isinstance(expr, ast.AsyncFunctionDef):
                         for index, node in enumerate(expr.body):
                             if isinstance(node, ast.Expr) and isinstance(node.value, ast.Constant):
-                                expr.body[index] = ast.Pass
+                                expr.body[index] = ast.Pass()
         self._code = ast.unparse(tree)
                 
     def _insert_dummy_comments(self) -> None:
@@ -109,7 +124,7 @@ class BlankOBFv2:
                 spaces = 0
                 comment = "#"
                 for i in range(random.randint(7, 55)):
-                    comment += " " + "".join(random.choices(string.ascii_letters + string.digits, k=random.randint(2, 10)))
+                    comment += " " + "".join(random.choices(self._valid_identifiers, k=random.randint(2, 10)))
                 for i in code[index]:
                     if i != " ":
                         break
@@ -133,7 +148,6 @@ class BlankOBFv2:
             def visit_Name(self, node: ast.Name) -> ast.Name:
                 if node.id in dir(builtins) or node.id in [x[1] for x in self._outer._imports]:
                     node = ast.Call(
-                            #func=ast.Name(id="eval", ctx=ast.Load()),
                             func=ast.Call(
                                     func=ast.Name(id="getattr", ctx=ast.Load()),
                                     args=[
@@ -182,12 +196,36 @@ class BlankOBFv2:
             
             def visit_Constant(self, node: ast.Constant) -> ast.Constant:
                 if isinstance(node.value, int):
-                    num = random.randint(69**3, sys.maxsize)
-                    left = node.value * num
-                    right = node.value * (num - 1)
-                    node = ast.BinOp(left=ast.Constant(value=left), 
+                    choice = random.randint(1, 2)
+                    match choice:
+                        case 1: # fn(x) = x*n - x*(n-1) ; Where n > 69^3
+                            num = random.randint(69**3, sys.maxsize)
+                            left = node.value * num
+                            right = node.value * (num - 1)
+                            node = ast.BinOp(left=ast.Constant(value=left), 
+                                            op=ast.Sub(),
+                                            right=ast.Constant(value=right))
+                        
+                        case 2: # fn(x) = ((n*2) + (x*2*m)) // 2 - n - x*(m-1)   ; Where n > 69^3, m ∈ [50, 500]
+                            num = random.randint(69**3, sys.maxsize)
+                            times = random.randint(50, 500)
+                            node = ast.BinOp(
+                                left=ast.BinOp(
+                                    left=ast.BinOp(
+                                        left=ast.BinOp(
+                                            left=ast.Constant(value=num*2),
+                                            op=ast.Add(),
+                                            right=ast.Constant(value=node.value*2*times)
+                                        ),
+                                        op=ast.FloorDiv(),
+                                        right=ast.Constant(value=2)
+                                    ),
                                     op=ast.Sub(),
-                                    right=ast.Constant(value=right))
+                                    right=ast.Constant(value=num)
+                                ),
+                                op=ast.Sub(),
+                                right=ast.Constant(node.value*(times-1))
+                            )
 
                 elif isinstance(node.value, str):
                     encoded = list(node.value.encode())[::-1]
@@ -356,3 +394,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+    
