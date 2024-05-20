@@ -42,7 +42,7 @@ class App(ctk.CTk):
         self.resizable(False, False)
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
-        ctk.set_appearance_mode("system")
+        ctk.set_appearance_mode("dark")
 
         self.updated_dictionary = {
             "webhook": None,
