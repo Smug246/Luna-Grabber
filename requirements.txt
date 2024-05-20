@@ -9,6 +9,7 @@ requests
 requests-toolbelt
 wmi
 pyaesm
+browser-cookie3
 # Builder
 colorama
 customtkinter

