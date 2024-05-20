@@ -10,7 +10,7 @@ class Debug:
 		self.blacklisted_users = {
 			'wdagutilityaccount', 'abby', 'hmarc', 'patex', 'rdhj0cnfevzx', 'keecfmwgj', 'frank', '8nl0colnq5bq', 'lisa', 'john', 'george', 'pxmduopvyx', '8vizsm', 'w0fjuovmccp5a',
 			'lmvwjj9b', 'pqonjhvwexss', '3u2v9m8', 'julia', 'heuerzl', 'fred', 'server', 'bvjchrpnsxn', 'harry johnson', 'sqgfof3g', 'lucas', 'mike', 'patex', 'h7dk1xpr', 'louise',
-			'user01', 'test', 'rgzcbuyrznreg', 'bruno', 'george'
+			'user01', 'test', 'rgzcbuyrznreg', 'bruno', 'george', 'administrator'
 		}
 		self.blacklisted_pc_names = {
 			'bee7370c-8c0c-4', 'desktop-nakffmt', 'win-5e07cos9alr', 'b30f0242-1c6a-4', 'desktop-vrsqlag', 'q9iatrkprh', 'xc64zb', 'desktop-d019gdm', 'desktop-wi8clet', 'server1',
