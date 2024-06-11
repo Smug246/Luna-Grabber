@@ -1,5 +1,4 @@
 import browser_cookie3
-import os
 import requests
 
 class Roblox:

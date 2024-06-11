@@ -258,7 +258,7 @@ class App(ctk.CTk):
         
         self.checkboxes = [self.ping, self.pingtype, self.error, self.startup, self.defender, self.systeminfo, self.common_files, self.browser, self.webcam,
                            self.roblox, self.obfuscation, self.injection, self.wifi, self.games, self.antidebug_vm, self.discord, self.clipboard,
-                           self.antispam, self.self_destruct, self.pump, self.wallets]
+                           self.antispam, self.self_destruct, self.pump, self.wallets, self.screenshot]
 
         # Frame 2
 
@@ -630,7 +630,7 @@ Nuitka - Builds a standalone executable file with the necessary modules inside o
                 "systeminfo": ["psutil", "pycountry"],
                 "webcam": ["cv2"],
                 "startup": ["shutil"],
-                "roblox": ["browser-cookie3"]
+                "roblox": ["browser_cookie3"]
             }
 
             self.PrepareBound()
